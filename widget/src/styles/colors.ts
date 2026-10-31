@@ -10,12 +10,12 @@ export const colors = css`
     --alpha-grey-100-20: #00000033;
 
     /* VertualAI Brand Colors */
-    --onyx-ink-100: #000000;
-    --onyx-ink-95: #1c1c1c;
+    --virtualai-ink-100: #000000;
+    --virtualai-ink-95: #1c1c1c;
 
     /* Theme / Primary - Configurable via env vars */
-    --theme-primary-06: var(--onyx-ink-100);
-    --theme-primary-05: var(--onyx-ink-95);
+    --theme-primary-06: var(--virtualai-ink-100);
+    --theme-primary-05: var(--virtualai-ink-95);
 
     /* Background / Neutral */
     --background-neutral-00: var(--grey-00);

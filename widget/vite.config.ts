@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
       lib: {
         entry: resolve(__dirname, "src/index.ts"),
         name: "VertualAIWidget",
-        fileName: "onyx-widget",
+        fileName: "virtualai-widget",
         formats: ["es"],
       },
       rollupOptions: {

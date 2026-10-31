@@ -16,6 +16,11 @@ import {
 } from "@/lib/workflows/nodeRegistry";
 import { nodeKindUi } from "./nodeUi";
 import { selectableStepAgents } from "@/lib/workflows/stepAgents";
+import { OrchestratorLimitFields } from "./OrchestratorLimitFields";
+import {
+  MAX_TIMEOUT_SECONDS,
+  MIN_TIMEOUT_SECONDS,
+} from "@/lib/workflows/workflowLimits";
 
 // Names of utility agents that get their own section
 const UTILITY_AGENT_NAMES = new Set(["HTTP Request", "Code Executor"]);
@@ -393,43 +398,15 @@ function SettingsTab({
         </>
       )}
 
-      <div className="wfb-settings-row">
-        <div className="wfb-settings-label">Max Total Steps</div>
-        <input
-          className="wfb-settings-number"
-          type="number"
-          min={1}
-          max={50}
-          value={meta.max_steps}
-          onChange={(e) =>
-            onUpdateMeta({ max_steps: Number(e.target.value) || 10 })
-          }
-        />
-      </div>
-
-      <div className="wfb-settings-row">
-        <div className="wfb-settings-label">Max Calls per Agent</div>
-        <input
-          className="wfb-settings-number"
-          type="number"
-          min={1}
-          max={10}
-          value={meta.max_calls_per_agent}
-          onChange={(e) =>
-            onUpdateMeta({
-              max_calls_per_agent: Number(e.target.value) || 2,
-            })
-          }
-        />
-      </div>
+      <OrchestratorLimitFields meta={meta} onUpdateMeta={onUpdateMeta} />
 
       <div className="wfb-settings-row">
         <div className="wfb-settings-label">Timeout (seconds)</div>
         <input
           className="wfb-settings-number"
           type="number"
-          min={30}
-          max={7200}
+          min={MIN_TIMEOUT_SECONDS}
+          max={MAX_TIMEOUT_SECONDS}
           value={meta.timeout_seconds}
           onChange={(e) =>
             onUpdateMeta({

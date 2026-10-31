@@ -1,0 +1,1186 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup: New knowledge base wizard and Knowledge mode</title>
+<style>
+/* Colour names and accent values follow web/src/app/css/colors.css. */
+:root {
+  --background-tint-00:#ffffff; --background-tint-01:#fafafa; --background-tint-02:#f2f2f3; --background-tint-03:#e6e6e8;
+  --border-01:#e2e2e5; --border-02:#c9c9ce; --text-05:#1a1a1c; --text-04:#3a3a3f; --text-03:#62626a; --text-02:#85858c;
+  --virtualai-accent:#1c1c1c; --virtualai-accent-subtle:rgba(28,28,28,.05); --virtualai-accent-glow:rgba(28,28,28,.12);
+  --accent-contrast:#ffffff; --section-knowledge:#15803d; --section-knowledge-bg:rgba(21,128,61,.1);
+  --section-agents:#6d28d9; --section-agents-bg:rgba(109,40,217,.1);
+  --success:#15803d; --success-bg:rgba(21,128,61,.1); --warning:#b45309; --warning-bg:rgba(180,83,9,.1);
+  --danger:#b91c1c; --danger-bg:rgba(185,28,28,.08); --end-node:#16a34a;
+}
+.dark {
+  --background-tint-00:#000000; --background-tint-01:#0a0a0b; --background-tint-02:#161618; --background-tint-03:#242427;
+  --border-01:#2a2a2e; --border-02:#3f3f45; --text-05:#f4f4f5; --text-04:#d4d4d8; --text-03:#a1a1aa; --text-02:#808088;
+  --virtualai-accent:#6366f1; --virtualai-accent-subtle:rgba(99,102,241,.1); --virtualai-accent-glow:rgba(99,102,241,.22);
+  --accent-contrast:#ffffff; --section-knowledge:#22c55e; --section-knowledge-bg:rgba(34,197,94,.14);
+  --section-agents:#a78bfa; --section-agents-bg:rgba(167,139,250,.14);
+  --success:#4ade80; --success-bg:rgba(74,222,128,.12); --warning:#fbbf24; --warning-bg:rgba(251,191,36,.12);
+  --danger:#f87171; --danger-bg:rgba(248,113,113,.12); --end-node:#16a34a;
+}
+.virtualai-ocean { --virtualai-accent:#3b82f6; --virtualai-accent-subtle:rgba(59,130,246,.06); --virtualai-accent-glow:rgba(59,130,246,.18); }
+.dark.virtualai-ocean { --virtualai-accent:#60a5fa; --virtualai-accent-subtle:rgba(59,130,246,.1); --virtualai-accent-glow:rgba(59,130,246,.28); --accent-contrast:#04121f; }
+.virtualai-emerald { --virtualai-accent:#059669; --virtualai-accent-subtle:rgba(52,211,153,.07); --virtualai-accent-glow:rgba(52,211,153,.2); }
+.dark.virtualai-emerald { --virtualai-accent:#34d399; --virtualai-accent-subtle:rgba(52,211,153,.1); --virtualai-accent-glow:rgba(52,211,153,.26); --accent-contrast:#04120c; }
+.virtualai-violet { --virtualai-accent:#7c3aed; --virtualai-accent-subtle:rgba(124,58,237,.06); --virtualai-accent-glow:rgba(124,58,237,.18); }
+.dark.virtualai-violet { --virtualai-accent:#a78bfa; --virtualai-accent-subtle:rgba(167,139,250,.1); --virtualai-accent-glow:rgba(167,139,250,.26); --accent-contrast:#10081f; }
+
+* { box-sizing:border-box; }
+html,body { height:100%; margin:0; }
+body { background:var(--background-tint-00); color:var(--text-05); font:14px/1.45 Inter,"Segoe UI",system-ui,sans-serif; }
+#app { display:flex; flex-direction:column; height:100vh; min-width:1120px; }
+button,input,select,textarea { font:inherit; color:inherit; }
+button { cursor:pointer; background:none; border:0; }
+button:disabled { cursor:not-allowed; }
+:focus-visible { outline:2px solid var(--virtualai-accent); outline-offset:2px; }
+h1,h2,h3,p { margin:0; }
+.muted { color:var(--text-03); } .small { font-size:12px; } .row { display:flex; align-items:center; gap:8px; } .grow { flex:1; min-width:0; }
+.stack { display:flex; flex-direction:column; gap:12px; }
+code,.mono { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px; }
+
+/* Review bar: mockup-only, not part of the product. */
+.review { display:flex; align-items:center; gap:6px; padding:6px 12px; background:var(--warning-bg); border-bottom:1px solid var(--border-01); font-size:12px; }
+.review strong { color:var(--warning); margin-right:6px; letter-spacing:.04em; }
+.review button,.review select { padding:3px 9px; border:1px solid var(--border-02); border-radius:6px; background:var(--background-tint-00); white-space:nowrap; }
+.review select { width:auto; flex:none; }
+.review .muted { white-space:nowrap; }
+.review button.on { background:var(--text-05); color:var(--background-tint-00); border-color:var(--text-05); }
+.review .sep { width:1px; height:18px; background:var(--border-02); margin:0 4px; }
+
+/* App navigation */
+.topnav { display:flex; align-items:center; gap:6px; height:52px; padding:0 16px; border-bottom:1px solid var(--border-01); flex:none; position:relative; }
+.topnav .brand { font-weight:600; padding-right:14px; margin-right:6px; border-right:1px solid var(--border-01); }
+.navbtn { padding:7px 12px; border-radius:8px; color:var(--text-04); font-weight:500; }
+.navbtn:hover { background:var(--background-tint-02); }
+.navbtn.knowledge { background:var(--section-knowledge-bg); color:var(--section-knowledge); }
+.navbtn.agents { background:var(--section-agents-bg); color:var(--section-agents); }
+.navmenu { position:absolute; top:46px; left:92px; width:250px; padding:6px; z-index:40; background:var(--background-tint-01); border:1px solid var(--border-02); border-radius:10px; box-shadow:0 12px 30px rgba(0,0,0,.35); }
+.navmenu button { display:block; width:100%; text-align:left; padding:8px 10px; border-radius:6px; }
+.navmenu button:hover { background:var(--background-tint-02); }
+
+.tag-new { display:inline-block; font-size:10px; font-weight:600; padding:1px 6px; border-radius:99px; color:var(--virtualai-accent); background:var(--virtualai-accent-subtle); border:1px solid var(--virtualai-accent-glow); margin-left:6px; vertical-align:1px; }
+.tag-later { display:inline-block; font-size:10px; padding:1px 6px; border-radius:99px; color:var(--text-03); background:var(--background-tint-03); margin-left:6px; }
+
+/* Builder header */
+.bhead { display:flex; align-items:center; gap:8px; height:56px; padding:0 16px; border-bottom:1px solid var(--border-01); flex:none; }
+.bhead h1 { font-size:15px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:320px; }
+.seg { display:inline-flex; border-radius:8px; background:var(--background-tint-02); padding:2px; }
+.seg button { padding:6px 13px; border-radius:6px; color:var(--text-03); font-weight:500; }
+.seg button.on { background:var(--virtualai-accent); color:var(--accent-contrast); }
+.btn { padding:7px 13px; border-radius:8px; border:1px solid var(--border-02); font-weight:500; background:var(--background-tint-00); white-space:nowrap; }
+.btn:hover:not(:disabled) { background:var(--background-tint-02); }
+.btn.primary { background:var(--virtualai-accent); color:var(--accent-contrast); border-color:var(--virtualai-accent); }
+.btn.primary:hover:not(:disabled) { filter:brightness(1.1); background:var(--virtualai-accent); }
+.btn:disabled { opacity:.5; }
+.btn.danger { color:var(--danger); border-color:var(--danger); }
+.btn.sm { padding:4px 10px; font-size:12px; }
+.linkbtn { color:var(--virtualai-accent); font-weight:500; padding:0; }
+
+/* Builder layout */
+.builder { flex:1; display:flex; min-height:0; }
+.side { width:240px; flex:none; border-right:1px solid var(--border-01); display:flex; flex-direction:column; min-height:0; }
+.tabs { display:flex; border-bottom:1px solid var(--border-01); flex:none; }
+.tabs button { flex:1; padding:11px 8px; color:var(--text-03); font-weight:500; border-bottom:2px solid transparent; }
+.tabs button.on { color:var(--virtualai-accent); border-bottom-color:var(--virtualai-accent); }
+.sidebody { padding:10px; overflow:auto; flex:1; display:flex; flex-direction:column; gap:8px; }
+.palette { display:flex; gap:10px; align-items:flex-start; padding:10px; width:100%; text-align:left; border:1px solid var(--border-01); border-radius:10px; background:var(--background-tint-00); cursor:grab; }
+.palette:hover:not(.used) { border-color:var(--virtualai-accent); }
+.palette.used { opacity:.45; cursor:not-allowed; }
+.palette .t { font-weight:600; font-size:13px; } .palette .d { font-size:12px; color:var(--text-03); }
+.ico { width:30px; height:30px; flex:none; border-radius:8px; display:grid; place-items:center; background:var(--background-tint-02); border:1px solid var(--border-01); color:var(--text-04); font-weight:600; font-size:13px; }
+.ico.accent { background:var(--virtualai-accent); color:var(--accent-contrast); border-color:transparent; }
+.field { display:flex; flex-direction:column; gap:5px; }
+.field>label,.flabel { font-weight:500; font-size:13px; }
+.hint { font-size:12px; color:var(--text-03); }
+input[type=text],input[type=number],input[type=search],input[type=date],select,textarea { width:100%; padding:8px 10px; border-radius:8px; border:1px solid var(--border-02); background:var(--background-tint-00); }
+input:focus,select:focus,textarea:focus { outline:none; border-color:var(--virtualai-accent); box-shadow:0 0 0 2px var(--virtualai-accent-glow); }
+input[type=range] { width:100%; accent-color:var(--virtualai-accent); }
+input[type=checkbox],input[type=radio] { accent-color:var(--virtualai-accent); width:15px; height:15px; flex:none; }
+.check { display:flex; gap:8px; align-items:flex-start; }
+.err { font-size:12px; color:var(--danger); }
+textarea { resize:vertical; }
+
+/* Canvas */
+.canvas { flex:1; position:relative; overflow:auto; min-width:0; background-color:var(--background-tint-01); background-image:radial-gradient(var(--border-01) 1px,transparent 1px); background-size:22px 22px; }
+.canvas.over { box-shadow:inset 0 0 0 2px var(--virtualai-accent); }
+.inner { position:relative; width:1560px; height:760px; transform-origin:0 0; }
+.inner svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
+.edge { fill:none; stroke:var(--virtualai-accent); stroke-width:1.6; }
+.pill rect { fill:var(--virtualai-accent); }
+.pill text { fill:var(--accent-contrast); font-size:10px; font-weight:600; text-anchor:middle; dominant-baseline:central; }
+.dot { fill:var(--background-tint-00); stroke:var(--virtualai-accent); stroke-width:2; }
+.node { position:absolute; width:250px; border:1.5px solid var(--border-02); border-radius:12px; background:var(--background-tint-00); cursor:pointer; user-select:none; touch-action:none; }
+.node.sel { border-color:var(--virtualai-accent); box-shadow:0 0 0 3px var(--virtualai-accent-glow); }
+.node.bad { border-color:var(--warning); }
+.node .nh { display:flex; align-items:center; gap:9px; padding:10px 12px; border-bottom:1px solid var(--border-01); }
+.node .ti { font-weight:600; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.node .su { font-size:11px; color:var(--text-03); }
+.node .no { color:var(--virtualai-accent); background:var(--virtualai-accent-subtle); font-size:11px; font-weight:600; padding:1px 6px; border-radius:5px; }
+.node .nb { padding:9px 12px; display:grid; grid-template-columns:72px 1fr; gap:4px 8px; font-size:11.5px; }
+.node .nb .k { color:var(--text-03); letter-spacing:.03em; text-transform:uppercase; font-size:10px; padding-top:1px; }
+.node .nb .v { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.chip { display:inline-block; padding:2px 8px; border-radius:99px; font-size:11px; font-weight:500; white-space:nowrap; }
+.chip.warn { color:var(--warning); background:var(--warning-bg); }
+.chip.ok { color:var(--success); background:var(--success-bg); }
+.chip.neutral { color:var(--text-03); background:var(--background-tint-03); }
+.chip.bad { color:var(--danger); background:var(--danger-bg); }
+.nf { padding:0 12px 10px; }
+.startnode { position:absolute; width:118px; padding:14px 8px; text-align:center; border-radius:12px; color:var(--accent-contrast); background:linear-gradient(135deg,var(--virtualai-accent),color-mix(in srgb,var(--virtualai-accent) 78%,#000)); user-select:none; touch-action:none; cursor:grab; }
+.startnode b { display:block; letter-spacing:.06em; font-size:12px; margin-top:3px; }
+.endnode { position:absolute; width:96px; padding:14px 6px; text-align:center; border-radius:12px; color:#fff; background:var(--end-node); font-weight:700; font-size:12px; letter-spacing:.05em; user-select:none; touch-action:none; cursor:grab; }
+.endnode small { display:block; font-weight:500; letter-spacing:0; font-size:10px; opacity:.9; }
+.legend { position:absolute; left:14px; top:14px; width:214px; padding:11px 13px; border:1px solid var(--border-01); border-radius:10px; background:var(--background-tint-00); z-index:5; font-size:12px; pointer-events:none; }
+.legend button { pointer-events:auto; }
+.legend b { font-size:13px; }
+.dropzone { position:absolute; left:50%; top:45%; transform:translate(-50%,-50%); padding:18px 26px; text-align:center; border:1.5px dashed var(--border-02); border-radius:12px; color:var(--text-03); background:var(--background-tint-00); }
+.zoom { position:absolute; left:14px; bottom:14px; display:flex; flex-direction:column; border:1px solid var(--border-01); border-radius:8px; overflow:hidden; background:var(--background-tint-00); z-index:5; }
+.zoom button { width:32px; height:30px; border-bottom:1px solid var(--border-01); }
+.zoom button:last-child { border-bottom:0; }
+.zoom button:hover { background:var(--background-tint-02); }
+.sticky-ui { position:sticky; left:0; top:0; width:0; height:0; z-index:6; }
+.overlay-wrap { flex:1; position:relative; min-width:0; display:flex; }
+.runslot.floating { position:absolute; left:50%; bottom:14px; transform:translateX(-50%); width:min(680px,calc(100% - 120px)); z-index:7; }
+.runcard { padding:11px 14px; border:1px solid var(--border-02); border-radius:12px; background:var(--background-tint-00); box-shadow:0 8px 26px rgba(0,0,0,.3); display:flex; flex-direction:column; gap:8px; }
+.bar { height:6px; border-radius:99px; background:var(--background-tint-03); overflow:hidden; }
+.bar i { display:block; height:100%; background:var(--virtualai-accent); transition:width .35s; }
+
+/* Right config panel */
+.panel { width:460px; flex:none; border-left:1px solid var(--border-01); background:var(--background-tint-00); display:flex; flex-direction:column; min-height:0; }
+.panel .ph { display:flex; align-items:center; gap:10px; padding:12px 14px; border-bottom:1px solid var(--border-01); }
+.panel .pb { flex:1; overflow:auto; padding:14px; display:flex; flex-direction:column; gap:16px; }
+.iconbtn { width:28px; height:28px; border-radius:6px; color:var(--text-03); }
+.iconbtn:hover { background:var(--background-tint-02); }
+
+/* Shared form pieces */
+.opt { display:flex; gap:10px; align-items:center; width:100%; padding:9px 11px; text-align:left; border:1px solid var(--border-01); border-radius:10px; background:var(--background-tint-00); }
+.opt:hover:not(:disabled) { border-color:var(--border-02); background:var(--background-tint-01); }
+.opt.on { border-color:var(--virtualai-accent); background:var(--virtualai-accent-subtle); }
+.opt:disabled { opacity:.5; cursor:not-allowed; }
+.opt .t { font-weight:600; font-size:13px; } .opt .d { font-size:12px; color:var(--text-03); }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.box { padding:11px 12px; border-radius:10px; border:1px solid var(--border-01); background:var(--background-tint-01); }
+.note { padding:9px 11px; border-radius:8px; font-size:12px; background:var(--background-tint-02); color:var(--text-04); }
+.note.warn { background:var(--warning-bg); color:var(--warning); }
+.note.bad { background:var(--danger-bg); color:var(--danger); }
+.note.ok { background:var(--success-bg); color:var(--success); }
+.sect { font-weight:600; font-size:13px; padding-bottom:6px; border-bottom:1px solid var(--border-01); }
+
+/* Chunk list */
+.stats { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+.stat { padding:7px 9px; border-radius:8px; background:var(--background-tint-02); }
+.stat b { display:block; font-size:15px; }
+.chunk { padding:9px 11px; border:1px solid var(--border-01); border-radius:8px; background:var(--background-tint-00); font-size:12.5px; }
+.chunk .ch { display:flex; justify-content:space-between; color:var(--text-03); font-size:11px; margin-bottom:4px; }
+.chunk .ct { white-space:pre-wrap; word-break:break-word; max-height:96px; overflow:hidden; }
+.chunk .ov { background:var(--virtualai-accent-glow); border-radius:3px; }
+.chunks { display:flex; flex-direction:column; gap:6px; }
+
+/* Wizard editor */
+.wiz { flex:1; overflow:auto; background:var(--background-tint-01); }
+.wizin { max-width:1040px; margin:0 auto; padding:6px 20px 30px; }
+.stepper { display:flex; align-items:center; gap:8px; padding:16px 4px; }
+.stp { display:flex; gap:9px; align-items:center; min-width:0; flex:none; }
+.stp .c { width:34px; height:34px; border-radius:50%; display:grid; place-items:center; background:var(--background-tint-03); color:var(--text-02); font-weight:600; flex:none; }
+.stp.cur .c { background:var(--virtualai-accent); color:var(--accent-contrast); }
+.stp.done .c { background:var(--virtualai-accent-glow); color:var(--virtualai-accent); }
+.stp .l { font-weight:600; font-size:13px; color:var(--text-03); } .stp .sb { font-size:11.5px; color:var(--text-02); }
+.stp.cur .l { color:var(--virtualai-accent); }
+.stpline { flex:1; min-width:12px; height:2px; background:var(--background-tint-03); border-radius:9px; }
+.stpline.done { background:var(--virtualai-accent); }
+.card { padding:18px; border:1px solid var(--border-01); border-radius:14px; background:var(--background-tint-00); }
+.kblayout { display:grid; grid-template-columns:minmax(0,1fr) 250px; gap:16px; align-items:start; }
+.kbside { padding:14px; position:sticky; top:0; gap:10px; font-size:13px; }
+.filedrop { position:relative; display:flex; flex-direction:column; align-items:center; gap:4px; padding:30px 16px; border:1.5px dashed var(--border-02); border-radius:12px; cursor:pointer; text-align:center; }
+.filedrop:hover,.filedrop.over,.filedrop:focus-within { border-color:var(--virtualai-accent); background:var(--virtualai-accent-subtle); }
+.wizgrid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:20px; align-items:start; }
+.wizfoot { display:flex; justify-content:space-between; margin-top:14px; }
+.summary { display:grid; grid-template-columns:140px 1fr; gap:8px 12px; }
+.summary dt { color:var(--text-03); } .summary dd { margin:0; }
+
+/* Pages */
+.page { flex:1; overflow:auto; }
+.pagein { max-width:1060px; margin:0 auto; padding:18px 24px 40px; }
+.crumb { font-size:12px; color:var(--text-03); margin-bottom:8px; }
+.page h1 { font-size:22px; font-weight:600; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { text-align:left; color:var(--text-03); font-weight:500; padding:8px 10px; border-bottom:1px solid var(--border-02); }
+td { padding:10px; border-bottom:1px solid var(--border-01); }
+.doc { padding:13px 15px; border:1px solid var(--border-01); border-radius:12px; display:flex; flex-direction:column; gap:7px; }
+.doc .dt { font-weight:600; }
+.badge { padding:3px 9px; border-radius:7px; background:var(--background-tint-02); font-size:12px; }
+.drawer { position:fixed; right:0; top:0; bottom:0; width:520px; z-index:50; background:var(--background-tint-00); border-left:1px solid var(--border-02); display:flex; flex-direction:column; box-shadow:-14px 0 40px rgba(0,0,0,.35); }
+
+/* Modals, toast */
+.scrim { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:60; display:grid; place-items:center; padding:24px; }
+.modal { width:min(760px,100%); max-height:88vh; display:flex; flex-direction:column; border:1px solid var(--border-02); border-radius:14px; background:var(--background-tint-00); }
+.modal .mh { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--border-01); }
+.modal .mh h2 { font-size:16px; }
+.modal .mb { padding:16px; overflow:auto; display:flex; flex-direction:column; gap:14px; }
+.modal .mf { display:flex; justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--border-01); }
+.cat { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+.tile { display:flex; align-items:center; gap:10px; padding:9px; border-radius:10px; text-align:left; }
+.tile:hover { background:var(--background-tint-02); }
+.tile .t { font-weight:600; font-size:13px; } .tile .d { font-size:12px; color:var(--text-03); }
+#toast { position:fixed; left:50%; top:62px; transform:translateX(-50%); padding:9px 15px; border-radius:10px; background:var(--text-05); color:var(--background-tint-00); z-index:80; font-size:13px; max-width:620px; box-shadow:0 8px 24px rgba(0,0,0,.4); }
+#toast[hidden] { display:none; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modalroot"></div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+'use strict';
+/* ── Sample content ─────────────────────────────────────────────── */
+const SAMPLE_CONTRACT = `Master Services Agreement
+
+This Agreement is entered into between the Department of Revenue and the Service Provider. It sets out the terms under which services are delivered during the contract period.
+
+1. Scope of Work. The Service Provider shall digitise land records for the listed districts, verify each record against the source register, and deliver a monthly progress report to the Project Officer. Work outside this scope needs a written change request.
+
+2. Payment Terms. Invoices are raised monthly after the Project Officer accepts the progress report. Payment is due within 45 days of a valid invoice. Late delivery attracts a penalty of 0.5 percent of the monthly fee for each week of delay, capped at 10 percent.
+
+3. Data Protection. All citizen data remains the property of the Department. The Service Provider shall store it only on approved servers inside India, restrict access to named staff, and report any breach within 24 hours of discovering it.
+
+4. Termination. Either party may terminate this Agreement with 60 days written notice. The Department may terminate immediately for a material breach that is not fixed within 15 days of notice. On termination the Service Provider shall return all records and delete its copies.
+
+5. Dispute Resolution. Disputes are first referred to the Project Officer and the Provider's Account Manager. Disputes not settled within 30 days go to arbitration under the Arbitration and Conciliation Act, held in Hyderabad.
+
+6. Staffing. The Service Provider shall name a project manager and at least two verification leads for each district. Named staff can be replaced only with the written approval of the Project Officer, and any replacement must have equal or better experience. The Provider shall keep attendance records for all staff working on the project and share them on request.
+
+7. Quality Standards. Each digitised record must match its source register with an accuracy of at least 99.5 percent, measured on a random sample chosen by the Department each month. Batches below this level are returned for correction at the Provider's own cost. Two consecutive failed batches in the same district trigger a joint review of the verification process.
+
+8. Security Audits. The Department may audit the Provider's systems and premises once every six months, or at any time after a reported breach, with five working days notice. The Provider shall fix critical findings within seven days and all other findings within thirty days, and shall confirm each fix in writing with supporting evidence.
+
+9. Intellectual Property. All software, templates and documentation written specifically for this project belong to the Department from the moment they are created. The Provider keeps ownership of its existing tools, and grants the Department a perpetual licence to use them wherever they are needed to operate the delivered system.
+
+10. Confidentiality. Each party shall protect the other's confidential information with at least the care it applies to its own, and shall use it only to perform this Agreement. These duties continue for five years after the Agreement ends. Citizen data stays confidential without any time limit, and its disclosure requires written approval from the Department.
+
+11. Force Majeure. Neither party is liable for delay caused by events beyond its reasonable control, including floods, epidemics and government orders. The affected party shall give notice within five working days and resume work as soon as it reasonably can. If the delay lasts more than ninety days, either party may end the Agreement by written notice without penalty.`;
+const SAMPLE_FAQ = `question,answer,category
+How do I apply for a land mutation?,"Submit Form 7 with the sale deed and tax receipt at the MRO office, or apply online through the citizen portal.",Land
+How long does a mutation take?,"Usually 30 working days from the date the application is accepted.",Land
+What is the fee for an income certificate?,"The fee is 35 rupees at the counter. Online applications also pay a 10 rupee service charge.",Certificates
+Who signs a caste certificate?,"The Tahsildar of the mandal where the applicant lives.",Certificates
+Can I track my application?,"Yes. Enter your application number on the citizen portal to see its current stage.",General
+What if my application is rejected?,"You can appeal to the Revenue Divisional Officer within 30 days of the rejection order.",General`;
+const SAMPLES = {
+  contract: { name:'Sample contract.txt', text:SAMPLE_CONTRACT, table:false },
+  faq: { name:'FAQ sheet.csv', text:SAMPLE_FAQ, table:true },
+};
+const CATALOG = [
+  ['Confluence','Knowledge Base & Wikis'],['Sharepoint','Knowledge Base & Wikis'],['Google Drive','Cloud Storage'],
+  ['Jira','Ticketing & Task Management'],['Zendesk','Ticketing & Task Management'],['Slack','Messaging'],
+  ['Salesforce','Sales'],['HubSpot','Sales'],['Gong','Sales'],['Github','Code Repository'],['Web','Others'],['File','Others'],
+];
+const CONNECTED = [
+  { id:'c1', name:'Confluence: Legal space', kind:'Confluence', docs:342, chunker:'Automatic' },
+  { id:'c2', name:'Sharepoint: Contracts', kind:'Sharepoint', docs:128, chunker:'Automatic' },
+  { id:'c3', name:'Google Drive: Citizen FAQs', kind:'Google Drive', docs:24, chunker:'Automatic' },
+  { id:'c4', name:'Web: Government orders', kind:'Web', docs:610, chunker:'General', pipeline:'Government orders' },
+];
+const COLLECTIONS = [
+  { id:'k1', name:'Legal Contracts', isPublic:false },
+  { id:'k2', name:'Citizen Services FAQ', isPublic:true },
+  { id:'k3', name:'Land Records', isPublic:true },
+  { id:'k4', name:'Government Orders', isPublic:true },
+];
+const PRESETS = {
+  automatic: { label:'Automatic (default)', strategy:'automatic' },
+  balanced: { label:'Balanced documents', strategy:'general', delimiter:'\\n\\n', maxTokens:400, overlap:40, cleanSpaces:true, stripUrls:false },
+  contracts: { label:'Contracts and policies', strategy:'general', delimiter:'\\n\\n', maxTokens:480, overlap:64, cleanSpaces:true, stripUrls:false },
+  short: { label:'Short help pages', strategy:'general', delimiter:'\\n', maxTokens:200, overlap:20, cleanSpaces:true, stripUrls:true },
+  faq: { label:'FAQ sheet', strategy:'qa' },
+};
+const STEP_TYPES = {
+  data_source: { label:'Data Source', icon:'⇪', desc:'Where the documents come from' },
+  chunker: { label:'Chunker', icon:'✂', desc:'How documents are split' },
+  knowledge_base: { label:'Collection', icon:'▤', desc:'What agents and workflows search' },
+};
+const ORDER = ['data_source','chunker','knowledge_base'];
+const SLOTS = { start:{x:24,y:300}, data_source:{x:186,y:170}, chunker:{x:482,y:340}, knowledge_base:{x:778,y:170}, end:{x:1070,y:300} };
+const MAX_TOKENS = 512;
+
+const freshAddFlow=()=>({ step:0, search:'', kind:null, connName:'', access:'public', credential:'existing', refresh:'30 minutes', prune:'30 days', start:'' });
+function freshState() {
+  return {
+    view:'wizard', menu:null, modal:null, toast:null, zoom:1, legend:true, sideTab:'steps', panel:null, wizStep:0, drawer:null,
+    name:'', desc:'', purpose:'automatic', created:false, srcTab:'connected', srcSearch:'', uploads:[], agentCreated:null,
+    review:{ startNow:true, mkAgent:false, agentName:'' },
+    placed:[], pos:JSON.parse(JSON.stringify(SLOTS)),
+    source:null,
+    chunker:{ preset:'automatic', strategy:'automatic', delimiter:'\\n\\n', maxTokens:400, overlap:40, cleanSpaces:true, stripUrls:false, qCol:'', aCol:'' },
+    sampleKey:'contract', uploaded:null,
+    coll:{ mode:'new', id:'', newName:'', newDesc:'', isPublic:true, team:'', touched:false },
+    version:0, savedHash:null, versions:[],
+    run:{ state:'idle', pct:0, stage:'' }, indexedHash:null, indexed:null, attempts:[],
+    extra:{ collections:[], connected:[] },
+    seq:{ tab:'utils', sel:'ks', query:'$user_input', collections:[], topK:10, agentColls:[], test:null,
+          pos:{ start:{x:50,y:300}, ks:{x:220,y:190}, agent:{x:570,y:190}, end:{x:910,y:300} } },
+    addFlow:freshAddFlow(),
+  };
+}
+let S = freshState();
+
+/* ── Helpers ────────────────────────────────────────────────────── */
+const $ = (q,r=document)=>r.querySelector(q);
+const $$ = (q,r=document)=>[...r.querySelectorAll(q)];
+const esc = s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toast.h); toast.h=setTimeout(()=>t.hidden=true,3600); }
+function getPath(o,p){ return p.split('.').reduce((a,k)=>a?.[k],o); }
+function setPath(o,p,v){ const ks=p.split('.'); const l=ks.pop(); ks.reduce((a,k)=>a[k],o)[l]=v; }
+const words=t=>t.trim().split(/\s+/).filter(Boolean);
+const tokens=t=>Math.ceil(words(t).length*1.33);
+const allCollections=()=>[...COLLECTIONS,...S.extra.collections];
+const allConnected=()=>[...S.extra.connected,...CONNECTED];
+function chunkerSummary(c=S.chunker){
+  if(c.strategy==='automatic') return 'Automatic';
+  if(c.strategy==='qa') return 'Q&A';
+  return `General · ${c.maxTokens} tokens · overlap ${c.overlap}`;
+}
+function collectionName(){
+  const c=S.coll;
+  if(c.mode==='none') return 'None for now';
+  if(c.mode==='new') return c.newName.trim()?`${c.newName.trim()}${S.created?'':' (new)'}`:'';
+  return allCollections().find(x=>x.id===c.id)?.name||'';
+}
+const configHash=()=>JSON.stringify({c:{...S.chunker,preset:0},s:S.source?.id,k:collectionName()});
+
+/* ── Validation (the same rules drive both editors) ─────────────── */
+function chunkerErrors(){
+  const c=S.chunker,e={};
+  if(c.strategy==='general'){
+    if(!String(c.delimiter).length) e.delimiter='Enter a delimiter.';
+    if(!(c.maxTokens>=50)) e.maxTokens='Use at least 50 tokens.';
+    else if(c.maxTokens>MAX_TOKENS) e.maxTokens=`The embedding model takes at most ${MAX_TOKENS} tokens per chunk.`;
+    if(!(c.overlap>=0)) e.overlap='Overlap can\'t be negative.';
+    else if(c.overlap>=c.maxTokens) e.overlap='Overlap must be smaller than the chunk size.';
+  }
+  return e;
+}
+const sourceOk=()=>!!S.source;
+const chunkerOk=()=>Object.keys(chunkerErrors()).length===0;
+const collOk=()=>S.coll.mode==='none'||!!collectionName();
+function issues(){
+  const out=[];
+  if(!S.name.trim()) out.push(S.view==='canvas'?'Name the knowledge base (Config tab).':'Name the knowledge base.');
+  if(!sourceOk()) out.push('Choose a data source.');
+  if(!chunkerOk()) out.push('Fix the chunker settings.');
+  if(!collOk()) out.push('Choose a collection, or select "None for now".');
+  return out;
+}
+
+/* ── Chunking used by the preview (a browser approximation) ─────── */
+function parseCsv(text){
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<text.length;i++){const ch=text[i];
+    if(q){ if(ch==='"'&&text[i+1]==='"'){f+='"';i++;} else if(ch==='"') q=false; else f+=ch; }
+    else if(ch==='"') q=true;
+    else if(ch===','){row.push(f);f='';}
+    else if(ch==='\n'){row.push(f.replace(/\r$/,''));rows.push(row);row=[];f='';}
+    else f+=ch;
+  }
+  if(f.length||row.length){row.push(f);rows.push(row);}
+  return rows.filter(r=>r.some(c=>c.trim()));
+}
+function currentSample(){ return S.uploaded||SAMPLES[S.sampleKey]; }
+function sampleColumns(){ const s=currentSample(); return s.table?(parseCsv(s.text)[0]||[]):[]; }
+function clean(text,c){
+  let t=text;
+  if(c.cleanSpaces) t=t.replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n');
+  if(c.stripUrls) t=t.replace(/https?:\/\/\S+/g,'').replace(/\S+@\S+\.\S+/g,'');
+  return t;
+}
+function splitBy(pieces,maxT,ovT){
+  const maxW=Math.max(5,Math.floor(maxT/1.33)),ovW=Math.floor(ovT/1.33),step=Math.max(1,maxW-ovW);
+  const out=[];let cur=[],carried=0;
+  const flush=()=>{ if(cur.length>carried){ out.push({text:cur.join(' '),overlapWords:carried}); const tail=ovW?cur.slice(-ovW):[]; cur=tail; carried=tail.length; } };
+  for(const p of pieces){
+    const ws=words(p); if(!ws.length) continue;
+    if(ws.length>maxW){ flush(); cur=[];carried=0;
+      for(let i=0;i<ws.length;i+=step){ out.push({text:ws.slice(i,i+maxW).join(' '),overlapWords:i?Math.min(ovW,ws.length-i):0}); if(i+maxW>=ws.length) break; }
+      continue; }
+    if(cur.length+ws.length>maxW) flush();
+    cur.push(...ws);
+  }
+  flush();
+  return out;
+}
+function tableChunks(s){
+  const rows=parseCsv(s.text),head=rows[0]||[];
+  const out=[{text:`File: ${s.name}\nColumns: ${head.join(', ')}\nRows: ${Math.max(0,rows.length-1)}`,overlapWords:0}];
+  const body=rows.slice(1).map(r=>head.map((h,i)=>`${h}: ${r[i]??''}`).join(' | '));
+  splitBy(body,MAX_TOKENS,0).forEach(c=>out.push(c));
+  return out;
+}
+function runChunker(){
+  const c=S.chunker,s=currentSample(),warnings=[];let chunks=[];
+  if(c.strategy==='qa'){
+    if(!s.table) return {chunks:[],warnings:[],error:'Q&A needs a CSV or Excel file with one question and answer per row. Try "FAQ sheet.csv".'};
+    const rows=parseCsv(s.text),head=rows[0]||[];
+    const qi=head.indexOf(c.qCol||head[0]),ai=head.indexOf(c.aCol||head[1]);
+    if(qi<0||ai<0) return {chunks:[],warnings:[],error:'Those columns aren\'t in this file. Choose the question and answer columns.'};
+    if(qi===ai) return {chunks:[],warnings:[],error:'The question and answer columns must be different.'};
+    rows.slice(1).forEach(r=>{ if(r[qi]?.trim()&&r[ai]?.trim()) chunks.push({text:`Question: ${r[qi]}\nAnswer: ${r[ai]}`,overlapWords:0}); });
+    const skipped=rows.length-1-chunks.length;
+    if(skipped>0) warnings.push(`${skipped} row(s) skipped because a question or answer is empty.`);
+  } else if(s.table){
+    chunks=tableChunks(s);
+    warnings.push('Spreadsheets use the table chunker under Automatic and General. Choose Q&A for one chunk per row.');
+  } else if(c.strategy==='automatic'){
+    chunks=splitBy(s.text.split(/(?<=[.!?])\s+/),MAX_TOKENS,0);
+  } else {
+    const d=String(c.delimiter).replace(/\\n/g,'\n').replace(/\\t/g,'\t');
+    if(!d) return {chunks:[],warnings:[],error:null};
+    chunks=splitBy(clean(s.text,c).split(d),Math.min(c.maxTokens||1,MAX_TOKENS),Math.max(0,c.overlap||0));
+  }
+  return {chunks,warnings,error:null};
+}
+
+/* ── Top-level rendering ────────────────────────────────────────── */
+function render(){
+  const v=S.view;
+  const body= v==='list'?listView(): v==='canvas'?builderView(): v==='wizard'?wizardView(): v==='seq'?seqView(): explorerView();
+  $('#app').innerHTML=reviewBar()+topNav()+body;
+  if(S.drawer) $('#app').insertAdjacentHTML('beforeend',drawerHTML());
+  renderModal();
+  if(v==='canvas'||v==='seq') drawEdges();
+}
+function reviewBar(){
+  const tab=(id,l)=>`<button class="${S.view===id?'on':''}" data-act="view" data-v="${id}">${l}</button>`;
+  const cur=[...document.documentElement.classList].find(c=>c.startsWith('virtualai-'))||'';
+  return `<div class="review"><strong>MOCKUP</strong>
+    ${tab('wizard','1 New knowledge base')}${tab('canvas','2 Same thing on the canvas')}${tab('list','3 Knowledge bases')}${tab('seq','4 Using it in a workflow')}${tab('explorer','5 Explorer: chunks')}
+    <span class="sep"></span><button data-act="demo">Load demo</button><button data-act="reset">Reset</button>
+    <span class="grow"></span><span class="muted">Sample data, simulated indexing</span>
+    <select aria-label="Accent theme" data-act-change="accent">
+      ${[['','Default'],['virtualai-ocean','Ocean'],['virtualai-emerald','Emerald'],['virtualai-violet','Violet']].map(([k,l])=>`<option value="${k}" ${cur===k?'selected':''}>${l}</option>`).join('')}
+    </select>
+    <button data-act="theme">Light / dark</button></div>`;
+}
+function topNav(){
+  const inKnow=['list','canvas','wizard','explorer'].includes(S.view);
+  return `<nav class="topnav" aria-label="Admin">
+    <span class="brand">Admin</span>
+    <button class="navbtn ${inKnow?'knowledge':''}" data-act="menu">Knowledge ▾</button>
+    <button class="navbtn ${S.view==='seq'?'agents':''}" data-act="view" data-v="seq">Agents ▾</button>
+    <button class="navbtn" data-act="inert">AI Models ▾</button>
+    <button class="navbtn" data-act="inert">Governance ▾</button>
+    <button class="navbtn" data-act="inert">Workspace ▾</button>
+    ${S.menu?`<div class="navmenu">
+      <button data-act="newkb">New knowledge base<span class="tag-new">New</span></button>
+      <button data-act="inert">Add Data Source</button>
+      <button data-act="inert">Collections</button>
+      <button data-act="view" data-v="list">Knowledge Bases<span class="tag-new">New</span></button>
+      <button data-act="view" data-v="explorer">Knowledge Explorer</button>
+    </div>`:''}
+  </nav>`;
+}
+function modeSeg(active){
+  const b=(id,l)=>`<button class="${active===id?'on':''}" data-act="mode" data-m="${id}">${l}</button>`;
+  return `<div class="seg" role="group" aria-label="Orchestration mode">${b('sequential','Sequential')}${b('llm','LLM Decision')}${b('knowledge','Knowledge')}</div>`;
+}
+
+/* ── Pipelines list ─────────────────────────────────────────────── */
+function listView(){
+  const cur = S.placed.length||S.source ? `<tr><td><button class="linkbtn" data-act="view" data-v="canvas">${esc(S.name)}</button></td><td>${esc(S.source?.name||'Not set')}</td><td>${esc(chunkerSummary())}</td><td>${esc(collectionName()||'Not set')}</td><td>${statusChip()}</td></tr>`:'';
+  return `<div class="page"><div class="pagein stack">
+    <div class="crumb">Admin › Knowledge › Knowledge Bases</div>
+    <div class="row"><div class="grow"><h1>Knowledge Bases</h1><p class="muted">Each one takes documents from a source, splits them your way, and puts them in a collection.</p></div>
+    <button class="btn" data-act="newcanvas">Start on the canvas</button><button class="btn primary" data-act="newkb">New knowledge base</button></div>
+    <table><thead><tr><th>Name</th><th>Source</th><th>Chunker</th><th>Collection</th><th>Status</th></tr></thead><tbody>
+    ${cur}
+    <tr><td>Government orders</td><td>Web: Government orders</td><td>General · 400 tokens · overlap 40</td><td>Government Orders</td><td><span class="chip ok">Indexed</span></td></tr>
+    </tbody></table>
+    <div class="note">Sources without a pipeline keep using Automatic, exactly as they do today. They don't appear here until an admin creates a knowledge base for them.</div>
+  </div></div>`;
+}
+function statusChip(){
+  if(S.run.state==='running') return '<span class="chip neutral">Indexing</span>';
+  if(S.indexedHash&&S.indexedHash!==configHash()) return '<span class="chip warn">Re-index needed</span>';
+  if(S.indexedHash) return '<span class="chip ok">Indexed</span>';
+  return '<span class="chip neutral">Paused until started</span>';
+}
+
+/* ── Builder (canvas) ───────────────────────────────────────────── */
+function builderHead(extra=''){
+  return `<div class="bhead">
+    <button class="iconbtn" data-act="view" data-v="list" aria-label="Back to knowledge bases">←</button>
+    <h1 data-slot="title">${esc(S.name||'Untitled')}</h1>
+    <span class="chip neutral">v${S.version||'–'}</span>
+    <span class="grow"></span>
+    ${modeSeg('knowledge')}
+    ${extra}
+    <button class="btn" data-act="versions">Versions</button>
+    <button class="btn primary" data-act="save">Update</button>
+  </div>`;
+}
+function builderView(){
+  return builderHead(`<button class="btn" data-act="view" data-v="wizard">Open as wizard</button>`)+
+  `<div class="builder">
+    <aside class="side">
+      <div class="tabs"><button class="${S.sideTab==='steps'?'on':''}" data-act="sidetab" data-t="steps">Steps</button><button class="${S.sideTab==='config'?'on':''}" data-act="sidetab" data-t="config">Config</button></div>
+      <div class="sidebody">${S.sideTab==='steps'?paletteHTML():identityForm()}</div>
+    </aside>
+    <div class="overlay-wrap">
+      <div class="canvas" id="canvas" data-drop="1"><div class="inner" id="inner" style="transform:scale(${S.zoom})">
+        <svg id="edges" aria-hidden="true"></svg><div id="nodes">${nodesHTML()}</div>
+      </div></div>
+      ${S.legend?`<div class="legend"><div class="row"><b class="grow">Knowledge Mode</b><button class="iconbtn" style="height:20px;width:20px" data-act="legend" aria-label="Close">×</button></div><p class="muted" style="margin-top:4px">Runs in the background for every document, not on each chat message.</p><p class="muted" style="margin-top:4px"><i>Source → Chunker → Collection</i></p></div>`:''}
+      <div class="zoom"><button data-act="zoom" data-z="in" aria-label="Zoom in">+</button><button data-act="zoom" data-z="out" aria-label="Zoom out">−</button><button data-act="zoom" data-z="fit" aria-label="Reset zoom">⛶</button></div>
+      ${S.placed.length?`<div class="runslot floating">${runHTML()}</div>`:''}
+    </div>
+    ${S.panel?panelHTML():''}
+  </div>`;
+}
+function paletteHTML(){
+  return `<p class="hint">Drag a step onto the canvas, or click to add it. Steps connect in order.</p>`+
+   ORDER.map(t=>{const u=S.placed.includes(t),d=STEP_TYPES[t];
+    return `<button class="palette ${u?'used':''}" ${u?'aria-disabled="true"':'draggable="true"'} data-act="addstep" data-type="${t}" data-pal="${t}"><span class="ico">${d.icon}</span><span><span class="t">${d.label}</span><br><span class="d">${u?'Already on the canvas':d.desc}</span></span></button>`;}).join('')+
+   `<div class="note" style="margin-top:6px">The Agents tab is hidden in Knowledge mode. Chunkers don't use an LLM, so they aren't agents.</div>`;
+}
+function identityForm(){
+  return `<div class="field"><label for="f-name">Knowledge base name</label><input id="f-name" type="text" data-bind="name" value="${esc(S.name)}" placeholder="For example: Legal contracts"></div>
+  <div class="field"><label for="f-desc">Description (optional)</label><textarea id="f-desc" rows="3" data-bind="desc">${esc(S.desc)}</textarea></div>`;
+}
+function stepRows(t){
+  if(t==='data_source') return S.source?[['Source',S.source.name],['Extractor','Automatic'],['Status',S.source.isNew?'Paused until started':`${S.source.docs} documents`]]:null;
+  if(t==='chunker'){ if(!chunkerOk()) return null;
+    const c=S.chunker;
+    if(c.strategy==='general') return [['Strategy','General'],['Max size',`${c.maxTokens} tokens`],['Overlap',`${c.overlap} tokens`]];
+    if(c.strategy==='qa') return [['Strategy','Q&A'],['Unit','One chunk per row']];
+    return [['Strategy','Automatic'],['Size',`${MAX_TOKENS} tokens`]]; }
+  if(t==='knowledge_base'){ if(!collOk()) return null;
+    return [['Collection',collectionName()],['Search','Workspace settings']]; }
+}
+function nodesHTML(){
+  const nd=S.placed.slice().sort((a,b)=>ORDER.indexOf(a)-ORDER.indexOf(b));
+  const P=S.pos;
+  let h=`<div class="startnode" data-node="start" style="left:${P.start.x}px;top:${P.start.y}px">☰<b>START</b><div class="small">Knowledge</div><div style="font-size:10px;opacity:.85">Indexes in background</div></div>`;
+  nd.forEach((t,i)=>{
+    const d=STEP_TYPES[t],rows=stepRows(t),p=P[t];
+    h+=`<div class="node ${S.panel===t?'sel':''} ${rows?'':'bad'}" data-node="${t}" tabindex="0" role="button" aria-label="${d.label} step settings" style="left:${p.x}px;top:${p.y}px">
+      <div class="nh"><span class="ico">${d.icon}</span><div class="grow"><div class="ti">${d.label}</div><div class="su">${d.label} · v1</div></div><span class="no">#${i+1}</span></div>
+      ${rows?`<div class="nb">${rows.map(([k,v])=>`<span class="k">${esc(k)}</span><span class="v" title="${esc(v)}">${esc(v)}</span>`).join('')}</div>`:`<div class="nf" style="padding-top:10px"><span class="chip warn">Needs setup</span></div>`}
+    </div>`;
+  });
+  if(!nd.length) h+=`<div class="dropzone">Drag <b>Data Source</b> here to begin</div>`;
+  if(nd.length===3) h+=`<div class="endnode" data-node="end" style="left:${P.end.x}px;top:${P.end.y}px">✓<br>END<small>Collection ready</small></div>`;
+  return h;
+}
+function currentEdgeChain(){
+  if(S.view==='seq') return ['start','ks','agent','end'];
+  const nd=S.placed.slice().sort((a,b)=>ORDER.indexOf(a)-ORDER.indexOf(b));
+  return nd.length===3?['start',...nd,'end']:(nd.length?['start',...nd]:[]);
+}
+function drawEdges(){
+  const svg=$('#edges'); if(!svg) return;
+  const chain=currentEdgeChain(); let out='';
+  const el=id=>$(`[data-node="${id}"]`);
+  for(let i=0;i<chain.length-1;i++){
+    const a=el(chain[i]),b=el(chain[i+1]); if(!a||!b) continue;
+    const x1=a.offsetLeft+a.offsetWidth,y1=a.offsetTop+a.offsetHeight/2,x2=b.offsetLeft,y2=b.offsetTop+b.offsetHeight/2;
+    const dx=Math.max(40,Math.abs(x2-x1)/2),mx=(x1+x2)/2,my=(y1+y2)/2;
+    out+=`<path class="edge" d="M${x1},${y1} C${x1+dx},${y1} ${x2-dx},${y2} ${x2},${y2}"/>
+      <circle class="dot" cx="${x1}" cy="${y1}" r="4"/><circle class="dot" cx="${x2}" cy="${y2}" r="4"/>
+      <g class="pill"><rect x="${mx-23}" y="${my-9}" width="46" height="18" rx="9"/><text x="${mx}" y="${my}">then #${i+1}</text></g>`;
+  }
+  svg.innerHTML=out;
+}
+function refreshCanvas(){ const n=$('#nodes'); if(n){ n.innerHTML=S.view==='seq'?seqNodes():nodesHTML(); drawEdges(); } }
+function panelHTML(){
+  const d=STEP_TYPES[S.panel];
+  const body= S.panel==='data_source'?sourceForm(): S.panel==='chunker'?chunkerForm(true): collectionForm();
+  return `<aside class="panel" aria-label="${d.label} settings">
+    <div class="ph"><span class="ico">${d.icon}</span><div class="grow"><b>${d.label}</b><div class="small muted">${d.desc}</div></div><button class="iconbtn" data-act="closepanel" aria-label="Close">×</button></div>
+    <div class="pb">${body}<div><button class="btn danger sm" data-act="removestep" data-type="${S.panel}">Remove step</button></div></div>
+  </aside>`;
+}
+
+/* ── Step forms (the same functions render the canvas panel and the Wizard editor) ── */
+function sourceRows(filter=''){
+  const q=filter.toLowerCase();
+  const list=allConnected().filter(c=>c.name.toLowerCase().includes(q));
+  if(!list.length) return '<p class="muted">No connected sources match.</p>';
+  return list.map(c=>{
+    const locked=!!c.pipeline&&S.source?.id!==c.id,on=S.source?.id===c.id;
+    return `<button class="opt ${on?'on':''}" ${locked?'disabled':''} data-act="picksource" data-id="${c.id}">
+      <span class="ico">${esc(c.kind[0])}</span><span class="grow"><span class="t">${esc(c.name)}</span><br>
+      <span class="d">${locked?`Already in "${esc(c.pipeline)}"`:c.isNew?'New · paused until you start':`${c.docs} documents · uses ${esc(c.chunker)}`}</span></span>${on?'<span aria-hidden="true">✓</span>':''}</button>`;}).join('');
+}
+function sourceForm(){
+  return `<div class="stack"><div class="sect">Connected sources</div>${sourceRows()}
+    <button class="btn" data-act="addsource">+ Add a new source</button>
+    <p class="hint">Uses the existing connector forms, including credentials and sign-in. A new source stays paused until you start, so nothing is indexed with the wrong settings.</p></div>
+    <div class="stack"><div class="sect">Extractor</div>
+    <div class="box row"><span class="grow"><b>Automatic</b><div class="hint">Chosen from the file type: PDF, Word, Excel and more.</div></div><span class="tag-later">Choice later</span></div></div>`;
+}
+function chunkerForm(narrow){
+  const c=S.chunker,e=chunkerErrors();
+  const strat=(id,t,d,dis)=>`<button class="opt ${c.strategy===id?'on':''}" ${dis?'disabled':''} data-act="strategy" data-s="${id}"><span class="grow"><span class="t">${t}${dis?'<span class="tag-later">Later</span>':''}</span><br><span class="d">${d}</span></span></button>`;
+  let fields='';
+  if(c.strategy==='automatic'){
+    fields=`<div class="note">Today's chunker: ${MAX_TOKENS} tokens with sentence-aware splitting and the table chunker for spreadsheets. Nothing to configure.</div>`;
+  } else if(c.strategy==='general'){
+    fields=`<div class="field"><label for="f-delim">Delimiter</label><input id="f-delim" type="text" class="mono" data-bind="chunker.delimiter" value="${esc(c.delimiter)}"><span class="hint">Split here first. <code>\\n\\n</code> means paragraphs, <code>\\n</code> means lines.</span>${e.delimiter?`<span class="err">${e.delimiter}</span>`:''}</div>
+    <div class="field"><label for="f-max">Maximum chunk size (tokens)</label><div class="row"><input type="range" min="50" max="${MAX_TOKENS}" step="1" data-bind="chunker.maxTokens" data-num="1" value="${c.maxTokens}" aria-label="Maximum chunk size slider"><input id="f-max" style="width:84px" type="number" min="50" max="${MAX_TOKENS}" data-bind="chunker.maxTokens" data-num="1" value="${c.maxTokens}"></div><span class="err" data-err="maxTokens">${e.maxTokens||''}</span></div>
+    <div class="field"><label for="f-ov">Overlap (tokens)</label><div class="row"><input type="range" min="0" max="200" step="1" data-bind="chunker.overlap" data-num="1" value="${c.overlap}" aria-label="Overlap slider"><input id="f-ov" style="width:84px" type="number" min="0" data-bind="chunker.overlap" data-num="1" value="${c.overlap}"></div><span class="err" data-err="overlap">${e.overlap||''}</span></div>
+    <div class="stack" style="gap:7px"><span class="flabel">Clean-up rules</span>
+      <label class="check"><input type="checkbox" data-bind="chunker.cleanSpaces" ${c.cleanSpaces?'checked':''}><span>Replace extra spaces, newlines and tabs</span></label>
+      <label class="check"><input type="checkbox" data-bind="chunker.stripUrls" ${c.stripUrls?'checked':''}><span>Remove URLs and email addresses</span></label></div>`;
+  } else if(c.strategy==='qa'){
+    const cols=sampleColumns();
+    const sel=(id,label,path,val,fb)=>`<div class="field"><label for="${id}">${label}</label>${cols.length?`<select id="${id}" data-bind="${path}" data-refresh="1">${cols.map(x=>`<option ${(val||fb)===x?'selected':''}>${esc(x)}</option>`).join('')}</select>`:`<input id="${id}" type="text" data-bind="${path}" value="${esc(val)}" placeholder="Column name">`}</div>`;
+    fields=`<div class="note">One chunk per row of a CSV or Excel file, stored as "Question… Answer…". Other document types in this source use Automatic.</div><div class="grid2">${sel('f-q','Question column','chunker.qCol',c.qCol,cols[0])}${sel('f-a','Answer column','chunker.aCol',c.aCol,cols[1])}</div>`;
+  }
+  const preset=`<div class="field"><label for="f-preset">Start from a preset</label><select id="f-preset" data-act-change="preset">${Object.entries(PRESETS).map(([k,p])=>`<option value="${k}" ${c.preset===k?'selected':''}>${p.label}</option>`).join('')}${c.preset==='custom'?'<option value="custom" selected>Custom</option>':''}</select></div>`;
+  const strategies=`<div class="stack" style="gap:6px"><span class="flabel">Strategy</span>
+    ${strat('automatic','Automatic','Today\'s chunker. Good default.')}
+    ${strat('general','General','Your own delimiter, size and overlap.')}
+    ${strat('qa','Q&amp;A','One chunk per spreadsheet row.')}
+    ${strat('parent','Parent-child','Find small pieces, return their larger section.',true)}</div>`;
+  const left=`<div class="stack">${preset}${strategies}<div class="stack">${fields}</div></div>`;
+  const prev=`<div class="stack"><div class="sect">Try a sample file</div><div class="previewslot stack">${previewHTML()}</div></div>`;
+  return narrow?`${left}${prev}`:`<div class="wizgrid">${left}${prev}</div>`;
+}
+function previewHTML(){
+  const s=currentSample(),r=runChunker();
+  const samp=(k)=>`<button class="btn sm" style="${!S.uploaded&&S.sampleKey===k?'border-color:var(--virtualai-accent);color:var(--virtualai-accent)':''}" data-act="sample" data-k="${k}">${SAMPLES[k].name}</button>`;
+  const head=`<div class="row" style="flex-wrap:wrap">${samp('contract')}${samp('faq')}<label class="btn sm" style="cursor:pointer">Upload…<input type="file" accept=".txt,.md,.csv" data-act-change="upload" style="position:absolute;opacity:0;width:1px;height:1px"></label></div>
+   ${S.uploaded?`<div class="hint">Using <b>${esc(S.uploaded.name)}</b></div>`:''}`;
+  if(r.error) return `${head}<div class="note bad" role="alert">${esc(r.error)}</div>`;
+  if(!chunkerOk()) return `${head}<div class="note warn">Fix the settings to see the preview.</div>`;
+  const t=r.chunks.map(x=>tokens(x.text)),avg=t.length?Math.round(t.reduce((a,b)=>a+b,0)/t.length):0,max=t.length?Math.max(...t):0;
+  const shown=r.chunks.slice(0,12).map((x,i)=>chunkCard(x,i)).join('');
+  return `${head}
+   <div class="stats"><div class="stat"><b>${t.length}</b><span class="small muted">chunks</span></div><div class="stat"><b>${avg}</b><span class="small muted">avg tokens</span></div><div class="stat"><b>${max}</b><span class="small muted">largest</span></div></div>
+   ${r.warnings.map(w=>`<div class="note warn">${esc(w)}</div>`).join('')}
+   <div class="chunks">${shown}</div>
+   ${r.chunks.length>12?`<div class="hint">Showing 12 of ${r.chunks.length} chunks.</div>`:''}
+   <div class="hint">Nothing is embedded or saved during preview. Token counts here are estimates.</div>`;
+}
+function chunkCard(x,i){
+  const ws=x.text.split(' ');let body=esc(x.text);
+  if(x.overlapWords>0&&ws.length>x.overlapWords){ body=`<span class="ov" title="Overlap with the previous chunk">${esc(ws.slice(0,x.overlapWords).join(' '))}</span> ${esc(ws.slice(x.overlapWords).join(' '))}`; }
+  return `<div class="chunk"><div class="ch"><span>Chunk ${i+1}</span><span>≈ ${tokens(x.text)} tokens</span></div><div class="ct">${body}</div></div>`;
+}
+function collectionForm(){
+  const c=S.coll;
+  const mode=(id,t,d)=>`<button class="opt ${c.mode===id?'on':''}" data-act="collmode" data-m="${id}"><span class="grow"><span class="t">${t}</span><br><span class="d">${d}</span></span></button>`;
+  let inner='';
+  if(c.mode==='existing'){
+    inner=`<div class="field"><label for="f-coll">Collection</label><select id="f-coll" data-bind="coll.id" data-refresh="1"><option value="">Choose a collection…</option>${allCollections().map(x=>`<option value="${x.id}" ${c.id===x.id?'selected':''}>${esc(x.name)}${x.isPublic?'':' (private)'}</option>`).join('')}</select></div>
+    ${allCollections().find(x=>x.id===c.id&&!x.isPublic)?'<div class="note warn">This collection is private. The source must belong to the same team, or saving will show an access error.</div>':''}`;
+  } else if(c.mode==='new'){
+    inner=`<div class="field"><label for="f-cn">Collection name</label><input id="f-cn" type="text" data-bind="coll.newName" value="${esc(c.newName)}" placeholder="A name for the collection"></div>
+    <div class="field"><label for="f-cd">Description (optional)</label><input id="f-cd" type="text" data-bind="coll.newDesc" value="${esc(c.newDesc)}" placeholder="Describe what the collection represents"></div>
+    <label class="check"><input type="checkbox" data-bind="coll.isPublic" data-refresh="1" ${c.isPublic?'checked':''}><span><b>Make this collection public?</b><div class="hint">If set, all users can use it. Otherwise only admins and users with explicit access can.</div></span></label>
+    ${c.isPublic?'':`<div class="field"><label for="f-team">Assign team access</label><input id="f-team" type="search" data-bind="coll.team" value="${esc(c.team)}" placeholder="Search teams…"></div>`}`;
+  } else {
+    inner=`<div class="note">Documents are still indexed and searchable by permission, but workflows can't target them until you add a collection.</div>`;
+  }
+  return `<div class="stack" style="gap:6px"><span class="flabel">Where should the documents go?</span>${mode('existing','Existing collection','Add this source to one you already have.')}${mode('new','New collection','Create one now.')}${mode('none','None for now','Index only.')}</div>
+  <div class="stack">${inner}</div>
+  <div class="stack"><div class="sect">Index and search</div>
+    <div class="box"><div class="row"><b class="grow">Workspace search settings</b><span class="chip neutral">Read only</span></div><div class="hint" style="margin-top:4px">Embedding model and hybrid search are set for the whole workspace. Reranking also applies if it's turned on.</div></div></div>`;
+}
+
+/* ── Run card ───────────────────────────────────────────────────── */
+function runHTML(){
+  const R=S.run,iss=issues(),changed=S.indexedHash&&S.indexedHash!==configHash();
+  if(R.state==='running') return `<div class="runcard"><div class="row"><b class="grow">${esc(R.stage)}</b><span class="small muted">${R.pct}%</span></div><div class="bar" role="progressbar" aria-valuenow="${R.pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${R.pct}%"></i></div></div>`;
+  if(iss.length) return `<div class="runcard"><div class="row"><div class="grow"><b>Finish setup to start</b><div class="small muted">${esc(iss[0])}${iss.length>1?` (+${iss.length-1} more)`:''}</div></div><button class="btn primary" disabled>Start indexing</button></div></div>`;
+  if(changed) return `<div class="runcard"><div class="row"><div class="grow"><b style="color:var(--warning)">Settings changed since the last index</b><div class="small muted">Existing documents keep their old chunks until you re-index.</div></div><button class="btn sm" data-act="history">Run history</button><button class="btn primary" data-act="start">Apply and re-index</button></div></div>`;
+  if(S.indexedHash){ const n=S.indexed; return `<div class="runcard"><div class="row"><div class="grow"><b style="color:var(--success)">✓ Indexed</b><div class="small muted">${n.docs} documents · ${n.chunks} chunks · ${esc(n.config)}</div></div><button class="btn sm" data-act="history">Run history</button><button class="btn sm" data-act="viewchunks">View chunks</button>${S.agentCreated?'':'<button class="btn sm primary" data-act="mkagent">Create an agent</button>'}</div></div>`; }
+  const existing=S.source&&!S.source.isNew;
+  return `<div class="runcard"><div class="row"><div class="grow"><b>Ready</b><div class="small muted">${existing?`This re-indexes ${S.source.docs} existing documents with the new settings.`:'The source stays paused until you start.'}</div></div><button class="btn primary" data-act="start">${existing?'Apply and re-index':'Start indexing'}</button></div></div>`;
+}
+function refreshRun(){ $$('.runslot').forEach(el=>el.innerHTML=runHTML()); }
+function startRun(){
+  if(issues().length) return;
+  if(configHash()!==S.savedHash) saveVersion(true);
+  const reindex=!!S.indexedHash||!S.source.isNew;
+  const st=['Scheduled','Fetching documents','Extracting text','Chunking','Embedding','Writing to the index'];
+  S.run={state:'running',pct:0,stage:st[0]};refreshRun();
+  const iv=setInterval(()=>{
+    S.run.pct=Math.min(100,S.run.pct+7);
+    S.run.stage=st[Math.min(st.length-1,Math.floor(S.run.pct/100*st.length))];
+    if(S.run.pct>=100){ clearInterval(iv); finishRun(reindex); }
+    refreshRun();
+  },260);
+}
+function finishRun(reindex){
+  const r=runChunker(),s=currentSample();
+  const docs=S.source?.docs||1,chunks=Math.max(r.chunks.length,1)*docs;
+  S.run={state:'idle',pct:0,stage:''};
+  S.indexedHash=configHash();
+  if(S.source.isNew){ const x=allConnected().find(c=>c.id===S.source.id); if(x) x.docs=x.docs||1; }
+  S.indexed={docs,chunks,config:chunkerSummary(),docName:s.name,list:r.chunks,strategy:chunkerSummary()};
+  S.attempts.unshift({n:S.attempts.length+1,kind:reindex?'Re-index':'First index',config:chunkerSummary(),version:S.version,docs,chunks,when:'Just now'});
+  if(S.coll.mode==='new'&&S.coll.newName.trim()&&!S.extra.collections.some(c=>c.name===S.coll.newName.trim())){
+    S.extra.collections.push({id:'n'+Date.now(),name:S.coll.newName.trim(),isPublic:S.coll.isPublic});
+  }
+  refreshRun();
+  toast('Indexing finished (simulated).');
+}
+function saveVersion(silent){
+  const iss=issues();
+  if(iss.length){ if(!silent){ toast(iss.join(' ')); } return false; }
+  const h=configHash();
+  if(h===S.savedHash){ if(!silent) toast('No changes to save.'); return true; }
+  S.version=(S.version||0)+1;S.savedHash=h;
+  S.versions.unshift({v:S.version,summary:`${S.source?.name} → ${chunkerSummary()} → ${collectionName()}`,chunker:{...S.chunker},coll:{...S.coll},source:S.source,when:'Just now',who:'You'});
+  if(!silent) toast(S.indexedHash&&S.indexedHash!==h?`Saved version ${S.version}. Nothing is re-indexed until you choose to.`:`Saved version ${S.version}.`);
+  return true;
+}
+
+/* ── New knowledge base wizard (the same editor and data as the canvas) ── */
+const WIZ=[['Basics','Name and content'],['Data source','Where documents come from'],['Chunking','How they are split'],['Collection','What agents search'],['Review','Check and create']];
+const PURPOSES=[
+  ['automatic','Not sure yet','Use the default. You can change it later.'],
+  ['balanced','General documents','Reports, manuals and mixed files.'],
+  ['contracts','Contracts and policies','Long documents with numbered clauses.'],
+  ['short','Help pages','Short pages and articles.'],
+  ['faq','FAQ spreadsheet','Excel or CSV with question and answer columns.'],
+];
+function wizardHead(){
+  return `<div class="bhead"><button class="iconbtn" data-act="view" data-v="list" aria-label="Back to knowledge bases">←</button>
+    <h1 ${S.created?'data-slot="title"':''}>${S.created?esc(S.name):'New knowledge base'}</h1>
+    ${S.created?`<span class="chip neutral">v${S.version||'–'}</span>`:''}
+    <span class="grow"></span><button class="btn" data-act="tocanvas">Switch to canvas</button>
+    ${S.created?'<button class="btn" data-act="versions">Versions</button>':''}</div>`;
+}
+function basicsStep(){
+  return `<div class="stack">${identityForm()}
+    <div class="stack" style="gap:6px"><span class="flabel">What kind of content is this?</span>
+      <span class="hint">This picks starting chunk settings. You can fine-tune them in step 3.</span>
+      ${PURPOSES.map(([id,t,d])=>`<button class="opt ${S.purpose===id?'on':''}" data-act="purpose" data-p="${id}"><span class="grow"><span class="t">${t}</span><br><span class="d">${d}</span></span>${S.purpose===id?'<span aria-hidden="true">✓</span>':''}</button>`).join('')}
+    </div></div>`;
+}
+function connectorFields(){
+  const f=S.addFlow,opts=(list,val)=>list.map(o=>`<option ${o===val?'selected':''}>${o}</option>`).join('');
+  return `<div class="field"><label for="f-cname">Connector name</label><input id="f-cname" type="text" data-bind="addFlow.connName" value="${esc(f.connName)}"></div>
+    <div class="grid2"><div class="field"><label for="f-cred">Credential</label><select id="f-cred" data-bind="addFlow.credential"><option value="existing" ${f.credential==='existing'?'selected':''}>Existing ${esc(f.kind)} credential</option><option value="new" ${f.credential==='new'?'selected':''}>Add a new credential…</option></select></div>
+    <div class="field"><label for="f-acc">Who can see these documents?</label><select id="f-acc" data-bind="addFlow.access"><option value="public" ${f.access==='public'?'selected':''}>Everyone</option><option value="private" ${f.access==='private'?'selected':''}>Only people with access</option></select></div></div>
+    <div class="sect">Sync settings</div>
+    <div class="grid2"><div class="field"><label for="f-ref">Check for new documents every</label><select id="f-ref" data-bind="addFlow.refresh">${opts(['10 minutes','30 minutes','1 hour','1 day','Never'],f.refresh)}</select></div>
+    <div class="field"><label for="f-pru">Remove deleted documents every</label><select id="f-pru" data-bind="addFlow.prune">${opts(['1 day','7 days','30 days','Never'],f.prune)}</select></div></div>
+    <div class="field" style="max-width:50%"><label for="f-sd">Only index documents from (optional)</label><input id="f-sd" type="date" data-bind="addFlow.start" value="${esc(f.start)}"></div>
+    <div class="note">These are the same settings as today's connector form, which would be reused rather than rebuilt.</div>`;
+}
+function newSourcePane(){
+  const f=S.addFlow;
+  if(f.step===0){
+    const q=f.search.toLowerCase();
+    return `<input id="f-cat" type="search" placeholder="Search data sources…" aria-label="Search data sources" data-bind="addFlow.search" data-catalog="1" value="${esc(f.search)}">
+    <div class="cat" id="catgrid">${catalogGrid(CATALOG.filter(([n,d])=>n.toLowerCase().includes(q)||d.toLowerCase().includes(q)))}</div>`;
+  }
+  return `<div class="row"><span class="ico">${esc(f.kind[0])}</span><b class="grow">Set up ${esc(f.kind)}</b><button class="btn sm" data-act="addback">Choose another</button></div>
+    ${connectorFields()}
+    <div class="row"><button class="btn primary" data-act="addcreate">Add this source</button><span class="hint">It stays paused until you start indexing.</span></div>`;
+}
+function uploadPane(){
+  const fmt=n=>n>1048576?`${(n/1048576).toFixed(1)} MB`:`${Math.max(1,Math.round(n/1024))} KB`;
+  const usingFiles=S.source?.id==='files';
+  return `<label class="filedrop" data-filedrop="1"><b>Drop files here, or click to choose</b><span class="hint">PDF, Word, Excel, CSV, text and more.</span>
+      <input type="file" multiple data-act-change="kbupload" style="position:absolute;opacity:0;width:1px;height:1px"></label>
+    ${S.uploads.length?`<div class="stack" style="gap:6px">${S.uploads.map((f,i)=>`<div class="box row"><span class="grow">${esc(f.name)} <span class="small muted">${fmt(f.size)}</span></span><button class="btn sm" data-act="removefile" data-i="${i}" aria-label="Remove ${esc(f.name)}">Remove</button></div>`).join('')}</div>
+      ${usingFiles?'':'<button class="btn" data-act="usefiles">Use these files</button>'}`:''}
+    <div class="hint">Uploaded files have no sync schedule. To update them, upload again.</div>`;
+}
+function sourceStep(){
+  const tab=(id,l)=>`<button class="${S.srcTab===id?'on':''}" data-act="srctab" data-t="${id}">${l}</button>`;
+  const pane=S.srcTab==='connected'?`<input id="f-srcq" type="search" placeholder="Search connected sources…" aria-label="Search connected sources" data-bind="srcSearch" data-srcsearch="1" value="${esc(S.srcSearch)}"><div class="stack" style="gap:6px" id="srclist">${sourceRows(S.srcSearch)}</div>`
+    : S.srcTab==='new'?newSourcePane():uploadPane();
+  const existing=S.source&&!S.source.isNew;
+  return `<div class="stack">
+    <div class="seg" role="group" aria-label="How to add documents" style="align-self:flex-start">${tab('connected','Use a connected source')}${tab('new','Connect a new source')}${tab('upload','Upload files')}</div>
+    ${pane}
+    ${existing?`<div class="note warn">${esc(S.source.name)} already has ${S.source.docs} documents. They'll be re-indexed with your new settings when you start.</div>`:''}
+    <div class="box row"><span class="grow"><b>Extractor: Automatic</b><div class="hint">Chosen from the file type: PDF, Word, Excel and more.</div></span><span class="tag-later">Choice later</span></div>
+  </div>`;
+}
+function collectionStep(){
+  return `<div class="note"><b>Agents and workflows search collections.</b> A collection can hold documents from several knowledge bases, so "Legal" could combine contracts and policies.</div>${collectionForm()}`;
+}
+function kbSummary(){
+  const row=(k,v)=>`<div><div class="small muted">${k}</div><div class="${v?'':'muted'}">${esc(v||'Not set yet')}</div></div>`;
+  return `<div class="sect">Your knowledge base</div>${row('Name',S.name.trim())}${row('Data source',S.source?.name)}${row('Chunker',chunkerSummary())}${row('Collection',collectionName())}`;
+}
+function reviewStep(){
+  const sec=(i,title,rows)=>`<div class="box stack" style="gap:6px"><div class="row"><b class="grow">${title}</b><button class="linkbtn small" data-act="wizgo" data-i="${i}">Edit</button></div><dl class="summary">${rows.map(([k,v])=>`<dt>${k}</dt><dd>${esc(v||'Not set')}</dd>`).join('')}</dl></div>`;
+  const src=S.source,y=src?.sync;
+  const srcRows=[['Source',src?.name],['Extractor','Automatic']];
+  if(y) srcRows.push(['Check for new',y.refresh==='Never'?'Never':'Every '+y.refresh],['Remove deleted',y.prune==='Never'?'Never':'Every '+y.prune],['Index from',y.start||'All documents'],['Visible to',y.access==='public'?'Everyone':'People with access']);
+  else if(src&&src.id==='files') srcRows.push(['Files',S.uploads.map(f=>f.name).join(', ')]);
+  else if(src) srcRows.push(['Current documents',String(src.docs)]);
+  const r=S.review,iss=issues();
+  return `<div class="stack">
+    ${sec(0,'Basics',[['Name',S.name.trim()],['Description',S.desc.trim()||'None']])}
+    ${sec(1,'Data source',srcRows)}
+    ${sec(2,'Chunking',[['Chunker',chunkerSummary()]])}
+    ${sec(3,'Collection',[['Collection',collectionName()],['Visible to',S.coll.mode==='new'?(S.coll.isPublic?'Everyone':'Only people with access'):'As set on the collection']])}
+    <div class="box stack" style="gap:6px"><div class="row"><b class="grow">Workspace settings</b><span class="chip neutral">Read only</span></div><dl class="summary"><dt>Embedding and search</dt><dd>Current embedding model with hybrid search</dd><dt>Reranking</dt><dd>As set for the workspace</dd><dt>Image processing</dt><dd>As set for the workspace</dd></dl><span class="hint">These apply to every knowledge base and aren't set here.</span></div>
+    ${S.created?'':`<div class="stack" style="gap:8px"><div class="sect">When you create it</div>
+      <label class="check"><input type="radio" name="startmode" data-act-change="startmode" value="now" ${r.startNow?'checked':''}><span><b>Start indexing now</b>${src&&!src.isNew?`<div class="hint">Re-indexes ${src.docs} existing documents.</div>`:''}</span></label>
+      <label class="check"><input type="radio" name="startmode" data-act-change="startmode" value="later" ${r.startNow?'':'checked'}><span><b>Save, and start later</b><div class="hint">${src&&!src.isNew?'The source keeps its current chunks until you start.':'The source stays paused.'}</div></span></label>
+      <label class="check"><input type="checkbox" data-bind="review.mkAgent" data-refresh="1" ${r.mkAgent?'checked':''}><span><b>Also create an agent that answers from this collection</b></span></label>
+      ${r.mkAgent?`<div class="field" style="max-width:380px"><label for="f-agent">Agent name</label><input id="f-agent" type="text" data-bind="review.agentName" value="${esc(r.agentName)}" placeholder="${esc(S.name.trim()+' assistant')}"></div>${S.coll.mode==='none'?'<div class="err">An agent needs a collection. Choose one in step 4, or untick this.</div>':''}`:''}
+    </div>`}
+    ${iss.length?`<div class="note bad" role="alert">${iss.map(esc).join(' ')}</div>`:''}
+  </div>`;
+}
+function doneStep(){
+  return `<div class="stack"><div><h2 style="font-size:18px">✓ ${esc(S.name)} is created</h2><p class="muted">Collection: ${esc(collectionName())}${S.agentCreated?` · Agent: ${esc(S.agentCreated)}`:''}</p></div>
+    <div class="runslot">${runHTML()}</div>
+    <div class="sect">What next</div>
+    <div class="grid2">
+      <button class="opt" data-act="tocanvas"><span class="grow"><span class="t">See it on the canvas</span><br><span class="d">The same knowledge base, as a flow.</span></span></button>
+      <button class="opt" data-act="mkagent"><span class="grow"><span class="t">Use it in a workflow</span><br><span class="d">Add a Knowledge Search step.</span></span></button>
+      <button class="opt" data-act="wizgo" data-i="0"><span class="grow"><span class="t">Change settings</span><br><span class="d">Re-indexing stays your choice.</span></span></button>
+      <button class="opt" data-act="newkb"><span class="grow"><span class="t">Create another</span><br><span class="d">Start a new knowledge base.</span></span></button>
+    </div></div>`;
+}
+function wizardView(){
+  const st=S.wizStep,done=st===5;
+  const stepper=WIZ.map(([l,sb],i)=>{
+    const can=S.created||i<st;
+    return `<button class="stp ${i===st?'cur':i<st?'done':''}" data-act="wizgo" data-i="${i}" ${can?'':'disabled'} ${i===st?'aria-current="step"':''}><span class="c">${i<st?'✓':i+1}</span><span style="text-align:left"><span class="l">${l}</span><br><span class="sb">${sb}</span></span></button>${i<WIZ.length-1?`<span class="stpline ${i<st?'done':''}"></span>`:''}`;}).join('');
+  const body=[basicsStep,sourceStep,()=>chunkerForm(false),collectionStep,reviewStep,doneStep][st]();
+  const withSide=[0,1,3].includes(st);
+  let foot='';
+  if(!done){
+    const next=st<4?'<button class="btn primary" data-act="wiznext">Next</button>'
+      :S.created?'<button class="btn primary" data-act="save">Save changes</button>'
+      :'<button class="btn primary" data-act="createkb">Create knowledge base</button>';
+    foot=`<div class="wizfoot"><button class="btn" data-act="wizback" ${st===0?'disabled':''}>Back</button>${next}</div>`;
+  }
+  return wizardHead()+`<div class="wiz"><div class="wizin"><div class="stepper">${stepper}</div>
+    <div class="${withSide?'kblayout':''}"><div class="card"><div id="wizerr"></div><div class="stack">${body}</div></div>${withSide?`<aside class="card kbside stack" aria-label="Summary">${kbSummary()}</aside>`:''}</div>
+    ${foot}</div></div>`;
+}
+function wizardCheck(){
+  const st=S.wizStep;
+  if(st===0&&!S.name.trim()) return 'Name the knowledge base.';
+  if(st===1&&!sourceOk()) return 'Choose a data source, connect a new one, or upload files.';
+  if(st===2&&!chunkerOk()) return 'Fix the chunker settings first.';
+  if(st===3&&!collOk()) return 'Name the collection, choose one, or select "None for now".';
+  return null;
+}
+function addUploads(files){
+  let reading=false;
+  for(const f of files){
+    S.uploads.push({name:f.name,size:f.size});
+    if(!reading&&/\.(txt|md|csv)$/i.test(f.name)){
+      reading=true;
+      const reader=new FileReader();
+      reader.onload=()=>{ S.uploaded={name:f.name,text:String(reader.result),table:/\.csv$/i.test(f.name)};render(); };
+      reader.readAsText(f);
+    }
+  }
+  syncUploadSource();render();
+}
+function syncUploadSource(){
+  const n=S.uploads.length;
+  if(n) S.source={id:'files',name:`Uploaded files (${n})`,kind:'File',docs:n,isNew:true,chunker:'Automatic'};
+  else if(S.source?.id==='files') S.source=null;
+}
+
+/* ── Sequential workflow using the collection ───────────────────── */
+function seqNodes(){
+  const P=S.seq.pos,q=S.seq;
+  const names=q.collections.map(id=>allCollections().find(c=>c.id===id)?.name).filter(Boolean);
+  return `<div class="startnode" data-node="start" style="left:${P.start.x}px;top:${P.start.y}px">☰<b>START</b><div class="small">Sequential</div><div style="font-size:10px;opacity:.85">Runs steps in order</div></div>
+  <div class="node ${q.sel==='ks'?'sel':''} ${names.length?'':'bad'}" data-node="ks" tabindex="0" role="button" aria-label="Knowledge Search settings" style="left:${P.ks.x}px;top:${P.ks.y}px">
+    <div class="nh"><span class="ico">⌕</span><div class="grow"><div class="ti">Find relevant documents</div><div class="su">Knowledge Search · v1</div></div><span class="no">#1</span></div>
+    ${names.length?`<div class="nb"><span class="k">Query</span><span class="v mono">${esc(q.query)}</span><span class="k">Search in</span><span class="v">${esc(names.join(', '))}</span><span class="k">Top</span><span class="v">${q.topK} results</span><span class="k">LLM</span><span class="v">None</span></div>`:'<div class="nf" style="padding-top:10px"><span class="chip warn">Choose a collection</span></div>'}
+  </div>
+  <div class="node ${q.sel==='agent'?'sel':''}" data-node="agent" tabindex="0" role="button" aria-label="Agent settings" style="left:${P.agent.x}px;top:${P.agent.y}px">
+    <div class="nh"><span class="ico accent">C</span><div class="grow"><div class="ti">${esc(S.agentCreated||'Contract Assistant')}</div><div class="su">Draft the answer</div></div><span class="no">#2</span></div>
+    <div class="nb"><span class="k">Output</span><span class="v mono">answer</span><span class="k">LLM</span><span class="v">Default</span><span class="k">Input</span><span class="v mono">$search.output</span><span class="k">Limit to</span><span class="v">${esc(q.agentColls.map(id=>allCollections().find(c=>c.id===id)?.name).filter(Boolean).join(', ')||'Agent\'s collections')}</span></div>
+  </div>
+  <div class="endnode" data-node="end" style="left:${P.end.x}px;top:${P.end.y}px">✓<br>END</div>`;
+}
+function seqView(){
+  const q=S.seq;
+  const tab=(id,l)=>`<button class="${q.tab===id?'on':''}" data-act="seqtab" data-t="${id}">${l}</button>`;
+  const util=(l,d,isNew)=>`<div class="palette" style="cursor:default"><span class="ico">${l[0]}</span><span><span class="t">${l}${isNew?'<span class="tag-new">New</span>':''}</span><br><span class="d">${d}</span></span></div>`;
+  const side=q.tab==='utils'?util('Knowledge Search','Search collections without an LLM',true)+util('Code','Run a Python step')+util('Parallel','Run branches at once')+util('Loop','Repeat steps')+util('Condition','Choose a branch')
+    : q.tab==='agents'?`<button class="btn" style="border-style:dashed;color:var(--virtualai-accent)" data-act="inert">+ New Agent</button>`+['Contract Assistant','FIR Drafting Assistant','Land Records Assistant','District Report Generator'].map(a=>util(a,'Agent')).join('')
+    : `<div class="field"><label>Name</label><input type="text" value="Contract questions" readonly></div>`;
+  const panel=q.sel==='ks'?ksPanel():q.sel==='agent'?agentPanel():'';
+  return `<div class="bhead"><button class="iconbtn" data-act="inert" aria-label="Back">←</button><h1>Contract questions</h1><span class="grow"></span>${modeSeg('sequential')}<button class="btn" data-act="inert">Versions</button><button class="btn primary" data-act="seqsave">Update</button></div>
+  <div class="builder"><aside class="side"><div class="tabs">${tab('agents','Agents')}${tab('utils','Utils')}${tab('config','Config')}</div><div class="sidebody">${side}</div></aside>
+   <div class="overlay-wrap"><div class="canvas" id="canvas"><div class="inner" id="inner"><svg id="edges" aria-hidden="true"></svg><div id="nodes">${seqNodes()}</div></div></div></div>
+   ${panel?`<aside class="panel"><div class="ph"><div class="grow"><b>${q.sel==='ks'?'Knowledge Search':'Agent step'}</b></div><button class="iconbtn" data-act="seqclose" aria-label="Close">×</button></div><div class="pb">${panel}</div></aside>`:''}
+  </div>`;
+}
+function collChecks(path,sel){
+  return allCollections().map(c=>`<label class="check"><input type="checkbox" data-act-change="collcheck" data-path="${path}" value="${c.id}" ${sel.includes(c.id)?'checked':''}><span>${esc(c.name)}${c.isPublic?'':' <span class="small muted">(private)</span>'}</span></label>`).join('');
+}
+function ksPanel(){
+  const q=S.seq;
+  return `<div class="note">Searches with the permissions of the person running the workflow. Later steps read the results as JSON.</div>
+  <div class="field"><label for="f-kq">Search query</label><input id="f-kq" class="mono" type="text" data-bind="seq.query" data-seqref="1" value="${esc(q.query)}"><span class="hint"><code>$user_input</code> or a previous step's output.</span></div>
+  <div class="stack" style="gap:7px"><span class="flabel">Search in these collections</span>${collChecks('collections',q.collections)}${q.collections.length?'':'<span class="err">Choose at least one collection.</span>'}</div>
+  <div class="field"><label for="f-kt">Number of results</label><input id="f-kt" type="number" min="1" max="50" data-bind="seq.topK" data-num="1" data-seqref="1" value="${q.topK}"></div>
+  <div class="stack"><div class="sect">Test this step</div><div class="row"><input id="f-test" type="text" placeholder="Try a question, e.g. payment" aria-label="Test question"><button class="btn" data-act="seqtest">Search</button></div><div id="seqresult">${q.test?seqResult():''}</div></div>`;
+}
+function seqResult(){
+  return `<pre class="box mono" style="margin:0;white-space:pre-wrap;word-break:break-word;max-height:260px;overflow:auto">${esc(JSON.stringify({results:S.seq.test},null,2))}</pre>`;
+}
+function agentPanel(){
+  const q=S.seq;
+  return `<div class="field"><label>Agent</label><input type="text" value="${esc(S.agentCreated||'Contract Assistant')}" readonly></div>
+  <div class="stack" style="gap:7px"><span class="flabel">Limit this step's search to</span>${collChecks('agentColls',q.agentColls)}<span class="hint">Leave empty to use the agent's own collections.</span></div>
+  <div class="note warn">Today this setting is saved but ignored at run time. The plan fixes it and shows it in both editors.</div>`;
+}
+
+/* ── Knowledge Explorer ─────────────────────────────────────────── */
+function explorerView(){
+  const n=S.indexed;
+  const card=(t,meta,txt,act)=>`<div class="doc"><div class="dt">📄 ${esc(t)}</div><div class="row" style="flex-wrap:wrap"><span class="badge">Relevance: 0 ✎</span><span class="badge">Indexed ☑</span><span class="small muted">Updated ${esc(meta.when)}</span><span class="badge">${esc(meta.chunks)} chunks · ${esc(meta.strategy)}<span class="tag-new">New</span></span>${act}</div>${txt?`<div class="muted small">${esc(txt.slice(0,240))}…</div>`:''}</div>`;
+  return `<div class="page"><div class="pagein stack">
+    <div class="crumb">Admin › Knowledge › Knowledge Explorer</div>
+    <div><h1>Knowledge Explorer</h1><p class="muted">Search and inspect indexed documents, manage visibility, and tune relevance scores.</p></div>
+    <input type="search" placeholder="Search knowledge base by title or content…" aria-label="Search knowledge base">
+    <div class="row"><button class="btn" data-act="inert">Any time… ▾</button><button class="btn" data-act="inert">All Sources ▾</button></div>
+    ${n?card(n.docName,{when:'just now',chunks:n.list.length,strategy:n.strategy},n.list[0]?.text||'',`<button class="btn sm primary" data-act="drawer" data-d="current">View chunks</button>`):`<div class="note">Create a knowledge base and start indexing to see your chunks here. The two documents below use demo data.</div>`}
+    ${card('Take Home Assignment_260930_093244.md',{when:'1 day ago',chunks:6,strategy:'Automatic'},'Services Industry (Workforce Scheduling & Capacity Planning). A consulting firm, healthcare facility, or hospitality chain needs to staff shifts or allocate consultants to projects.',`<button class="btn sm" data-act="drawer" data-d="contract">View chunks</button>`)}
+    ${card('Consolidated-IT-Conferences-2026-2027.xlsx',{when:'9 hours ago',chunks:8,strategy:'Automatic'},'AI Intersection: brings together over 9,000 enterprise leaders, buyers, and builders to focus on practical AI implementation.',`<button class="btn sm" data-act="drawer" data-d="faq">View chunks</button>`)}
+  </div></div>`;
+}
+function drawerHTML(){
+  const d=S.drawer;let title,list,strategy;
+  if(d==='current'){ title=S.indexed.docName;list=S.indexed.list;strategy=S.indexed.strategy; }
+  else if(d==='faq'){ title='Consolidated-IT-Conferences-2026-2027.xlsx';list=tableChunks(SAMPLES.faq);strategy='Automatic'; }
+  else { title='Take Home Assignment_260930_093244.md';list=splitBy(SAMPLE_CONTRACT.split(/(?<=[.!?])\s+/),MAX_TOKENS,0);strategy='Automatic'; }
+  return `<aside class="drawer" role="dialog" aria-label="Chunks of ${esc(title)}"><div class="ph row" style="padding:14px;border-bottom:1px solid var(--border-01)"><div class="grow"><b>${esc(title)}</b><div class="small muted">${list.length} chunks · ${esc(strategy)}</div></div><button class="iconbtn" data-act="closedrawer" aria-label="Close">×</button></div>
+  <div style="padding:14px;overflow:auto;flex:1" class="chunks">${list.map(chunkCard).join('')}</div></aside>`;
+}
+
+/* ── Modals ─────────────────────────────────────────────────────── */
+function renderModal(){
+  const m=S.modal,root=$('#modalroot');
+  if(!m){ root.innerHTML=''; return; }
+  let h='';
+  if(m==='addsource') h=addSourceModal();
+  if(m==='versions') h=versionsModal();
+  if(m==='history') h=historyModal();
+  root.innerHTML=`<div class="scrim" data-act="closemodal-scrim"><div class="modal" role="dialog" aria-modal="true">${h}</div></div>`;
+}
+function addSourceModal(){
+  const f=S.addFlow;
+  if(f.step===0){
+    const q=f.search.toLowerCase(),items=CATALOG.filter(([n,d])=>n.toLowerCase().includes(q)||d.toLowerCase().includes(q));
+    return `<div class="mh"><h2>Add Data Source</h2><button class="iconbtn" data-act="closemodal" aria-label="Close">×</button></div>
+    <div class="mb"><input id="f-cat" type="search" placeholder="Search data sources…" aria-label="Search data sources" data-bind="addFlow.search" data-catalog="1" value="${esc(f.search)}">
+    <div class="cat" id="catgrid">${catalogGrid(items)}</div></div>`;
+  }
+  return `<div class="mh"><h2>Set up ${esc(f.kind)}</h2><button class="iconbtn" data-act="closemodal" aria-label="Close">×</button></div>
+  <div class="mb"><div class="note">Stands in for the existing ${esc(f.kind)} form with its credential, connector and advanced steps. It would be reused as is, not rebuilt.</div>
+    ${connectorFields()}
+    <div class="note ok">This source is created <b>paused</b>. Nothing is fetched until you start.</div></div>
+  <div class="mf"><button class="btn" data-act="addback">Back</button><button class="btn primary" data-act="addcreate">Create source</button></div>`;
+}
+function catalogGrid(items){
+  return items.map(([n,d])=>`<button class="tile" data-act="pickkind" data-k="${esc(n)}"><span class="ico">${esc(n[0])}</span><span><span class="t">${esc(n)}</span><br><span class="d">${esc(d)}</span></span></button>`).join('')||'<p class="muted">No matching data sources.</p>';
+}
+function versionsModal(){
+  const rows=S.versions.map((v,i)=>`<tr><td><b>v${v.v}</b>${i===0?' <span class="chip ok">Current</span>':''}</td><td>${esc(v.summary)}</td><td>${esc(v.who)}, ${esc(v.when)}</td><td>${i===0?'':`<button class="btn sm" data-act="restore" data-v="${v.v}">Restore</button>`}</td></tr>`).join('');
+  return `<div class="mh"><h2>Versions</h2><button class="iconbtn" data-act="closemodal" aria-label="Close">×</button></div>
+  <div class="mb">${rows?`<table><thead><tr><th>Version</th><th>Contents</th><th>Saved</th><th></th></tr></thead><tbody>${rows}</tbody></table>`:'<p class="muted">Nothing saved yet. Press Update to save the first version.</p>'}
+  <div class="note">This is the existing workflow version history. Restoring changes the settings only; documents are re-indexed when you choose to.</div></div>`;
+}
+function historyModal(){
+  return `<div class="mh"><h2>Run history</h2><button class="iconbtn" data-act="closemodal" aria-label="Close">×</button></div>
+  <div class="mb"><table><thead><tr><th>Run</th><th>Type</th><th>Settings used</th><th>Version</th><th>Documents</th><th>Chunks</th><th>When</th></tr></thead><tbody>
+  ${S.attempts.map(a=>`<tr><td>#${a.n}</td><td>${esc(a.kind)}</td><td>${esc(a.config)}</td><td>v${a.version}</td><td>${a.docs}</td><td>${a.chunks}</td><td>${esc(a.when)}</td></tr>`).join('')}
+  </tbody></table><div class="note">Each run keeps a copy of the settings it used, so a retry can't silently pick up later edits.</div></div>`;
+}
+
+/* ── Node dragging on the canvas ────────────────────────────────── */
+let drag=null;
+document.addEventListener('pointerdown',ev=>{
+  const n=ev.target.closest?.('[data-node]'); if(!n||ev.button!==0) return;
+  const id=n.dataset.node,store=S.view==='seq'?S.seq.pos:S.pos;
+  drag={id,store,sx:ev.clientX,sy:ev.clientY,ox:store[id].x,oy:store[id].y,moved:false,el:n};
+});
+document.addEventListener('pointermove',ev=>{
+  if(!drag) return;
+  const z=S.view==='seq'?1:S.zoom,dx=(ev.clientX-drag.sx)/z,dy=(ev.clientY-drag.sy)/z;
+  if(!drag.moved&&Math.hypot(dx,dy)<4) return;
+  drag.moved=true;
+  const p=drag.store[drag.id];p.x=Math.max(0,drag.ox+dx);p.y=Math.max(0,drag.oy+dy);
+  drag.el.style.left=p.x+'px';drag.el.style.top=p.y+'px';drawEdges();
+});
+document.addEventListener('pointerup',()=>{
+  if(!drag) return;
+  const d=drag;drag=null;
+  if(!d.moved) openNode(d.id);
+});
+function openNode(id){
+  if(S.view==='seq'){ if(id==='ks'||id==='agent'){ S.seq.sel=id; render(); } return; }
+  if(ORDER.includes(id)){ S.panel=id; render(); }
+}
+
+/* ── Palette drag and drop ──────────────────────────────────────── */
+document.addEventListener('dragstart',ev=>{
+  const p=ev.target.closest?.('[data-pal]'); if(!p||p.classList.contains('used')) return;
+  ev.dataTransfer.setData('text/plain',p.dataset.pal);ev.dataTransfer.effectAllowed='copy';
+});
+document.addEventListener('dragover',ev=>{ const c=ev.target.closest?.('[data-drop]'); if(c){ ev.preventDefault(); c.classList.add('over'); } });
+document.addEventListener('dragleave',ev=>{ const c=ev.target.closest?.('[data-drop]'); if(c&&!c.contains(ev.relatedTarget)) c.classList.remove('over'); });
+document.addEventListener('drop',ev=>{
+  const c=ev.target.closest?.('[data-drop]'); if(!c) return;
+  ev.preventDefault();c.classList.remove('over');
+  const t=ev.dataTransfer.getData('text/plain'); if(!ORDER.includes(t)||S.placed.includes(t)) return;
+  const r=$('#inner').getBoundingClientRect();
+  S.pos[t]={x:Math.max(0,(ev.clientX-r.left)/S.zoom-125),y:Math.max(0,(ev.clientY-r.top)/S.zoom-40)};
+  placeStep(t);
+});
+function placeStep(t){
+  S.placed.push(t);S.panel=t;
+  if(S.placed.length===3) toast('All three steps are connected. Set them up, then start indexing.');
+  render();
+}
+
+/* ── Clicks ─────────────────────────────────────────────────────── */
+const ACTIONS={
+  view(e){ S.view=e.dataset.v;S.menu=null;S.drawer=null;render(); },
+  menu(){ S.menu=!S.menu;render(); },
+  inert(){ S.menu=null;render();toast('Not part of this mockup.'); },
+  theme(){ document.documentElement.classList.toggle('dark');render(); },
+  demo(){ const k=S.view; S=freshState();S.view=(k==='list'||k==='explorer')?'wizard':k;S.name='Legal contracts';S.desc='Contracts from the legal Sharepoint site';
+    S.placed=[...ORDER];S.source=CONNECTED[1];S.purpose='contracts';
+    Object.assign(S.chunker,{...PRESETS.contracts,preset:'contracts'});S.coll={mode:'existing',id:'k1',newName:'',newDesc:'',isPublic:true,team:'',touched:true};S.seq.collections=['k1'];render(); },
+  reset(){ S=freshState();render(); },
+  newkb(){ const k=S.extra;S=freshState();S.extra=k;render(); },
+  newcanvas(){ const k=S.extra;S=freshState();S.extra=k;S.view='canvas';S.coll.mode='existing';render(); },
+  tocanvas(){ S.view='canvas';S.menu=null;if(!S.placed.length) S.placed=[...ORDER];render(); },
+  purpose(e){ const p=e.dataset.p;S.purpose=p;Object.assign(S.chunker,PRESETS[p],{preset:p});delete S.chunker.label;
+    if(PRESETS[p].strategy==='qa'&&!currentSample().table){ S.sampleKey='faq';S.uploaded=null; } render(); },
+  srctab(e){ S.srcTab=e.dataset.t;render(); },
+  usefiles(){ syncUploadSource();render(); },
+  removefile(e){ S.uploads.splice(+e.dataset.i,1);syncUploadSource();render(); },
+  createkb(){ const iss=issues();
+    if(S.review.mkAgent&&S.coll.mode==='none') iss.push('An agent needs a collection.');
+    if(iss.length){ const w=$('#wizerr'); if(w) w.innerHTML=`<div class="note bad" role="alert" style="margin-bottom:12px">${esc(iss.join(' '))}</div>`; return; }
+    S.created=true;S.placed=[...ORDER];saveVersion(true);
+    if(S.review.mkAgent) S.agentCreated=S.review.agentName.trim()||`${S.name.trim()} assistant`;
+    if(S.coll.mode==='new'&&!S.extra.collections.some(c=>c.name===S.coll.newName.trim())) S.extra.collections.push({id:'n'+Date.now(),name:S.coll.newName.trim(),isPublic:S.coll.isPublic});
+    S.wizStep=5;render();
+    if(S.review.startNow) startRun(); },
+  mode(e){ const m=e.dataset.m;
+    if(S.view==='seq'){ if(m==='llm') toast('Knowledge Search works in Sequential mode for now, so it would be hidden in LLM Decision.'); else if(m==='knowledge') toast('The mode is chosen when a workflow is created and can\'t be switched later.'); return; }
+    if(m!=='knowledge') toast('Knowledge bases always use Knowledge mode. It can\'t be switched later.'); },
+  sidetab(e){ S.sideTab=e.dataset.t;render(); },
+  legend(){ S.legend=false;render(); },
+  zoom(e){ const z=e.dataset.z;S.zoom= z==='fit'?1:Math.min(1.5,Math.max(.5,S.zoom+(z==='in'?.1:-.1)));const i=$('#inner');if(i)i.style.transform=`scale(${S.zoom})`; },
+  addstep(e){ const t=e.dataset.type; if(S.placed.includes(t)) return; S.pos[t]={...SLOTS[t]}; placeStep(t); },
+  closepanel(){ S.panel=null;render(); },
+  removestep(e){ S.placed=S.placed.filter(t=>t!==e.dataset.type);S.panel=null;render(); },
+  picksource(e){ const c=allConnected().find(x=>x.id===e.dataset.id); if(!c||c.pipeline) return; S.source=c;render(); },
+  addsource(){ S.addFlow=freshAddFlow();S.modal='addsource';render(); },
+  pickkind(e){ S.addFlow.kind=e.dataset.k;S.addFlow.step=1;S.addFlow.connName=`${e.dataset.k}: new source`;render(); },
+  addback(){ S.addFlow.step=0;render(); },
+  addcreate(){ const f=S.addFlow; if(!f.connName.trim()){ toast('Name the connector.'); return; }
+    const c={id:'x'+Date.now(),name:f.connName.trim(),kind:f.kind,docs:12,chunker:'Automatic',isNew:true,sync:{refresh:f.refresh,prune:f.prune,start:f.start,access:f.access}};
+    S.extra.connected.unshift(c);S.source=c;S.modal=null;S.srcTab='connected';S.srcSearch='';S.addFlow=freshAddFlow();render();toast('Source added and paused.'); },
+  closemodal(){ S.modal=null;render(); },
+  strategy(e){ const c=S.chunker;c.strategy=e.dataset.s;c.preset=e.dataset.s==='automatic'?'automatic':e.dataset.s==='qa'?'faq':'custom';
+    if(c.strategy==='qa'&&!currentSample().table){ S.sampleKey='faq';S.uploaded=null; } render(); },
+  sample(e){ S.sampleKey=e.dataset.k;S.uploaded=null;render(); },
+  collmode(e){ S.coll.mode=e.dataset.m;render(); },
+  versions(){ S.modal='versions';render(); },
+  history(){ S.modal='history';render(); },
+  restore(e){ const v=S.versions.find(x=>x.v===+e.dataset.v); if(!v) return;
+    S.chunker={...v.chunker};S.coll={...v.coll};S.source=v.source;S.modal=null;S.savedHash=null;saveVersion(true);render();toast(`Restored version ${v.v} as version ${S.version}. Documents aren't re-indexed until you choose to.`); },
+  save(){ saveVersion(false);render(); },
+  start(){ startRun(); },
+  viewchunks(){ S.view='explorer';S.drawer='current';render(); },
+  mkagent(){ S.view='seq';if(!S.agentCreated&&S.created) S.agentCreated=`${S.name.trim()} assistant`;const id=S.coll.mode==='existing'?S.coll.id:S.extra.collections.find(c=>c.name===S.coll.newName.trim())?.id;
+    if(id&&!S.seq.collections.includes(id)) S.seq.collections.push(id);S.seq.sel='ks';render();toast('A workflow using this collection (simulated).'); },
+  wizgo(e){ S.wizStep=+e.dataset.i;render(); },
+  wizback(){ S.wizStep=Math.max(0,S.wizStep-1);render(); },
+  wiznext(){ const m=wizardCheck(); if(m){ $('#wizerr').innerHTML=`<div class="note bad" role="alert" style="margin-bottom:12px">${esc(m)}</div>`; return; }
+    S.wizStep++;render(); },
+  seqtab(e){ S.seq.tab=e.dataset.t;render(); },
+  seqclose(){ S.seq.sel=null;render(); },
+  seqsave(){ toast(S.seq.collections.length?'Saved (simulated).':'Knowledge Search needs at least one collection.'); },
+  seqtest(){ const term=($('#f-test')?.value||'').trim().toLowerCase();
+    const pool=S.indexed?.list?.length?S.indexed.list:splitBy(SAMPLE_CONTRACT.split(/\n\n/),300,0);
+    const hits=pool.map(c=>({c,s:term?words(term).filter(w=>c.text.toLowerCase().includes(w)).length:1})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,Math.min(3,S.seq.topK||3));
+    S.seq.test=hits.map((x,i)=>({title:S.indexed?.docName||'Sample contract.txt',text:x.c.text.slice(0,140)+'…',link:'#',score:+(0.92-i*0.11).toFixed(2)}));
+    const r=$('#seqresult'); if(r) r.innerHTML=seqResult(); },
+  drawer(e){ S.drawer=e.dataset.d;render(); },
+  closedrawer(){ S.drawer=null;render(); },
+};
+document.addEventListener('click',ev=>{
+  if(ev.target.dataset?.act==='closemodal-scrim'){ S.modal=null;render();return; }
+  const el=ev.target.closest?.('[data-act]'); if(!el||el.disabled) return;
+  const fn=ACTIONS[el.dataset.act]; if(fn) fn(el);
+  else if(S.menu&&!ev.target.closest('.navmenu')){ S.menu=null;render(); }
+});
+document.addEventListener('keydown',ev=>{
+  if(ev.key==='Escape'){ if(S.modal){ S.modal=null;render(); } else if(S.drawer){ S.drawer=null;render(); } else if(S.menu){ S.menu=null;render(); } }
+  if((ev.key==='Enter'||ev.key===' ')&&ev.target.matches?.('[data-node]')){ ev.preventDefault();openNode(ev.target.dataset.node); }
+});
+
+/* ── Form input ─────────────────────────────────────────────────── */
+function afterInput(el){
+  if(el.dataset.catalog){ const q=S.addFlow.search.toLowerCase();const g=$('#catgrid');if(g) g.innerHTML=catalogGrid(CATALOG.filter(([n,d])=>n.toLowerCase().includes(q)||d.toLowerCase().includes(q))); return; }
+  if(el.dataset.bind?.startsWith('addFlow')) return;
+  if(el.dataset.srcsearch){ const l=$('#srclist'); if(l) l.innerHTML=sourceRows(S.srcSearch); return; }
+  if(el.dataset.bind==='name'&&!S.coll.touched) S.coll.newName=S.name;
+  if(el.dataset.bind==='coll.newName') S.coll.touched=true;
+  $$('.kbside').forEach(n=>n.innerHTML=kbSummary());
+  if(el.dataset.seqref){ refreshCanvas(); return; }
+  if(el.dataset.bind==='name'){ const t=$('[data-slot=title]'); if(t) t.textContent=S.name||'Untitled'; }
+  if(el.dataset.bind?.startsWith('chunker.')){
+    if(el.dataset.bind!=='chunker.qCol'&&el.dataset.bind!=='chunker.aCol') S.chunker.preset=S.chunker.strategy==='qa'?'faq':'custom';
+    $$(`[data-bind="${el.dataset.bind}"]`).forEach(o=>{ if(o!==el) o.value=getPath(S,el.dataset.bind); });
+    const e=chunkerErrors();
+    $$('[data-err]').forEach(n=>n.textContent=e[n.dataset.err]||'');
+    const p=$('#f-preset'); if(p&&S.chunker.preset==='custom'&&p.value!=='custom'){ if(!$('option[value=custom]',p)) p.insertAdjacentHTML('beforeend','<option value="custom">Custom</option>'); p.value='custom'; }
+  }
+  $$('.previewslot').forEach(n=>n.innerHTML=previewHTML());
+  refreshCanvas();refreshRun();
+}
+document.addEventListener('input',ev=>{
+  const el=ev.target; if(!el.dataset?.bind) return;
+  let v=el.type==='checkbox'?el.checked:el.value;
+  if(el.dataset.num) v=v===''?NaN:Number(v);
+  setPath(S,el.dataset.bind,v);
+  if(el.dataset.refresh) render(); else afterInput(el);
+});
+document.addEventListener('change',ev=>{
+  const el=ev.target,a=el.dataset?.actChange; if(!a) return;
+  if(a==='accent'){ const r=document.documentElement;[...r.classList].filter(c=>c.startsWith('virtualai-')).forEach(c=>r.classList.remove(c)); if(el.value) r.classList.add(el.value); drawEdges(); }
+  if(a==='preset'){ const p=PRESETS[el.value]; if(!p) return; Object.assign(S.chunker,p,{preset:el.value}); delete S.chunker.label;
+    if(p.strategy==='qa'&&!currentSample().table){ S.sampleKey='faq';S.uploaded=null; } render(); }
+  if(a==='startmode'){ S.review.startNow=el.value==='now';render(); }
+  if(a==='kbupload'){ if(el.files?.length) addUploads([...el.files]); }
+  if(a==='collcheck'){ const list=S.seq[el.dataset.path],i=list.indexOf(el.value); if(el.checked&&i<0) list.push(el.value); if(!el.checked&&i>=0) list.splice(i,1); render(); }
+  if(a==='upload'){ const f=el.files?.[0]; if(!f) return;
+    if(f.size>15*1024*1024){ toast('That file is over the 15 MB preview limit.'); return; }
+    const reader=new FileReader();
+    reader.onload=()=>{ S.uploaded={name:f.name,text:String(reader.result),table:/\.csv$/i.test(f.name)};render(); };
+    reader.onerror=()=>toast('Could not read that file.');
+    reader.readAsText(f); }
+});
+document.addEventListener('dragover',ev=>{ const d=ev.target.closest?.('[data-filedrop]'); if(d){ ev.preventDefault(); d.classList.add('over'); } });
+document.addEventListener('dragleave',ev=>{ const d=ev.target.closest?.('[data-filedrop]'); if(d&&!d.contains(ev.relatedTarget)) d.classList.remove('over'); });
+document.addEventListener('drop',ev=>{ const d=ev.target.closest?.('[data-filedrop]'); if(d){ ev.preventDefault(); if(ev.dataTransfer.files.length) addUploads([...ev.dataTransfer.files]); } });
+window.addEventListener('resize',drawEdges);
+render();
+</script>
+</body>
+</html>

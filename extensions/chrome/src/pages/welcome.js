@@ -1,11 +1,11 @@
 import {
   CHROME_SPECIFIC_STORAGE_KEYS,
-  DEFAULT_ONYX_DOMAIN,
+  DEFAULT_VIRTUALAI_DOMAIN,
 } from "../utils/constants.js";
 
 document.addEventListener("DOMContentLoaded", function () {
-  const domainInput = document.getElementById("onyxDomain");
-  const useOnyxAsDefaultToggle = document.getElementById("useOnyxAsDefault");
+  const domainInput = document.getElementById("virtualaiDomain");
+  const useVirtualAIAsDefaultToggle = document.getElementById("useVirtualAIAsDefault");
   const continueBtn = document.getElementById("continueBtn");
   const backBtn = document.getElementById("backBtn");
   const finishBtn = document.getElementById("finishBtn");
@@ -121,20 +121,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function handleFinish() {
-    const domain = domainInput.value.trim() || DEFAULT_ONYX_DOMAIN;
-    const useOnyxAsDefault = useOnyxAsDefaultToggle.checked;
+    const domain = domainInput.value.trim() || DEFAULT_VIRTUALAI_DOMAIN;
+    const useVirtualAIAsDefault = useVirtualAIAsDefaultToggle.checked;
 
     chrome.storage.local.set(
       {
-        [CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]: domain,
-        [CHROME_SPECIFIC_STORAGE_KEYS.USE_ONYX_AS_DEFAULT_NEW_TAB]:
-          useOnyxAsDefault,
+        [CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]: domain,
+        [CHROME_SPECIFIC_STORAGE_KEYS.USE_VIRTUALAI_AS_DEFAULT_NEW_TAB]:
+          useVirtualAIAsDefault,
         [CHROME_SPECIFIC_STORAGE_KEYS.THEME]: currentTheme,
         [CHROME_SPECIFIC_STORAGE_KEYS.ONBOARDING_COMPLETE]: true,
       },
       () => {
         // Open a new tab if they enabled the new tab feature, otherwise just close
-        if (useOnyxAsDefault) {
+        if (useVirtualAIAsDefault) {
           chrome.tabs.create({}, () => {
             window.close();
           });
@@ -149,15 +149,15 @@ document.addEventListener("DOMContentLoaded", function () {
   function loadStoredValues() {
     chrome.storage.local.get(
       {
-        [CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]: "",
-        [CHROME_SPECIFIC_STORAGE_KEYS.USE_ONYX_AS_DEFAULT_NEW_TAB]: true,
+        [CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]: "",
+        [CHROME_SPECIFIC_STORAGE_KEYS.USE_VIRTUALAI_AS_DEFAULT_NEW_TAB]: true,
       },
       (result) => {
-        if (result[CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]) {
-          domainInput.value = result[CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN];
+        if (result[CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]) {
+          domainInput.value = result[CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN];
         }
-        useOnyxAsDefaultToggle.checked =
-          result[CHROME_SPECIFIC_STORAGE_KEYS.USE_ONYX_AS_DEFAULT_NEW_TAB];
+        useVirtualAIAsDefaultToggle.checked =
+          result[CHROME_SPECIFIC_STORAGE_KEYS.USE_VIRTUALAI_AS_DEFAULT_NEW_TAB];
       },
     );
   }

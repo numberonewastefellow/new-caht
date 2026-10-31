@@ -1,6 +1,6 @@
 import {
   CHROME_SPECIFIC_STORAGE_KEYS,
-  DEFAULT_ONYX_DOMAIN,
+  DEFAULT_VIRTUALAI_DOMAIN,
   ACTIONS,
 } from "./constants.js";
 
@@ -278,7 +278,7 @@ export function initErrorModal() {
     });
 
     disableOverrideButton.addEventListener("click", () => {
-      chrome.storage.local.set({ useOnyxAsDefaultNewTab: false }, () => {
+      chrome.storage.local.set({ useVirtualAIAsDefaultNewTab: false }, () => {
         chrome.tabs.update({ url: "chrome://new-tab-page" });
       });
     });
@@ -326,9 +326,9 @@ export function initAuthModal() {
     openAuthButton.addEventListener("click", (e) => {
       e.preventDefault();
       chrome.storage.local.get(
-        { [CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]: DEFAULT_ONYX_DOMAIN },
+        { [CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]: DEFAULT_VIRTUALAI_DOMAIN },
         (result) => {
-          const onyxDomain = result[CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN];
+          const virtualaiDomain = result[CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN];
           chrome.runtime.sendMessage(
             { action: ACTIONS.CLOSE_SIDE_PANEL },
             () => {
@@ -340,7 +340,7 @@ export function initAuthModal() {
               }
               chrome.tabs.create(
                 {
-                  url: `${onyxDomain}/auth/login`,
+                  url: `${virtualaiDomain}/auth/login`,
                   active: true,
                 },
                 (_) => {

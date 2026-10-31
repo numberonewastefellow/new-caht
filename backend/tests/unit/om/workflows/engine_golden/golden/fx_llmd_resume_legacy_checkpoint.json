@@ -316,7 +316,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"a\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: a\"}"
       ]
      ]
     }
@@ -343,8 +347,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"a\"}}"
+        2,
+        ""
        ],
        [
         "tool_call_response",
@@ -382,8 +386,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"a\"}}"
+        2,
+        ""
        ],
        [
         "tool_call_response",
@@ -392,8 +396,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b\"}}"
+        2,
+        ""
        ]
       ],
       "cycle_count": 2,
@@ -915,11 +919,15 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"a\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: a\"}"
+      ],
+      [
+       "user",
+       "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nPlease call the same agent again with this additional information included in the task."
       ]
      ]
     },
@@ -946,15 +954,23 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"a\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: a\"}"
+      ],
+      [
+       "user",
+       "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nPlease call the same agent again with this additional information included in the task."
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b again with the user's reply\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"FX Beta\", \"agent_output\": \"beta result for: b again with the user's reply\"}"
       ]
      ]
     },
@@ -981,19 +997,31 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"a\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: a\"}"
+      ],
+      [
+       "user",
+       "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nPlease call the same agent again with this additional information included in the task."
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"FX Beta\", \"agent_output\": \"beta result for: b again with the user's reply\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b again with the user's reply\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_fx_gamma\", \"arguments\": {\"task\": \"g\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"FX Gamma\", \"agent_output\": \"gamma result for: g\"}"
       ]
      ]
     }
@@ -1022,8 +1050,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"a\"}}"
+        2,
+        ""
        ],
        [
         "tool_call_response",
@@ -1031,19 +1059,14 @@
         "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: a\"}"
        ],
        [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b\"}}"
-       ],
-       [
-        "tool_call_response",
+        "user",
         37,
         "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nPlease call the same agent again with this additional information included in the task."
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b again with the user's reply\"}}"
+        7,
+        ""
        ],
        [
         "tool_call_response",
@@ -1086,8 +1109,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"a\"}}"
+        2,
+        ""
        ],
        [
         "tool_call_response",
@@ -1095,19 +1118,14 @@
         "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: a\"}"
        ],
        [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b\"}}"
-       ],
-       [
-        "tool_call_response",
+        "user",
         37,
         "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nPlease call the same agent again with this additional information included in the task."
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b again with the user's reply\"}}"
+        7,
+        ""
        ],
        [
         "tool_call_response",
@@ -1116,8 +1134,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_fx_gamma\", \"arguments\": {\"task\": \"g\"}}"
+        2,
+        ""
        ],
        [
         "tool_call_response",

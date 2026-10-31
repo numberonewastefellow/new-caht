@@ -64,6 +64,21 @@ class WorkflowNode(BaseModel):
     branch_index: int | None = None
 
 
+class WorkflowSettings(BaseModel):
+    """Workflow-level settings, versioned with the steps so a restore brings them back."""
+
+    model_config = ConfigDict(frozen=True)
+
+    description: str | None = None
+    orchestrator_prompt: str | None = None
+    orchestrator_llm_provider: str | None = None
+    orchestrator_llm_model: str | None = None
+    max_steps: int | None = None
+    max_calls_per_agent: int | None = None
+    is_public: bool | None = None
+    icon_name: str | None = None
+
+
 class WorkflowGraph(BaseModel):
     """A workflow's nodes in execution order, plus the settings the engine needs."""
 
@@ -75,6 +90,8 @@ class WorkflowGraph(BaseModel):
     orchestration_mode: str
     schema_version: int = 1
     timeout_seconds: int = 1800
+    # None in definitions recorded before settings were versioned.
+    settings: WorkflowSettings | None = None
     nodes: list[WorkflowNode] = []
 
     @model_validator(mode="after")
@@ -191,6 +208,16 @@ def graph_from_workflow(
         schema_version=workflow.schema_version or 1,
         timeout_seconds=(
             workflow.timeout_seconds if workflow.timeout_seconds is not None else 1800
+        ),
+        settings=WorkflowSettings(
+            description=workflow.description or None,
+            orchestrator_prompt=workflow.orchestrator_prompt or None,
+            orchestrator_llm_provider=workflow.orchestrator_llm_provider or None,
+            orchestrator_llm_model=workflow.orchestrator_llm_model or None,
+            max_steps=workflow.max_steps,
+            max_calls_per_agent=workflow.max_calls_per_agent,
+            is_public=workflow.is_public,
+            icon_name=workflow.icon_name or None,
         ),
         nodes=[_node_from_step(step, registry, key_by_step_id) for step in steps],
     )

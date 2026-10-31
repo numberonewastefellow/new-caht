@@ -79,7 +79,7 @@ The built `.dmg` will be in `src-tauri/target/release/bundle/dmg/`.
 ## Project Structure
 
 ```
-onyx-desktop/
+virtualai-desktop/
 ├── package.json          # Node dependencies & scripts
 ├── src/
 │   └── index.html        # Fallback/loading page
@@ -115,9 +115,9 @@ npm run tauri icon path/to/your-icon.png
 The app defaults to `https://cloud.vertualai.app` but supports any VertualAI instance.
 
 **Config file location:**
-- macOS: `~/Library/Application Support/app.onyx.desktop/config.json`
-- Linux: `~/.config/app.onyx.desktop/config.json`
-- Windows: `%APPDATA%/app.onyx.desktop/config.json`
+- macOS: `~/Library/Application Support/com.virtualai.desktop/config.json`
+- Linux: `~/.config/com.virtualai.desktop/config.json`
+- Windows: `%APPDATA%/com.virtualai.desktop/config.json`
 
 **To use a self-hosted instance:**
 
@@ -127,7 +127,7 @@ The app defaults to `https://cloud.vertualai.app` but supports any VertualAI ins
 
 ```json
 {
-  "server_url": "https://your-onyx-instance.company.com",
+  "server_url": "https://your-virtualai-instance.company.com",
   "window_title": "VertualAI"
 }
 ```
@@ -137,10 +137,10 @@ The app defaults to `https://cloud.vertualai.app` but supports any VertualAI ins
 **Quick edit via terminal:**
 ```bash
 # macOS
-open -t ~/Library/Application\ Support/app.onyx.desktop/config.json
+open -t ~/Library/Application\ Support/com.virtualai.desktop/config.json
 
 # Or use any editor
-code ~/Library/Application\ Support/app.onyx.desktop/config.json
+code ~/Library/Application\ Support/com.virtualai.desktop/config.json
 ```
 
 ### Change the default URL in build
@@ -151,7 +151,7 @@ Edit `src-tauri/tauri.conf.json`:
   "app": {
     "windows": [
       {
-        "url": "https://your-onyx-instance.com"
+        "url": "https://your-virtualai-instance.com"
       }
     ]
   }

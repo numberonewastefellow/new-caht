@@ -341,6 +341,8 @@ def restore_workflow_version_endpoint(
     except WorkflowSaveError as e:
         # e.g. an agent used by that version has since been deleted
         raise HTTPException(status_code=400, detail=str(e))
+    except WorkflowVersionConflictError as e:
+        raise HTTPException(status_code=409, detail=str(e))
     if workflow is None:
         raise HTTPException(status_code=404, detail="Workflow or version not found")
     create_or_update_workflow_agent(db_session=db_session, workflow=workflow)

@@ -312,8 +312,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -2163,11 +2163,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Triage Doctor': work on: Pre"
       ]
      ]
     },
@@ -2201,15 +2201,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Triage Doctor': work on: Pre"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Lab Analyst\", \"agent_output\": \"lab_analysis result for: Step 'Lab Analyst': work on: Prepare a c\", \"_...<len=248 sha1=a50e6413b6c0>"
       ]
      ]
     },
@@ -2243,19 +2247,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Triage Doctor': work on: Pre"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Lab Analyst\", \"agent_output\": \"lab_analysis result for: Step 'Lab Analyst': work on: Prepare a c\", \"_...<len=248 sha1=a50e6413b6c0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Primary Care Physician\", \"agent_output\": \"primary_care_assessment result for: Step 'Primary Care Phys...<len=292 sha1=c9b4104759f9>"
       ]
      ]
     },
@@ -2289,23 +2301,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Triage Doctor': work on: Pre"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Lab Analyst\", \"agent_output\": \"lab_analysis result for: Step 'Lab Analyst': work on: Prepare a c\", \"_...<len=248 sha1=a50e6413b6c0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Primary Care Physician\", \"agent_output\": \"primary_care_assessment result for: Step 'Primary Care Phys...<len=292 sha1=c9b4104759f9>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endocrinologist\", \"agent_output\": \"endocrine_assessment result for: Step 'Endocrinologist': work on: ...<len=276 sha1=a7df42a302d0>"
       ]
      ]
     },
@@ -2339,27 +2363,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Triage Doctor': work on: Pre"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Lab Analyst\", \"agent_output\": \"lab_analysis result for: Step 'Lab Analyst': work on: Prepare a c\", \"_...<len=248 sha1=a50e6413b6c0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Primary Care Physician\", \"agent_output\": \"primary_care_assessment result for: Step 'Primary Care Phys...<len=292 sha1=c9b4104759f9>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endocrinologist\", \"agent_output\": \"endocrine_assessment result for: Step 'Endocrinologist': work on: ...<len=276 sha1=a7df42a302d0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cardiologist\", \"arguments\": {\"task\": \"Step 'Cardiologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cardiologist\", \"agent_output\": \"cardiac_assessment result for: Step 'Cardiologist': work on: Prepare ...<len=267 sha1=937d9ee37e3c>"
       ]
      ]
     },
@@ -2393,31 +2433,51 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Triage Doctor': work on: Pre"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Lab Analyst\", \"agent_output\": \"lab_analysis result for: Step 'Lab Analyst': work on: Prepare a c\", \"_...<len=248 sha1=a50e6413b6c0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Primary Care Physician\", \"agent_output\": \"primary_care_assessment result for: Step 'Primary Care Phys...<len=292 sha1=c9b4104759f9>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endocrinologist\", \"agent_output\": \"endocrine_assessment result for: Step 'Endocrinologist': work on: ...<len=276 sha1=a7df42a302d0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cardiologist\", \"agent_output\": \"cardiac_assessment result for: Step 'Cardiologist': work on: Prepare ...<len=267 sha1=937d9ee37e3c>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cardiologist\", \"arguments\": {\"task\": \"Step 'Cardiologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_gastroenterologist\", \"arguments\": {\"task\": \"Step 'Gastroenterologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Gastroenterologist\", \"agent_output\": \"gi_assessment result for: Step 'Gastroenterologist': work on: P...<len=258 sha1=104120bc8213>"
       ]
      ]
     },
@@ -2451,35 +2511,59 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Triage Doctor': work on: Pre"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Lab Analyst\", \"agent_output\": \"lab_analysis result for: Step 'Lab Analyst': work on: Prepare a c\", \"_...<len=248 sha1=a50e6413b6c0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Primary Care Physician\", \"agent_output\": \"primary_care_assessment result for: Step 'Primary Care Phys...<len=292 sha1=c9b4104759f9>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endocrinologist\", \"agent_output\": \"endocrine_assessment result for: Step 'Endocrinologist': work on: ...<len=276 sha1=a7df42a302d0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cardiologist\", \"agent_output\": \"cardiac_assessment result for: Step 'Cardiologist': work on: Prepare ...<len=267 sha1=937d9ee37e3c>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cardiologist\", \"arguments\": {\"task\": \"Step 'Cardiologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Gastroenterologist\", \"agent_output\": \"gi_assessment result for: Step 'Gastroenterologist': work on: P...<len=258 sha1=104120bc8213>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_gastroenterologist\", \"arguments\": {\"task\": \"Step 'Gastroenterologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_rheumatologist\", \"arguments\": {\"task\": \"Step 'Rheumatologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Rheumatologist\", \"agent_output\": \"rheumatology_assessment result for: Step 'Rheumatologist': work on:...<len=284 sha1=40e40f6dd8d3>"
       ]
      ]
     },
@@ -2513,39 +2597,67 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Triage Doctor': work on: Pre"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Lab Analyst\", \"agent_output\": \"lab_analysis result for: Step 'Lab Analyst': work on: Prepare a c\", \"_...<len=248 sha1=a50e6413b6c0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Primary Care Physician\", \"agent_output\": \"primary_care_assessment result for: Step 'Primary Care Phys...<len=292 sha1=c9b4104759f9>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endocrinologist\", \"agent_output\": \"endocrine_assessment result for: Step 'Endocrinologist': work on: ...<len=276 sha1=a7df42a302d0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cardiologist\", \"agent_output\": \"cardiac_assessment result for: Step 'Cardiologist': work on: Prepare ...<len=267 sha1=937d9ee37e3c>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cardiologist\", \"arguments\": {\"task\": \"Step 'Cardiologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Gastroenterologist\", \"agent_output\": \"gi_assessment result for: Step 'Gastroenterologist': work on: P...<len=258 sha1=104120bc8213>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_gastroenterologist\", \"arguments\": {\"task\": \"Step 'Gastroenterologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Rheumatologist\", \"agent_output\": \"rheumatology_assessment result for: Step 'Rheumatologist': work on:...<len=284 sha1=40e40f6dd8d3>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_rheumatologist\", \"arguments\": {\"task\": \"Step 'Rheumatologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_nephrologist\", \"arguments\": {\"task\": \"Step 'Nephrologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Nephrologist\", \"agent_output\": \"nephrology_assessment result for: Step 'Nephrologist': work on: Prepa...<len=276 sha1=0ee1ba43de2c>"
       ]
      ]
     },
@@ -2579,43 +2691,75 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Triage Doctor': work on: Pre"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Lab Analyst\", \"agent_output\": \"lab_analysis result for: Step 'Lab Analyst': work on: Prepare a c\", \"_...<len=248 sha1=a50e6413b6c0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Primary Care Physician\", \"agent_output\": \"primary_care_assessment result for: Step 'Primary Care Phys...<len=292 sha1=c9b4104759f9>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endocrinologist\", \"agent_output\": \"endocrine_assessment result for: Step 'Endocrinologist': work on: ...<len=276 sha1=a7df42a302d0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cardiologist\", \"agent_output\": \"cardiac_assessment result for: Step 'Cardiologist': work on: Prepare ...<len=267 sha1=937d9ee37e3c>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cardiologist\", \"arguments\": {\"task\": \"Step 'Cardiologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Gastroenterologist\", \"agent_output\": \"gi_assessment result for: Step 'Gastroenterologist': work on: P...<len=258 sha1=104120bc8213>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_gastroenterologist\", \"arguments\": {\"task\": \"Step 'Gastroenterologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Rheumatologist\", \"agent_output\": \"rheumatology_assessment result for: Step 'Rheumatologist': work on:...<len=284 sha1=40e40f6dd8d3>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_rheumatologist\", \"arguments\": {\"task\": \"Step 'Rheumatologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Nephrologist\", \"agent_output\": \"nephrology_assessment result for: Step 'Nephrologist': work on: Prepa...<len=276 sha1=0ee1ba43de2c>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_nephrologist\", \"arguments\": {\"task\": \"Step 'Nephrologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_hematologist\", \"arguments\": {\"task\": \"Step 'Hematologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Hematologist\", \"agent_output\": \"hematology_assessment result for: Step 'Hematologist': work on: Prepa...<len=276 sha1=eceea15b741b>"
       ]
      ]
     },
@@ -2649,47 +2793,83 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Triage Doctor': work on: Pre"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Lab Analyst\", \"agent_output\": \"lab_analysis result for: Step 'Lab Analyst': work on: Prepare a c\", \"_...<len=248 sha1=a50e6413b6c0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Primary Care Physician\", \"agent_output\": \"primary_care_assessment result for: Step 'Primary Care Phys...<len=292 sha1=c9b4104759f9>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endocrinologist\", \"agent_output\": \"endocrine_assessment result for: Step 'Endocrinologist': work on: ...<len=276 sha1=a7df42a302d0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cardiologist\", \"agent_output\": \"cardiac_assessment result for: Step 'Cardiologist': work on: Prepare ...<len=267 sha1=937d9ee37e3c>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cardiologist\", \"arguments\": {\"task\": \"Step 'Cardiologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Gastroenterologist\", \"agent_output\": \"gi_assessment result for: Step 'Gastroenterologist': work on: P...<len=258 sha1=104120bc8213>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_gastroenterologist\", \"arguments\": {\"task\": \"Step 'Gastroenterologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Rheumatologist\", \"agent_output\": \"rheumatology_assessment result for: Step 'Rheumatologist': work on:...<len=284 sha1=40e40f6dd8d3>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_rheumatologist\", \"arguments\": {\"task\": \"Step 'Rheumatologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Nephrologist\", \"agent_output\": \"nephrology_assessment result for: Step 'Nephrologist': work on: Prepa...<len=276 sha1=0ee1ba43de2c>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_nephrologist\", \"arguments\": {\"task\": \"Step 'Nephrologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Hematologist\", \"agent_output\": \"hematology_assessment result for: Step 'Hematologist': work on: Prepa...<len=276 sha1=eceea15b741b>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_hematologist\", \"arguments\": {\"task\": \"Step 'Hematologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_10_0\", \"name\": \"delegate_to_wf_diagnosis_synthesizer\", \"arguments\": {\"task\": \"Step 'Diagnosis Synthesizer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Diagnosis Synthesizer\", \"agent_output\": \"final_diagnosis result for: Step 'Diagnosis Synthesizer': work on: P\"}"
       ]
      ]
     }
@@ -2718,13 +2898,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -2733,8 +2908,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2777,13 +2952,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -2792,8 +2962,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2802,8 +2972,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2849,13 +3019,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -2864,8 +3029,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2874,8 +3039,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2884,8 +3049,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2934,13 +3099,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -2949,8 +3109,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2959,8 +3119,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2969,8 +3129,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2979,8 +3139,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cardiologist\", \"arguments\": {\"task\": \"Step 'Cardiologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3032,13 +3192,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -3047,8 +3202,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3057,8 +3212,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3067,8 +3222,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3077,8 +3232,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cardiologist\", \"arguments\": {\"task\": \"Step 'Cardiologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3087,8 +3242,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_gastroenterologist\", \"arguments\": {\"task\": \"Step 'Gastroenterologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3143,13 +3298,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -3158,8 +3308,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3168,8 +3318,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3178,8 +3328,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3188,8 +3338,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cardiologist\", \"arguments\": {\"task\": \"Step 'Cardiologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3198,8 +3348,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_gastroenterologist\", \"arguments\": {\"task\": \"Step 'Gastroenterologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3208,8 +3358,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_rheumatologist\", \"arguments\": {\"task\": \"Step 'Rheumatologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3267,13 +3417,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -3282,8 +3427,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3292,8 +3437,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3302,8 +3447,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3312,8 +3457,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cardiologist\", \"arguments\": {\"task\": \"Step 'Cardiologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3322,8 +3467,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_gastroenterologist\", \"arguments\": {\"task\": \"Step 'Gastroenterologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3332,8 +3477,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_rheumatologist\", \"arguments\": {\"task\": \"Step 'Rheumatologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3342,8 +3487,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_nephrologist\", \"arguments\": {\"task\": \"Step 'Nephrologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3404,13 +3549,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -3419,8 +3559,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3429,8 +3569,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3439,8 +3579,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3449,8 +3589,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cardiologist\", \"arguments\": {\"task\": \"Step 'Cardiologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3459,8 +3599,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_gastroenterologist\", \"arguments\": {\"task\": \"Step 'Gastroenterologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3469,8 +3609,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_rheumatologist\", \"arguments\": {\"task\": \"Step 'Rheumatologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3479,8 +3619,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_nephrologist\", \"arguments\": {\"task\": \"Step 'Nephrologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3489,8 +3629,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_hematologist\", \"arguments\": {\"task\": \"Step 'Hematologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3554,13 +3694,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"Step 'Triage Doctor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_triage_doctor\", \"arguments\": {\"task\": \"TASK:\\nStep 'Triage Doct...<len=659 sha1=af24ecb2abee>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -3569,8 +3704,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_lab_analyst\", \"arguments\": {\"task\": \"Step 'Lab Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3579,8 +3714,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_primary_care_physician\", \"arguments\": {\"task\": \"Step 'Primary Care Physician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3589,8 +3724,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_endocrinologist\", \"arguments\": {\"task\": \"Step 'Endocrinologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3599,8 +3734,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cardiologist\", \"arguments\": {\"task\": \"Step 'Cardiologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3609,8 +3744,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_gastroenterologist\", \"arguments\": {\"task\": \"Step 'Gastroenterologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3619,8 +3754,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_rheumatologist\", \"arguments\": {\"task\": \"Step 'Rheumatologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3629,8 +3764,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_nephrologist\", \"arguments\": {\"task\": \"Step 'Nephrologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3639,8 +3774,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_hematologist\", \"arguments\": {\"task\": \"Step 'Hematologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3649,8 +3784,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_10_0\", \"name\": \"delegate_to_wf_diagnosis_synthesizer\", \"arguments\": {\"task\": \"Step 'Diagnosis Synthesizer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",

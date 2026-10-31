@@ -262,8 +262,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -1141,11 +1141,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'Tr...<len=676 sha1=41b9a9efdb80>"
+       "tool_call_response",
+       "travel_details result for: TASK:\nStep 'Travel Details Collector': w"
       ]
      ]
     },
@@ -1173,15 +1173,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "travel_details result for: TASK:\nStep 'Travel Details Collector': w"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'Tr...<len=676 sha1=41b9a9efdb80>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Interest & Activities Planner\", \"agent_output\": \"activities result for: Step 'Interest & Activities Planner': wo\"}"
       ]
      ]
     },
@@ -1208,19 +1212,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "travel_details result for: TASK:\nStep 'Travel Details Collector': w"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'Tr...<len=676 sha1=41b9a9efdb80>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Interest & Activities Planner\", \"agent_output\": \"activities result for: Step 'Interest & Activities Planner': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Flight Finder\", \"agent_output\": \"flights result for: Step 'Flight Finder': work on: Prepare a\"}"
       ]
      ]
     },
@@ -1246,23 +1258,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "travel_details result for: TASK:\nStep 'Travel Details Collector': w"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'Tr...<len=676 sha1=41b9a9efdb80>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Interest & Activities Planner\", \"agent_output\": \"activities result for: Step 'Interest & Activities Planner': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Flight Finder\", \"agent_output\": \"flights result for: Step 'Flight Finder': work on: Prepare a\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_hotel_finder\", \"arguments\": {\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Hotel Finder\", \"agent_output\": \"hotels result for: Step 'Hotel Finder': work on: Prepare a \"}"
       ]
      ]
     },
@@ -1287,27 +1311,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "travel_details result for: TASK:\nStep 'Travel Details Collector': w"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'Tr...<len=676 sha1=41b9a9efdb80>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Interest & Activities Planner\", \"agent_output\": \"activities result for: Step 'Interest & Activities Planner': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Flight Finder\", \"agent_output\": \"flights result for: Step 'Flight Finder': work on: Prepare a\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Hotel Finder\", \"agent_output\": \"hotels result for: Step 'Hotel Finder': work on: Prepare a \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_hotel_finder\", \"arguments\": {\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_itinerary_builder\", \"arguments\": {\"task\": \"Step 'Itinerary Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Itinerary Builder\", \"agent_output\": \"itinerary result for: Step 'Itinerary Builder': work on: Prepa\"}"
       ]
      ]
     },
@@ -1330,31 +1370,51 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "travel_details result for: TASK:\nStep 'Travel Details Collector': w"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'Tr...<len=676 sha1=41b9a9efdb80>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Interest & Activities Planner\", \"agent_output\": \"activities result for: Step 'Interest & Activities Planner': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Flight Finder\", \"agent_output\": \"flights result for: Step 'Flight Finder': work on: Prepare a\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Hotel Finder\", \"agent_output\": \"hotels result for: Step 'Hotel Finder': work on: Prepare a \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_hotel_finder\", \"arguments\": {\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Itinerary Builder\", \"agent_output\": \"itinerary result for: Step 'Itinerary Builder': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_itinerary_builder\", \"arguments\": {\"task\": \"Step 'Itinerary Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_trip_summary_budget\", \"arguments\": {\"task\": \"Step 'Trip Summary & Budget': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Trip Summary & Budget\", \"agent_output\": \"trip_summary result for: Step 'Trip Summary & Budget': work on: P\"}"
       ]
      ]
     }
@@ -1383,13 +1443,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'Tr...<len=676 sha1=41b9a9efdb80>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1398,8 +1453,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1442,13 +1497,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'Tr...<len=676 sha1=41b9a9efdb80>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1457,8 +1507,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1467,8 +1517,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1514,13 +1564,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'Tr...<len=676 sha1=41b9a9efdb80>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1529,8 +1574,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1539,8 +1584,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1549,8 +1594,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_hotel_finder\", \"arguments\": {\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1599,13 +1644,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'Tr...<len=676 sha1=41b9a9efdb80>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1614,8 +1654,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1624,8 +1664,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1634,8 +1674,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_hotel_finder\", \"arguments\": {\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1644,8 +1684,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_itinerary_builder\", \"arguments\": {\"task\": \"Step 'Itinerary Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1697,13 +1737,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_hitl_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'Tr...<len=676 sha1=41b9a9efdb80>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1712,8 +1747,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1722,8 +1757,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1732,8 +1767,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_hotel_finder\", \"arguments\": {\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1742,8 +1777,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_itinerary_builder\", \"arguments\": {\"task\": \"Step 'Itinerary Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1752,8 +1787,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_trip_summary_budget\", \"arguments\": {\"task\": \"Step 'Trip Summary & Budget': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",

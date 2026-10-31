@@ -24,9 +24,15 @@ export const ROUTER_NODE_TYPE = "conditional_router";
  * How an editor presents a node type:
  * - `agent` / `router`: a dedicated UI built into the editors;
  * - `schema`: a generic form generated from the type's config JSON schema;
+ * - `container`: like `schema`, but it holds steps (parallel, loop);
  * - `unsupported`: the type is not in the catalog; shown read-only.
  */
-export type NodeEditorKind = "agent" | "router" | "schema" | "unsupported";
+export type NodeEditorKind =
+  | "agent"
+  | "router"
+  | "schema"
+  | "container"
+  | "unsupported";
 
 const SPECIALIZED_EDITORS: Readonly<Record<string, NodeEditorKind>> = {
   [AGENT_NODE_TYPE]: "agent",
@@ -139,5 +145,6 @@ export function editorKindFor(
 ): NodeEditorKind {
   const specialized = SPECIALIZED_EDITORS[type];
   if (specialized) return specialized;
-  return findNodeType(catalog, type) ? "schema" : "unsupported";
+  if (!findNodeType(catalog, type)) return "unsupported";
+  return isContainer(catalog, type) ? "container" : "schema";
 }

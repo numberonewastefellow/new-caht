@@ -30,11 +30,11 @@ use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
 // Configuration
 // ============================================================================
 
-const DEFAULT_SERVER_URL: &str = "https://cloud.onyx.app";
+const DEFAULT_SERVER_URL: &str = "https://virtualai.com";
 const CONFIG_FILE_NAME: &str = "config.json";
 #[cfg(target_os = "macos")]
 const TITLEBAR_SCRIPT: &str = include_str!("../../src/titlebar.js");
-const TRAY_ID: &str = "onyx-tray";
+const TRAY_ID: &str = "virtualai-tray";
 const TRAY_ICON_BYTES: &[u8] = include_bytes!("../icons/tray-icon.png");
 const TRAY_MENU_OPEN_APP_ID: &str = "tray_open_app";
 const TRAY_MENU_OPEN_CHAT_ID: &str = "tray_open_chat";
@@ -42,11 +42,11 @@ const TRAY_MENU_SHOW_IN_BAR_ID: &str = "tray_show_in_menu_bar";
 const TRAY_MENU_QUIT_ID: &str = "tray_quit";
 const CHAT_LINK_INTERCEPT_SCRIPT: &str = r##"
 (() => {
-  if (window.__ONYX_CHAT_LINK_INTERCEPT_INSTALLED__) {
+  if (window.__VIRTUALAI_CHAT_LINK_INTERCEPT_INSTALLED__) {
     return;
   }
 
-  window.__ONYX_CHAT_LINK_INTERCEPT_INSTALLED__ = true;
+  window.__VIRTUALAI_CHAT_LINK_INTERCEPT_INSTALLED__ = true;
 
   function isChatSessionPage() {
     try {
@@ -173,7 +173,7 @@ const CHAT_LINK_INTERCEPT_SCRIPT: &str = r##"
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppConfig {
-    /// The VertualAI server URL (default: https://cloud.onyx.app)
+    /// The VertualAI server URL (default: https://virtualai.com)
     pub server_url: String,
 
     /// Optional: Custom window title
@@ -196,7 +196,7 @@ impl Default for AppConfig {
 
 /// Get the config directory path
 fn get_config_dir() -> Option<PathBuf> {
-    ProjectDirs::from("app", "onyx", "onyx-desktop").map(|dirs| dirs.config_dir().to_path_buf())
+    ProjectDirs::from("com", "virtualai", "virtualai-desktop").map(|dirs| dirs.config_dir().to_path_buf())
 }
 
 /// Get the full config file path
@@ -275,7 +275,7 @@ fn trigger_new_window(app: &AppHandle) {
     let handle = app.clone();
 
     tauri::async_runtime::spawn(async move {
-        let window_label = format!("onyx-{}", uuid::Uuid::new_v4());
+        let window_label = format!("virtualai-{}", uuid::Uuid::new_v4());
         let builder = WebviewWindowBuilder::new(
             &handle,
             &window_label,
@@ -307,7 +307,7 @@ fn trigger_new_window(app: &AppHandle) {
 }
 
 fn open_docs() {
-    let _ = open_in_default_browser("https://docs.onyx.app");
+    let _ = open_in_default_browser("https://virtualai.com");
 }
 
 fn open_settings(app: &AppHandle) {
@@ -553,7 +553,7 @@ fn go_forward(window: tauri::WebviewWindow) {
 #[tauri::command]
 async fn new_window(app: AppHandle, state: tauri::State<'_, ConfigState>) -> Result<(), String> {
     let server_url = state.config.read().unwrap().server_url.clone();
-    let window_label = format!("onyx-{}", uuid::Uuid::new_v4());
+    let window_label = format!("virtualai-{}", uuid::Uuid::new_v4());
 
     let builder = WebviewWindowBuilder::new(
         &app,

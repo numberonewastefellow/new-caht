@@ -223,8 +223,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"Collect the facts\"}}"
+        4,
+        ""
        ],
        [
         "tool_call_response",

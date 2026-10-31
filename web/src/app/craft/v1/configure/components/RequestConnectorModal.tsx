@@ -74,7 +74,7 @@ export default function RequestConnectorModal({
   if (!open) return null;
 
   const isCloud = NEXT_PUBLIC_CLOUD_ENABLED;
-  const DISCORD_URL = "https://discord.gg/4NA5SbzrWb";
+  const DISCORD_URL = "https://discord.gg/YOUR_DISCORD_INVITE";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">

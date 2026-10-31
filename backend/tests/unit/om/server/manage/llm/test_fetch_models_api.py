@@ -9,6 +9,7 @@ sync-to-DB behavior when provider_name is specified.
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+import httpx
 import litellm  # noqa: F401  # load before tests patch httpx.get (litellm fetches its model map on import)
 import pytest
 
@@ -568,6 +569,27 @@ class TestGetLMStudioAvailableModels:
                 )
         assert exc.value.status_code == 400
         assert "LM Studio" in exc.value.detail
+
+    def test_connect_error_explains_unreachable_server(self) -> None:
+        from fastapi import HTTPException
+
+        from om.server.manage.llm.api import get_lm_studio_available_models
+        from om.server.manage.llm.models import LMStudioModelsRequest
+
+        with patch(
+            "om.server.manage.llm.api.httpx.get",
+            side_effect=httpx.ConnectError("[Errno 101] Network is unreachable"),
+        ):
+            with pytest.raises(HTTPException) as exc:
+                get_lm_studio_available_models(
+                    LMStudioModelsRequest(api_base="http://h:1234"),
+                    MagicMock(),
+                    MagicMock(),
+                )
+        assert exc.value.status_code == 400
+        assert "could not connect" in exc.value.detail
+        assert "http://h:1234" in exc.value.detail
+        assert "host.docker.internal" in exc.value.detail
 
     def test_syncs_to_db_when_provider_name_specified(self) -> None:
         from om.server.manage.llm.api import get_lm_studio_available_models

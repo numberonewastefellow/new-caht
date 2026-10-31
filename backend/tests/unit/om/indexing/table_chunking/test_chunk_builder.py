@@ -64,6 +64,24 @@ def test_small_sheet_keeps_every_row_with_header(tokenizer: BaseTokenizer) -> No
     assert "name=Lakshmi Devi, amount_inr=300000" in text
 
 
+def test_note_row_is_not_counted_as_a_record(tokenizer: BaseTokenizer) -> None:
+    rows = [["Serial#", "Conference", "City"]]
+    rows += [[str(i), f"Conference {i}", f"City {i}"] for i in range(1, 17)]
+    rows.append(["", "Note: dates are provisional and may change.", ""])
+    text = "\n".join(_build(tokenizer, [sheet("Events", rows)]))
+    assert "Sheet Events: 17 rows (16 with a Serial# value);" in text
+    assert "register.xlsx :: Events (all 17 rows, 16 with a Serial# value)" in text
+
+
+def test_record_note_absent_when_every_row_is_numbered(
+    tokenizer: BaseTokenizer,
+) -> None:
+    rows = [["Serial#", "Conference"]] + [[str(i), f"C{i}"] for i in range(1, 6)]
+    text = "\n".join(_build(tokenizer, [sheet("Events", rows)]))
+    assert "Sheet Events: 5 rows;" in text
+    assert "with a Serial# value" not in text
+
+
 def test_csv_file_without_sheet_name(tokenizer: BaseTokenizer) -> None:
     chunks = _build(
         tokenizer,

@@ -254,8 +254,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"Step 'ML Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -1279,11 +1279,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"Step 'ML Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=f80d88e678db>"
+       "tool_call_response",
+       "ml_requirements result for: TASK:\nStep 'ML Requirements Collector': "
       ]
      ]
     },
@@ -1312,15 +1312,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"Step 'ML Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "ml_requirements result for: TASK:\nStep 'ML Requirements Collector': "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=f80d88e678db>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_ml_data_preprocessor\", \"arguments\": {\"task\": \"Step 'Data Preprocessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF ML Data Preprocessor\", \"agent_output\": \"preprocessed_data result for: Step 'Data Preprocessor': work ...<len=272 sha1=61000fa917d5>"
       ]
      ]
     },
@@ -1349,19 +1353,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"Step 'ML Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "ml_requirements result for: TASK:\nStep 'ML Requirements Collector': "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=f80d88e678db>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF ML Data Preprocessor\", \"agent_output\": \"preprocessed_data result for: Step 'Data Preprocessor': work ...<len=272 sha1=61000fa917d5>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_ml_data_preprocessor\", \"arguments\": {\"task\": \"Step 'Data Preprocessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_feature_engineer\", \"arguments\": {\"task\": \"Step 'Feature Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Feature Engineer\", \"agent_output\": \"engineered_features result for: Step 'Feature Engineer': work on:...<len=274 sha1=e6a7e6729481>"
       ]
      ]
     },
@@ -1390,23 +1402,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"Step 'ML Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "ml_requirements result for: TASK:\nStep 'ML Requirements Collector': "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=f80d88e678db>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF ML Data Preprocessor\", \"agent_output\": \"preprocessed_data result for: Step 'Data Preprocessor': work ...<len=272 sha1=61000fa917d5>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_ml_data_preprocessor\", \"arguments\": {\"task\": \"Step 'Data Preprocessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Feature Engineer\", \"agent_output\": \"engineered_features result for: Step 'Feature Engineer': work on:...<len=274 sha1=e6a7e6729481>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_feature_engineer\", \"arguments\": {\"task\": \"Step 'Feature Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_model_trainer\", \"arguments\": {\"task\": \"Step 'Model Trainer & Evaluator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Model Trainer\", \"agent_output\": \"model_results result for: Step 'Model Trainer & Evaluator': work o\",...<len=253 sha1=ffd98353badd>"
       ]
      ]
     },
@@ -1435,27 +1459,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"Step 'ML Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "ml_requirements result for: TASK:\nStep 'ML Requirements Collector': "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=f80d88e678db>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF ML Data Preprocessor\", \"agent_output\": \"preprocessed_data result for: Step 'Data Preprocessor': work ...<len=272 sha1=61000fa917d5>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_ml_data_preprocessor\", \"arguments\": {\"task\": \"Step 'Data Preprocessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Feature Engineer\", \"agent_output\": \"engineered_features result for: Step 'Feature Engineer': work on:...<len=274 sha1=e6a7e6729481>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_feature_engineer\", \"arguments\": {\"task\": \"Step 'Feature Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Model Trainer\", \"agent_output\": \"model_results result for: Step 'Model Trainer & Evaluator': work o\",...<len=253 sha1=ffd98353badd>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_model_trainer\", \"arguments\": {\"task\": \"Step 'Model Trainer & Evaluator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_model_selection_reporter\", \"arguments\": {\"task\": \"Step 'Model Selection Reporter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Model Selection Reporter\", \"agent_output\": \"model_report result for: Step 'Model Selection Reporter': work on\"}"
       ]
      ]
     }
@@ -1484,13 +1524,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"Step 'ML Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=f80d88e678db>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1499,8 +1534,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_ml_data_preprocessor\", \"arguments\": {\"task\": \"Step 'Data Preprocessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1543,13 +1578,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"Step 'ML Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=f80d88e678db>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1558,8 +1588,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_ml_data_preprocessor\", \"arguments\": {\"task\": \"Step 'Data Preprocessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1568,8 +1598,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_feature_engineer\", \"arguments\": {\"task\": \"Step 'Feature Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1615,13 +1645,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"Step 'ML Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=f80d88e678db>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1630,8 +1655,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_ml_data_preprocessor\", \"arguments\": {\"task\": \"Step 'Data Preprocessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1640,8 +1665,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_feature_engineer\", \"arguments\": {\"task\": \"Step 'Feature Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1650,8 +1675,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_model_trainer\", \"arguments\": {\"task\": \"Step 'Model Trainer & Evaluator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1700,13 +1725,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"Step 'ML Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ml_requirements_collector_v2\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=f80d88e678db>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1715,8 +1735,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_ml_data_preprocessor\", \"arguments\": {\"task\": \"Step 'Data Preprocessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1725,8 +1745,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_feature_engineer\", \"arguments\": {\"task\": \"Step 'Feature Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1735,8 +1755,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_model_trainer\", \"arguments\": {\"task\": \"Step 'Model Trainer & Evaluator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1745,8 +1765,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_model_selection_reporter\", \"arguments\": {\"task\": \"Step 'Model Selection Reporter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",

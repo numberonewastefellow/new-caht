@@ -2,10 +2,10 @@
 // This script injects a draggable title bar that matches VertualAI design system
 
 (function () {
-  const TITLEBAR_ID = "onyx-desktop-titlebar";
+  const TITLEBAR_ID = "virtualai-desktop-titlebar";
   const TITLEBAR_HEIGHT = 36;
-  const STYLE_ID = "onyx-desktop-titlebar-style";
-  const VIEWPORT_VAR = "--onyx-desktop-viewport-height";
+  const STYLE_ID = "virtualai-desktop-titlebar-style";
+  const VIEWPORT_VAR = "--virtualai-desktop-viewport-height";
 
   // Wait for DOM to be ready
   if (document.readyState === "loading") {
@@ -49,50 +49,50 @@
     style.id = STYLE_ID;
     style.textContent = `
       :root {
-        --onyx-desktop-titlebar-height: ${TITLEBAR_HEIGHT}px;
-        --onyx-desktop-viewport-height: 100dvh;
-        --onyx-desktop-safe-height: calc(var(--onyx-desktop-viewport-height) - var(--onyx-desktop-titlebar-height));
+        --virtualai-desktop-titlebar-height: ${TITLEBAR_HEIGHT}px;
+        --virtualai-desktop-viewport-height: 100dvh;
+        --virtualai-desktop-safe-height: calc(var(--virtualai-desktop-viewport-height) - var(--virtualai-desktop-titlebar-height));
       }
 
       @supports not (height: 100dvh) {
         :root {
-          --onyx-desktop-viewport-height: 100vh;
+          --virtualai-desktop-viewport-height: 100vh;
         }
       }
 
       html,
       body {
-        height: var(--onyx-desktop-viewport-height);
-        min-height: var(--onyx-desktop-viewport-height);
+        height: var(--virtualai-desktop-viewport-height);
+        min-height: var(--virtualai-desktop-viewport-height);
         margin: 0;
         padding: 0;
         overflow: hidden;
       }
 
       body {
-        padding-top: var(--onyx-desktop-titlebar-height) !important;
+        padding-top: var(--virtualai-desktop-titlebar-height) !important;
         box-sizing: border-box;
       }
 
       body > div#__next,
       body > div#root,
       body > main {
-        height: var(--onyx-desktop-safe-height);
-        min-height: var(--onyx-desktop-safe-height);
+        height: var(--virtualai-desktop-safe-height);
+        min-height: var(--virtualai-desktop-safe-height);
         overflow: auto;
       }
 
       /* Override common Tailwind viewport helpers so content fits under the titlebar */
       .h-screen {
-        height: var(--onyx-desktop-safe-height) !important;
+        height: var(--virtualai-desktop-safe-height) !important;
       }
 
       .min-h-screen {
-        min-height: var(--onyx-desktop-safe-height) !important;
+        min-height: var(--virtualai-desktop-safe-height) !important;
       }
 
       .max-h-screen {
-        max-height: var(--onyx-desktop-safe-height) !important;
+        max-height: var(--virtualai-desktop-safe-height) !important;
       }
 
       #${TITLEBAR_ID} {
@@ -101,7 +101,7 @@
         user-select: none !important;
         -webkit-app-region: drag;
         background: rgba(255, 255, 255, 0.85);
-        height: var(--onyx-desktop-titlebar-height);
+        height: var(--virtualai-desktop-titlebar-height);
       }
 
       /* Dark mode support */

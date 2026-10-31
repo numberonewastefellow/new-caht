@@ -143,6 +143,32 @@ export const CATALOG: NodeTypeInfo[] = [
       }),
     ],
   },
+  // Shaped like the backend's loop v1: a container.
+  {
+    type: "loop",
+    latest_version: 1,
+    versions: [
+      version({
+        version: 1,
+        label: "Loop",
+        category: "logic",
+        is_container: true,
+        config_schema: {
+          type: "object",
+          properties: {
+            mode: {
+              enum: ["for_each", "while"],
+              type: "string",
+              default: "for_each",
+            },
+            items: { type: "string", default: "" },
+            condition_field: { type: "string", default: "" },
+            max_iterations: { type: "integer", default: 5 },
+          },
+        },
+      }),
+    ],
+  },
   // A made-up type with a required field (no backend type has one yet).
   {
     type: "transform",

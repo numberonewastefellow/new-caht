@@ -170,7 +170,7 @@ readinessProbe:
 # API authentication for /v1/* (`Authorization: Bearer <token>`).
 # REQUIRED: without a token the service fails closed (every /v1 call -> 503).
 # Every backend pod that calls the service must get the SAME token in
-# CODE_INTERPRETER_API_TOKEN (the parent onyx chart does this via auth.codeinterpreter).
+# CODE_INTERPRETER_API_TOKEN (the parent chart does this via auth.codeinterpreter).
 auth:
   # Name of an existing Secret holding the token (preferred). Takes precedence.
   existingSecret: ""

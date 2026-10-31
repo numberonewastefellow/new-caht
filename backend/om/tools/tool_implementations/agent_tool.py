@@ -261,9 +261,6 @@ class AgentTool(Tool[None]):
         if user is None:
             user = self._db_session.get(User, self._agent.user_id)
         if user is None:
-            from sqlalchemy import select
-            user = self._db_session.execute(select(User).limit(1)).scalar_one_or_none()
-        if user is None:
             return ToolResponse(
                 rich_response=None,
                 llm_facing_response=json.dumps(

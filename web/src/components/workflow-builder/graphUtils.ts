@@ -36,6 +36,14 @@ import {
   buildWorkflowUpdate,
   snapshotToEditorSteps,
 } from "@/lib/workflows/serializer";
+import {
+  depthFirst,
+  groupByBlock,
+  isTopLevel,
+  type BlockPlace,
+} from "@/lib/workflows/stepTree";
+import { laneLabels } from "@/lib/workflows/containerLanes";
+import { layoutWorkflow, type Size } from "./containerLayout";
 import { validateSteps } from "@/lib/workflows/validation";
 import type {
   WorkflowNode,
@@ -100,6 +108,85 @@ function branchEdge(
   };
 }
 
+/**
+ * The edges of a workflow's steps: in Sequential mode each block is a chain and
+ * router branches hang off their handles; in LLM Decision mode, a star.
+ */
+export function stepsToEdges(
+  steps: readonly EditorStep[],
+  mode: OrchestrationMode
+): WorkflowEdge[] {
+  const edges: WorkflowEdge[] = [];
+  const stepIds = steps.map((s) => s.node_key);
+
+  if (mode === "sequential") {
+    // Router branch targets hang off the router's True/False handles;
+    // every other step chains from the step before it.
+    const branchTargetIds = new Set<string>();
+    for (const step of steps) {
+      if (step.step_type !== ROUTER_NODE_TYPE) continue;
+      const config = normalizeRouterConfig(step.config);
+      for (const branch of ROUTER_BRANCHES) {
+        for (const targetId of branchTargets(config, branch)) {
+          if (!stepIds.includes(targetId)) continue;
+          branchTargetIds.add(targetId);
+          edges.push(branchEdge(step.node_key, branch, targetId, mode));
+        }
+      }
+    }
+
+    // Each block (the top level, or one container branch) is its own chain. The
+    // top level starts at the Start node; a branch starts at its first step.
+    for (const block of Array.from(groupByBlock(steps).values())) {
+      block.forEach((step, position) => {
+        const nodeId = step.node_key;
+        if (branchTargetIds.has(nodeId)) return;
+        const previous = block[position - 1];
+        const sourceId = previous
+          ? previous.node_key
+          : isTopLevel(step)
+            ? ORCHESTRATOR_NODE_ID
+            : null;
+        if (!sourceId) return;
+        edges.push({
+          id: `edge-${sourceId}-${nodeId}`,
+          source: sourceId,
+          target: nodeId,
+          type: "step",
+          data: {
+            stepOrder: stepIds.indexOf(nodeId),
+            orchestration_mode: mode,
+          },
+        });
+      });
+    }
+  } else {
+    // Star topology: orchestrator -> each step
+    stepIds.forEach((nodeId, i) => {
+      edges.push({
+        id: `edge-${ORCHESTRATOR_NODE_ID}-${nodeId}`,
+        source: ORCHESTRATOR_NODE_ID,
+        target: nodeId,
+        type: "step",
+        data: { stepOrder: i, orchestration_mode: mode },
+      });
+    });
+  }
+
+  if (mode === "sequential" && stepIds.length > 0) {
+    const topLevel = steps.filter(isTopLevel);
+    const lastNodeId = topLevel[topLevel.length - 1]?.node_key ?? stepIds[stepIds.length - 1]!;
+    edges.push({
+      id: `edge-${lastNodeId}-${FINISH_NODE_ID}`,
+      source: lastNodeId,
+      target: FINISH_NODE_ID,
+      type: "step",
+      data: { stepOrder: stepIds.length, orchestration_mode: mode },
+    });
+  }
+  return edges;
+}
+
 // ── Snapshot → Graph ───────────────────────────────────────────────────
 
 /**
@@ -130,9 +217,8 @@ export function snapshotToGraph(
     },
   });
 
-  // 2. One node per step, in execution order. Container children are shown
-  // as normal nodes in order (group nodes come later) and keep their
-  // parent_key/branch_index so a save doesn't flatten the container.
+  // 2. One node per step, in execution order: containers come before their
+  // children, as React Flow requires, and autoLayout puts children in their box.
   steps.forEach((step, i) => {
     const { childCount, containerName } = containerInfo(step, steps);
     nodes.push(
@@ -152,50 +238,10 @@ export function snapshotToGraph(
   });
 
   // 3. Edges
-  const stepIds = steps.map((s) => s.node_key);
-
-  if (mode === "sequential") {
-    // Router branch targets hang off the router's True/False handles;
-    // every other step chains from the step before it.
-    const branchTargetIds = new Set<string>();
-    for (const step of steps) {
-      if (step.step_type !== ROUTER_NODE_TYPE) continue;
-      const config = normalizeRouterConfig(step.config);
-      for (const branch of ROUTER_BRANCHES) {
-        for (const targetId of branchTargets(config, branch)) {
-          if (!stepIds.includes(targetId)) continue;
-          branchTargetIds.add(targetId);
-          edges.push(branchEdge(step.node_key, branch, targetId, mode));
-        }
-      }
-    }
-
-    stepIds.forEach((nodeId, i) => {
-      if (branchTargetIds.has(nodeId)) return;
-      const sourceId = i === 0 ? ORCHESTRATOR_NODE_ID : stepIds[i - 1]!;
-      edges.push({
-        id: `edge-${sourceId}-${nodeId}`,
-        source: sourceId,
-        target: nodeId,
-        type: "step",
-        data: { stepOrder: i, orchestration_mode: mode },
-      });
-    });
-  } else {
-    // Star topology: orchestrator -> each step
-    stepIds.forEach((nodeId, i) => {
-      edges.push({
-        id: `edge-${ORCHESTRATOR_NODE_ID}-${nodeId}`,
-        source: ORCHESTRATOR_NODE_ID,
-        target: nodeId,
-        type: "step",
-        data: { stepOrder: i, orchestration_mode: mode },
-      });
-    });
-  }
+  edges.push(...stepsToEdges(steps, mode));
 
   // 4. Add END node for sequential mode
-  if (mode === "sequential" && stepIds.length > 0) {
+  if (mode === "sequential" && steps.length > 0) {
     nodes.push({
       id: FINISH_NODE_ID,
       type: "finish",
@@ -203,14 +249,6 @@ export function snapshotToGraph(
       deletable: false,
       selectable: false,
       data: {},
-    });
-    const lastNodeId = stepIds[stepIds.length - 1]!;
-    edges.push({
-      id: `edge-${lastNodeId}-${FINISH_NODE_ID}`,
-      source: lastNodeId,
-      target: FINISH_NODE_ID,
-      type: "step",
-      data: { stepOrder: stepIds.length, orchestration_mode: mode },
     });
   }
 
@@ -250,7 +288,7 @@ function routerConfigFromEdges(
 }
 
 /**
- * The canvas as editor steps in execution order (BFS from the start node).
+ * The canvas as editor steps in execution order.
  * Router branch targets come from the router's outgoing edges, so what the
  * canvas shows is what gets saved.
  */
@@ -304,6 +342,16 @@ export function graphToUpdatePayload(
 
 // ── Step Order Computation ─────────────────────────────────────────────
 
+const AGENT_NODE_WIDTH = 300;
+const AGENT_NODE_HEIGHT = 170;
+const STEP_NODE_WIDTH = 260;
+const STEP_NODE_HEIGHT = 100;
+const START_NODE_GAP = 260;
+
+function isContainerNode(node: StepFlowNode): boolean {
+  return node.type === "container";
+}
+
 /** The order a step had when loaded or created (Infinity if unknown). */
 function savedOrderOf(node: WorkflowNode | undefined): number {
   return node && isStepNode(node) && typeof node.data.stepOrder === "number"
@@ -311,69 +359,77 @@ function savedOrderOf(node: WorkflowNode | undefined): number {
     : Infinity;
 }
 
+/** Which of two same-ready nodes runs first: saved order, then canvas position. */
+function compareForOrder(a: StepFlowNode, b: StepFlowNode): number {
+  const savedDiff = savedOrderOf(a) - savedOrderOf(b);
+  if (savedDiff !== 0 && Number.isFinite(savedDiff)) return savedDiff;
+  if (Number.isFinite(savedOrderOf(a)) !== Number.isFinite(savedOrderOf(b))) {
+    return Number.isFinite(savedOrderOf(a)) ? -1 : 1;
+  }
+  // New nodes: X (column) first, then Y (row) for grid-aware ordering.
+  const xDiff = a.position.x - b.position.x;
+  if (Math.abs(xDiff) > 50) return xDiff;
+  return a.position.y - b.position.y;
+}
+
 /**
- * BFS from orchestrator node to determine step_order for each step node.
+ * One block's steps in execution order: a step runs once every step wired into it
+ * has run, so wiring decides the order and loading then saving never changes it.
+ * Edges from outside the block don't count. Steps caught in a cycle go last.
+ */
+function orderBlock(
+  block: StepFlowNode[],
+  edges: WorkflowEdge[]
+): StepFlowNode[] {
+  const ids = new Set(block.map((n) => n.id));
+  const incoming = new Map(block.map((n) => [n.id, 0]));
+  const outgoing = new Map<string, string[]>();
+  for (const edge of edges) {
+    if (!ids.has(edge.source) || !ids.has(edge.target)) continue;
+    incoming.set(edge.target, (incoming.get(edge.target) ?? 0) + 1);
+    outgoing.set(edge.source, [...(outgoing.get(edge.source) ?? []), edge.target]);
+  }
+
+  const remaining = new Map(block.map((n) => [n.id, n]));
+  const ordered: StepFlowNode[] = [];
+  while (remaining.size > 0) {
+    const candidates = Array.from(remaining.values());
+    const ready = candidates.filter((n) => (incoming.get(n.id) ?? 0) === 0);
+    const next = (ready.length > 0 ? ready : candidates).sort(compareForOrder)[0]!;
+    remaining.delete(next.id);
+    ordered.push(next);
+    for (const target of outgoing.get(next.id) ?? []) {
+      incoming.set(target, (incoming.get(target) ?? 0) - 1);
+    }
+  }
+  return ordered;
+}
+
+/**
+ * The execution order of every step on the canvas: each block is ordered from its
+ * own edges, then containers are followed by their branches.
  * Returns Map<nodeId, stepOrder>.
  */
 export function computeStepOrders(
   nodes: WorkflowNode[],
   edges: WorkflowEdge[]
 ): Map<string, number> {
-  const orders = new Map<string, number>();
-  const adjacency = new Map<string, string[]>();
-  const nodeMap = new Map(nodes.map((n) => [n.id, n]));
-
-  // Build adjacency list
-  for (const edge of edges) {
-    const list = adjacency.get(edge.source) || [];
-    list.push(edge.target);
-    adjacency.set(edge.source, list);
-  }
-
-  // BFS from orchestrator
-  const queue: string[] = [ORCHESTRATOR_NODE_ID];
-  const visited = new Set<string>();
-  let order = 0;
-
-  while (queue.length > 0) {
-    const current = queue.shift()!;
-    if (visited.has(current)) continue;
-    visited.add(current);
-
-    const currentNode = nodeMap.get(current);
-    if (currentNode && isStepNode(currentNode)) {
-      orders.set(current, order++);
-    }
-
-    const neighbors = adjacency.get(current) || [];
-    // Siblings (e.g. router branches) keep their saved order, so loading and
-    // saving never re-orders steps; ties (new nodes) fall back to position:
-    // X (column) first, then Y (row) for grid-aware ordering.
-    neighbors.sort((a, b) => {
-      const nodeA = nodeMap.get(a);
-      const nodeB = nodeMap.get(b);
-      const savedDiff = savedOrderOf(nodeA) - savedOrderOf(nodeB);
-      if (savedDiff !== 0 && Number.isFinite(savedDiff)) return savedDiff;
-      const xDiff = (nodeA?.position.x ?? 0) - (nodeB?.position.x ?? 0);
-      if (Math.abs(xDiff) > 50) return xDiff;
-      return (nodeA?.position.y ?? 0) - (nodeB?.position.y ?? 0);
-    });
-
-    for (const neighbor of neighbors) {
-      if (!visited.has(neighbor)) {
-        queue.push(neighbor);
-      }
-    }
-  }
-
-  // Assign remaining unvisited step nodes (disconnected)
-  for (const node of nodes) {
-    if (isStepNode(node) && !orders.has(node.id)) {
-      orders.set(node.id, order++);
-    }
-  }
-
-  return orders;
+  const stepNodes = nodes.filter(isStepNode);
+  const blocks = groupByBlock(
+    stepNodes.map((node) => ({
+      node_key: node.id,
+      parent_key: node.data.parent_key,
+      branch_index: node.data.branch_index,
+      node,
+    }))
+  );
+  const ordered = Array.from(blocks.values()).flatMap((block) => {
+    const nodeOf = new Map(block.map((entry) => [entry.node.id, entry]));
+    return orderBlock(block.map((entry) => entry.node), edges).map(
+      (node) => nodeOf.get(node.id)!
+    );
+  });
+  return new Map(depthFirst(ordered).map((entry, order) => [entry.node_key, order]));
 }
 
 // ── Auto Layout ────────────────────────────────────────────────────────
@@ -425,6 +481,10 @@ export function autoLayout(
 
   const detectedMode =
     mode || (orchestrator.data as OrchestratorNodeData).orchestration_mode;
+
+  if (detectedMode === "sequential" && agentNodes.some(isContainerNode)) {
+    return layoutWithContainers(orchestrator, agentNodes, finishNode, edges, nodes);
+  }
 
   const count = agentNodes.length;
   if (count === 0) {
@@ -517,6 +577,147 @@ export function autoLayout(
   return updated;
 }
 
+/** The size a node is drawn at (the CSS widths; heights are typical). */
+function drawnSize(node: StepFlowNode): Size {
+  return node.type === "agent"
+    ? { width: AGENT_NODE_WIDTH, height: AGENT_NODE_HEIGHT }
+    : { width: STEP_NODE_WIDTH, height: STEP_NODE_HEIGHT };
+}
+
+/** Sequential workflows with containers: a row of steps and boxes. */
+function layoutWithContainers(
+  orchestrator: WorkflowNode,
+  stepNodes: StepFlowNode[],
+  finishNode: WorkflowNode | undefined,
+  edges: WorkflowEdge[],
+  nodes: WorkflowNode[]
+): WorkflowNode[] {
+  const orders = computeStepOrders(nodes, edges);
+  const sorted = [...stepNodes].sort(
+    (a, b) => (orders.get(a.id) ?? 999) - (orders.get(b.id) ?? 999)
+  );
+  const { placements, size } = layoutWorkflow(
+    sorted.map((node) => ({
+      node_key: node.id,
+      parent_key: node.data.parent_key,
+      branch_index: node.data.branch_index,
+      size: drawnSize(node),
+      lanes: isContainerNode(node)
+        ? laneLabels(node.data, sorted.map((n) => n.data))
+        : null,
+    }))
+  );
+
+  const startX = 50 + START_NODE_GAP;
+  const centerY = size.height / 2;
+  const laidOut = sorted.map((node): WorkflowNode => {
+    const placement = placements.get(node.id)!;
+    const { parentId } = placement;
+    return {
+      ...node,
+      position: parentId
+        ? { x: placement.x, y: placement.y }
+        : { x: startX + placement.x, y: placement.y },
+      parentId: parentId ?? undefined,
+      style: isContainerNode(node)
+        ? { width: placement.size.width, height: placement.size.height }
+        : node.style,
+      data: { ...node.data, lanes: placement.lanes },
+    };
+  });
+
+  return [
+    { ...orchestrator, position: { x: 50, y: centerY - 60 } },
+    ...laidOut,
+    ...(finishNode
+      ? [
+          {
+            ...finishNode,
+            position: { x: startX + size.width + START_NODE_GAP / 2, y: centerY - 40 },
+          } as WorkflowNode,
+        ]
+      : []),
+  ];
+}
+
+/**
+ * The canvas after a structural edit: nodes take the new steps, edges are rebuilt
+ * from them, and everything is laid out again.
+ */
+export function graphFromSteps(
+  nodes: WorkflowNode[],
+  steps: readonly EditorStep[],
+  mode: OrchestrationMode
+): { nodes: WorkflowNode[]; edges: WorkflowEdge[] } {
+  const byId = new Map(nodes.map((n) => [n.id, n]));
+  const stepNodes = steps.flatMap((step, order): WorkflowNode[] => {
+    const node = byId.get(step.node_key);
+    if (!node || !isStepNode(node)) return [];
+    const { parentId: _parentId, ...rest } = node;
+    return [{ ...rest, data: { ...node.data, ...step, stepOrder: order } }];
+  });
+  const others = nodes.filter((n) => !isStepNode(n));
+  const hasFinish = others.some((n) => n.id === FINISH_NODE_ID);
+  const edges = stepsToEdges(steps, mode).filter(
+    (e) => hasFinish || e.target !== FINISH_NODE_ID
+  );
+  return { nodes: autoLayout([...others, ...stepNodes], edges, mode), edges };
+}
+
+/** A node's position on the canvas, adding up the boxes around it. */
+function absolutePosition(
+  node: WorkflowNode,
+  byId: ReadonlyMap<string, WorkflowNode>
+): { x: number; y: number } {
+  let { x, y } = node.position;
+  let parent = node.parentId ? byId.get(node.parentId) : undefined;
+  while (parent) {
+    x += parent.position.x;
+    y += parent.position.y;
+    parent = parent.parentId ? byId.get(parent.parentId) : undefined;
+  }
+  return { x, y };
+}
+
+/** The center of a node on the canvas. */
+export function nodeCenter(
+  node: WorkflowNode,
+  nodes: readonly WorkflowNode[]
+): { x: number; y: number } {
+  const { x, y } = absolutePosition(node, new Map(nodes.map((n) => [n.id, n])));
+  return {
+    x: x + (node.measured?.width ?? 0) / 2,
+    y: y + (node.measured?.height ?? 0) / 2,
+  };
+}
+
+/** The innermost container lane at a canvas point; null is the top level. */
+export function laneAt(
+  nodes: readonly WorkflowNode[],
+  point: { x: number; y: number },
+  exclude: ReadonlySet<string> = new Set()
+): BlockPlace | null {
+  const byId = new Map(nodes.map((n) => [n.id, n]));
+  let found: BlockPlace | null = null;
+  let foundDepth = -1;
+  for (const node of nodes) {
+    if (!isStepNode(node) || !isContainerNode(node) || exclude.has(node.id)) continue;
+    const { x, y } = absolutePosition(node, byId);
+    const width = Number(node.style?.width ?? 0);
+    if (point.x < x || point.x > x + width) continue;
+    (node.data.lanes ?? []).forEach((lane, branch) => {
+      if (point.y < y + lane.y || point.y > y + lane.y + lane.height) return;
+      let depth = 0;
+      for (let p = node.parentId; p; p = byId.get(p)?.parentId) depth++;
+      if (depth > foundDepth) {
+        found = { parent_key: node.id, branch_index: branch };
+        foundDepth = depth;
+      }
+    });
+  }
+  return found;
+}
+
 // ── Validation ─────────────────────────────────────────────────────────
 
 export interface ValidationError {
@@ -549,8 +750,13 @@ export function validateGraph(
 
   // Check for disconnected nodes (no incoming edge)
   const targetsWithEdges = new Set(edges.map((e) => e.target));
+  const branchHeads = new Set(
+    Array.from(groupByBlock(steps).values())
+      .filter((block) => !isTopLevel(block[0]!))
+      .map((block) => block[0]!.node_key)
+  );
   for (const node of nodes.filter(isStepNode)) {
-    if (!targetsWithEdges.has(node.id)) {
+    if (!targetsWithEdges.has(node.id) && !branchHeads.has(node.id)) {
       const name =
         node.data.step_name || node.data.agent_name || node.data.type_label;
       errors.push({

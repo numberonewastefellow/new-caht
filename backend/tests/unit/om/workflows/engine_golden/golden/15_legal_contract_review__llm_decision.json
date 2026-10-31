@@ -264,8 +264,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -1177,11 +1177,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+       "tool_call_response",
+       "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':"
       ]
      ]
     },
@@ -1211,15 +1211,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Clause Analyzer\", \"agent_output\": \"clause_analysis result for: Step 'Clause Analyzer': work on: Prepare\"}"
       ]
      ]
     },
@@ -1249,19 +1253,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Clause Analyzer\", \"agent_output\": \"clause_analysis result for: Step 'Clause Analyzer': work on: Prepare\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Regulatory Compliance Checker\", \"agent_output\": \"compliance_review result for: Step 'Regulatory Compliance Checker': wo\"}"
       ]
      ]
     },
@@ -1291,23 +1303,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Clause Analyzer\", \"agent_output\": \"clause_analysis result for: Step 'Clause Analyzer': work on: Prepare\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Regulatory Compliance Checker\", \"agent_output\": \"compliance_review result for: Step 'Regulatory Compliance Checker': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_contract_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Contract Risk Assessor\", \"agent_output\": \"risk_assessment result for: Step 'Risk Assessor': work on: Prepare a\"}"
       ]
      ]
     },
@@ -1337,27 +1361,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Clause Analyzer\", \"agent_output\": \"clause_analysis result for: Step 'Clause Analyzer': work on: Prepare\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Regulatory Compliance Checker\", \"agent_output\": \"compliance_review result for: Step 'Regulatory Compliance Checker': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Contract Risk Assessor\", \"agent_output\": \"risk_assessment result for: Step 'Risk Assessor': work on: Prepare a\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_contract_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_negotiation_strategist\", \"arguments\": {\"task\": \"Step 'Negotiation Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Negotiation Strategist\", \"agent_output\": \"negotiation_strategy result for: Step 'Negotiation Strategist': work on: \"}"
       ]
      ]
     },
@@ -1387,31 +1427,51 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Clause Analyzer\", \"agent_output\": \"clause_analysis result for: Step 'Clause Analyzer': work on: Prepare\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Regulatory Compliance Checker\", \"agent_output\": \"compliance_review result for: Step 'Regulatory Compliance Checker': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Contract Risk Assessor\", \"agent_output\": \"risk_assessment result for: Step 'Risk Assessor': work on: Prepare a\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_contract_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Negotiation Strategist\", \"agent_output\": \"negotiation_strategy result for: Step 'Negotiation Strategist': work on: \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_negotiation_strategist\", \"arguments\": {\"task\": \"Step 'Negotiation Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_executive_review_summary\", \"arguments\": {\"task\": \"Step 'Executive Review Summary': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Executive Review Summary\", \"agent_output\": \"executive_summary result for: Step 'Executive Review Summary': work on\"}"
       ]
      ]
     }
@@ -1440,13 +1500,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1455,8 +1510,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1499,13 +1554,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1514,8 +1564,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1524,8 +1574,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -1571,13 +1621,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1586,8 +1631,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1596,8 +1641,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -1606,8 +1651,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_contract_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1656,13 +1701,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1671,8 +1711,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1681,8 +1721,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -1691,8 +1731,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_contract_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1701,8 +1741,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_negotiation_strategist\", \"arguments\": {\"task\": \"Step 'Negotiation Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1754,13 +1794,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1769,8 +1804,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1779,8 +1814,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -1789,8 +1824,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_contract_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1799,8 +1834,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_negotiation_strategist\", \"arguments\": {\"task\": \"Step 'Negotiation Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1809,8 +1844,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_executive_review_summary\", \"arguments\": {\"task\": \"Step 'Executive Review Summary': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",

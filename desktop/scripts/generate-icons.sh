@@ -1,5 +1,5 @@
 #!/bin/bash
-# Icon generation script for Onyx Desktop
+# Icon generation script for VertualAI Desktop
 # Requires: ImageMagick (brew install imagemagick)
 
 set -e

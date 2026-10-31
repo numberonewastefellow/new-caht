@@ -572,7 +572,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_budget_analyst\", \"arguments\": {\"task\": \"Step 'Budget Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Budget Analyst\", \"agent_output\": \"budget_analysis result for: Step 'Budget Analyst': work on: Prepare \"}"
       ]
      ]
     },
@@ -598,11 +602,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_budget_analyst\", \"arguments\": {\"task\": \"Step 'Budget Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Budget Analyst\", \"agent_output\": \"budget_analysis result for: Step 'Budget Analyst': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_investment_advisor\", \"arguments\": {\"task\": \"Step 'Investment Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Investment Advisor\", \"agent_output\": \"investment_advice result for: Step 'Investment Advisor': work on: Prep\"}"
       ]
      ]
     },
@@ -627,15 +639,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_budget_analyst\", \"arguments\": {\"task\": \"Step 'Budget Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Budget Analyst\", \"agent_output\": \"budget_analysis result for: Step 'Budget Analyst': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_investment_advisor\", \"arguments\": {\"task\": \"Step 'Investment Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Investment Advisor\", \"agent_output\": \"investment_advice result for: Step 'Investment Advisor': work on: Prep\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_tax_strategist\", \"arguments\": {\"task\": \"Step 'Tax Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Tax Strategist\", \"agent_output\": \"tax_strategy result for: Step 'Tax Strategist': work on: Prepare \"}"
       ]
      ]
     },
@@ -658,19 +682,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_budget_analyst\", \"arguments\": {\"task\": \"Step 'Budget Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Budget Analyst\", \"agent_output\": \"budget_analysis result for: Step 'Budget Analyst': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_investment_advisor\", \"arguments\": {\"task\": \"Step 'Investment Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Investment Advisor\", \"agent_output\": \"investment_advice result for: Step 'Investment Advisor': work on: Prep\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_tax_strategist\", \"arguments\": {\"task\": \"Step 'Tax Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Tax Strategist\", \"agent_output\": \"tax_strategy result for: Step 'Tax Strategist': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_debt_manager\", \"arguments\": {\"task\": \"Step 'Debt Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Debt Manager\", \"agent_output\": \"debt_strategy result for: Step 'Debt Manager': work on: Prepare a \"}"
       ]
      ]
     }
@@ -697,8 +737,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_budget_analyst\", \"arguments\": {\"task\": \"Step 'Budget Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -738,8 +778,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_budget_analyst\", \"arguments\": {\"task\": \"Step 'Budget Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -748,8 +788,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_investment_advisor\", \"arguments\": {\"task\": \"Step 'Investment Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -792,8 +832,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_budget_analyst\", \"arguments\": {\"task\": \"Step 'Budget Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -802,8 +842,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_investment_advisor\", \"arguments\": {\"task\": \"Step 'Investment Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -812,8 +852,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_tax_strategist\", \"arguments\": {\"task\": \"Step 'Tax Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -859,8 +899,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_budget_analyst\", \"arguments\": {\"task\": \"Step 'Budget Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -869,8 +909,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_investment_advisor\", \"arguments\": {\"task\": \"Step 'Investment Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -879,8 +919,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_tax_strategist\", \"arguments\": {\"task\": \"Step 'Tax Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -889,8 +929,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_debt_manager\", \"arguments\": {\"task\": \"Step 'Debt Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",

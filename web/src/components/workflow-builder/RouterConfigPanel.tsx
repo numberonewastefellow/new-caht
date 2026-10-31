@@ -8,6 +8,7 @@ import {
   normalizeRouterConfig,
 } from "@/lib/workflows/routerConfig";
 import { ConfigPanelHeader } from "./ConfigPanelHeader";
+import { StepOptionsSection, StepPlacementSection } from "./StepOptionsSection";
 import type { StepConfigPanelProps } from "./types";
 
 /**
@@ -18,6 +19,9 @@ import type { StepConfigPanelProps } from "./types";
 export function RouterConfigPanel({
   nodeId,
   data,
+  catalog,
+  steps,
+  onMove,
   onUpdate,
   onDelete,
   onClose,
@@ -160,6 +164,20 @@ export function RouterConfigPanel({
             aren&apos;t connected to the handle run either way.
           </div>
         </div>
+
+        <StepPlacementSection
+          nodeId={nodeId}
+          data={data}
+          steps={steps}
+          catalog={catalog}
+          onMove={onMove}
+        />
+        <StepOptionsSection
+          nodeId={nodeId}
+          data={data}
+          canPause={false}
+          onUpdate={onUpdate}
+        />
 
         {/* Delete */}
         <div className="wfb-config-section" style={{ marginTop: 16 }}>

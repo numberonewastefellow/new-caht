@@ -12,6 +12,8 @@ import type { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interf
 import type { OrchestrationMode } from "@/lib/workflows/interfaces";
 import type { EditorStep } from "@/lib/workflows/editorModel";
 import type { NodeCatalog, NodeEditorKind } from "@/lib/workflows/nodeRegistry";
+import type { BlockPlace } from "@/lib/workflows/stepTree";
+import type { LaneBox } from "./containerLayout";
 
 export type { WorkflowMeta } from "@/lib/workflows/editorModel";
 export { DEFAULT_WORKFLOW_META } from "@/lib/workflows/editorModel";
@@ -42,6 +44,8 @@ export interface StepNodeDisplay {
   /** Containers: steps inside it. Children: the container they're in. */
   childCount?: number;
   containerName?: string | null;
+  /** Containers: the lanes drawn inside the box (see containerLayout.ts). */
+  lanes?: LaneBox[] | null;
 }
 
 /**
@@ -97,8 +101,13 @@ export interface StepConfigPanelProps {
   llmProviders: LLMProviderDescriptor[];
   onUpdate: (nodeId: string, partial: Partial<StepNodeData>) => void;
   onDelete: (nodeId: string) => void;
+  /** Remove a container but keep its steps, in its place. */
+  onDeleteKeepingSteps?: (nodeId: string) => void;
   onClose: () => void;
   onToggleCollapse?: () => void;
+  /** The workflow's steps, in execution order. */
+  steps: EditorStep[];
+  onMove: (nodeId: string, place: BlockPlace) => void;
 }
 
 export type StepConfigPanel = ComponentType<StepConfigPanelProps>;

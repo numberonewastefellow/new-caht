@@ -296,8 +296,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -1829,11 +1829,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'SOC Triage Analyst': work on"
       ]
      ]
     },
@@ -1866,15 +1866,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'SOC Triage Analyst': work on"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Network Forensics Analyst\", \"agent_output\": \"network_analysis result for: Step 'Network Forensics Ana...<len=274 sha1=b7ee9a66d05d>"
       ]
      ]
     },
@@ -1907,19 +1911,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'SOC Triage Analyst': work on"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Network Forensics Analyst\", \"agent_output\": \"network_analysis result for: Step 'Network Forensics Ana...<len=274 sha1=b7ee9a66d05d>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endpoint Malware Analyst\", \"agent_output\": \"endpoint_analysis result for: Step 'Endpoint/Malware Anal...<len=276 sha1=1d07ca177c73>"
       ]
      ]
     },
@@ -1952,23 +1964,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'SOC Triage Analyst': work on"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Network Forensics Analyst\", \"agent_output\": \"network_analysis result for: Step 'Network Forensics Ana...<len=274 sha1=b7ee9a66d05d>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endpoint Malware Analyst\", \"agent_output\": \"endpoint_analysis result for: Step 'Endpoint/Malware Anal...<len=276 sha1=1d07ca177c73>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_identity_access_analyst\", \"arguments\": {\"task\": \"Step 'Identity/Access Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Identity Access Analyst\", \"agent_output\": \"identity_analysis result for: Step 'Identity/Access Analyst': work on:\"}"
       ]
      ]
     },
@@ -2001,27 +2025,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'SOC Triage Analyst': work on"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Network Forensics Analyst\", \"agent_output\": \"network_analysis result for: Step 'Network Forensics Ana...<len=274 sha1=b7ee9a66d05d>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endpoint Malware Analyst\", \"agent_output\": \"endpoint_analysis result for: Step 'Endpoint/Malware Anal...<len=276 sha1=1d07ca177c73>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Identity Access Analyst\", \"agent_output\": \"identity_analysis result for: Step 'Identity/Access Analyst': work on:\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_identity_access_analyst\", \"arguments\": {\"task\": \"Step 'Identity/Access Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cloud_security_analyst\", \"arguments\": {\"task\": \"Step 'Cloud Security Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cloud Security Analyst\", \"agent_output\": \"cloud_analysis result for: Step 'Cloud Security Analyst': w...<len=265 sha1=144a7b6f345a>"
       ]
      ]
     },
@@ -2054,31 +2094,51 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'SOC Triage Analyst': work on"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Network Forensics Analyst\", \"agent_output\": \"network_analysis result for: Step 'Network Forensics Ana...<len=274 sha1=b7ee9a66d05d>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endpoint Malware Analyst\", \"agent_output\": \"endpoint_analysis result for: Step 'Endpoint/Malware Anal...<len=276 sha1=1d07ca177c73>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Identity Access Analyst\", \"agent_output\": \"identity_analysis result for: Step 'Identity/Access Analyst': work on:\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_identity_access_analyst\", \"arguments\": {\"task\": \"Step 'Identity/Access Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cloud Security Analyst\", \"agent_output\": \"cloud_analysis result for: Step 'Cloud Security Analyst': w...<len=265 sha1=144a7b6f345a>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cloud_security_analyst\", \"arguments\": {\"task\": \"Step 'Cloud Security Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_email_phishing_analyst\", \"arguments\": {\"task\": \"Step 'Email/Phishing Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Email Phishing Analyst\", \"agent_output\": \"email_analysis result for: Step 'Email/Phishing Analyst': work on: \"}"
       ]
      ]
     },
@@ -2111,35 +2171,59 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'SOC Triage Analyst': work on"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Network Forensics Analyst\", \"agent_output\": \"network_analysis result for: Step 'Network Forensics Ana...<len=274 sha1=b7ee9a66d05d>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endpoint Malware Analyst\", \"agent_output\": \"endpoint_analysis result for: Step 'Endpoint/Malware Anal...<len=276 sha1=1d07ca177c73>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Identity Access Analyst\", \"agent_output\": \"identity_analysis result for: Step 'Identity/Access Analyst': work on:\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_identity_access_analyst\", \"arguments\": {\"task\": \"Step 'Identity/Access Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cloud Security Analyst\", \"agent_output\": \"cloud_analysis result for: Step 'Cloud Security Analyst': w...<len=265 sha1=144a7b6f345a>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cloud_security_analyst\", \"arguments\": {\"task\": \"Step 'Cloud Security Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Email Phishing Analyst\", \"agent_output\": \"email_analysis result for: Step 'Email/Phishing Analyst': work on: \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_email_phishing_analyst\", \"arguments\": {\"task\": \"Step 'Email/Phishing Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_threat_intelligence_analyst\", \"arguments\": {\"task\": \"Step 'Threat Intelligence Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Threat Intelligence Analyst\", \"agent_output\": \"threat_intel result for: Step 'Threat Intelligence Analyst': work\"}"
       ]
      ]
     },
@@ -2172,39 +2256,67 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'SOC Triage Analyst': work on"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Network Forensics Analyst\", \"agent_output\": \"network_analysis result for: Step 'Network Forensics Ana...<len=274 sha1=b7ee9a66d05d>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endpoint Malware Analyst\", \"agent_output\": \"endpoint_analysis result for: Step 'Endpoint/Malware Anal...<len=276 sha1=1d07ca177c73>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Identity Access Analyst\", \"agent_output\": \"identity_analysis result for: Step 'Identity/Access Analyst': work on:\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_identity_access_analyst\", \"arguments\": {\"task\": \"Step 'Identity/Access Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cloud Security Analyst\", \"agent_output\": \"cloud_analysis result for: Step 'Cloud Security Analyst': w...<len=265 sha1=144a7b6f345a>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cloud_security_analyst\", \"arguments\": {\"task\": \"Step 'Cloud Security Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Email Phishing Analyst\", \"agent_output\": \"email_analysis result for: Step 'Email/Phishing Analyst': work on: \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_email_phishing_analyst\", \"arguments\": {\"task\": \"Step 'Email/Phishing Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Threat Intelligence Analyst\", \"agent_output\": \"threat_intel result for: Step 'Threat Intelligence Analyst': work\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_threat_intelligence_analyst\", \"arguments\": {\"task\": \"Step 'Threat Intelligence Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_data_loss_analyst\", \"arguments\": {\"task\": \"Step 'Data Loss Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Data Loss Analyst\", \"agent_output\": \"data_loss_analysis result for: Step 'Data Loss Analyst': work on...<len=272 sha1=653b756c30ea>"
       ]
      ]
     },
@@ -2237,43 +2349,75 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'SOC Triage Analyst': work on"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Network Forensics Analyst\", \"agent_output\": \"network_analysis result for: Step 'Network Forensics Ana...<len=274 sha1=b7ee9a66d05d>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Endpoint Malware Analyst\", \"agent_output\": \"endpoint_analysis result for: Step 'Endpoint/Malware Anal...<len=276 sha1=1d07ca177c73>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Identity Access Analyst\", \"agent_output\": \"identity_analysis result for: Step 'Identity/Access Analyst': work on:\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_identity_access_analyst\", \"arguments\": {\"task\": \"Step 'Identity/Access Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cloud Security Analyst\", \"agent_output\": \"cloud_analysis result for: Step 'Cloud Security Analyst': w...<len=265 sha1=144a7b6f345a>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cloud_security_analyst\", \"arguments\": {\"task\": \"Step 'Cloud Security Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Email Phishing Analyst\", \"agent_output\": \"email_analysis result for: Step 'Email/Phishing Analyst': work on: \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_email_phishing_analyst\", \"arguments\": {\"task\": \"Step 'Email/Phishing Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Threat Intelligence Analyst\", \"agent_output\": \"threat_intel result for: Step 'Threat Intelligence Analyst': work\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_threat_intelligence_analyst\", \"arguments\": {\"task\": \"Step 'Threat Intelligence Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Data Loss Analyst\", \"agent_output\": \"data_loss_analysis result for: Step 'Data Loss Analyst': work on...<len=272 sha1=653b756c30ea>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_data_loss_analyst\", \"arguments\": {\"task\": \"Step 'Data Loss Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_incident_report_writer\", \"arguments\": {\"task\": \"Step 'Incident Report Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Incident Report Writer\", \"agent_output\": \"incident_report result for: Step 'Incident Report Writer': work on: \"}"
       ]
      ]
     }
@@ -2302,13 +2446,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2317,8 +2456,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2361,13 +2500,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2376,8 +2510,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2386,8 +2520,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2433,13 +2567,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2448,8 +2577,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2458,8 +2587,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2468,8 +2597,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_identity_access_analyst\", \"arguments\": {\"task\": \"Step 'Identity/Access Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2518,13 +2647,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2533,8 +2657,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2543,8 +2667,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2553,8 +2677,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_identity_access_analyst\", \"arguments\": {\"task\": \"Step 'Identity/Access Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2563,8 +2687,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cloud_security_analyst\", \"arguments\": {\"task\": \"Step 'Cloud Security Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2616,13 +2740,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2631,8 +2750,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2641,8 +2760,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2651,8 +2770,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_identity_access_analyst\", \"arguments\": {\"task\": \"Step 'Identity/Access Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2661,8 +2780,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cloud_security_analyst\", \"arguments\": {\"task\": \"Step 'Cloud Security Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2671,8 +2790,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_email_phishing_analyst\", \"arguments\": {\"task\": \"Step 'Email/Phishing Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2727,13 +2846,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2742,8 +2856,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2752,8 +2866,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2762,8 +2876,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_identity_access_analyst\", \"arguments\": {\"task\": \"Step 'Identity/Access Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2772,8 +2886,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cloud_security_analyst\", \"arguments\": {\"task\": \"Step 'Cloud Security Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2782,8 +2896,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_email_phishing_analyst\", \"arguments\": {\"task\": \"Step 'Email/Phishing Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2792,8 +2906,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_threat_intelligence_analyst\", \"arguments\": {\"task\": \"Step 'Threat Intelligence Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2851,13 +2965,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2866,8 +2975,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2876,8 +2985,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2886,8 +2995,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_identity_access_analyst\", \"arguments\": {\"task\": \"Step 'Identity/Access Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2896,8 +3005,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cloud_security_analyst\", \"arguments\": {\"task\": \"Step 'Cloud Security Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2906,8 +3015,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_email_phishing_analyst\", \"arguments\": {\"task\": \"Step 'Email/Phishing Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2916,8 +3025,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_threat_intelligence_analyst\", \"arguments\": {\"task\": \"Step 'Threat Intelligence Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2926,8 +3035,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_data_loss_analyst\", \"arguments\": {\"task\": \"Step 'Data Loss Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2988,13 +3097,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"Step 'SOC Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_soc_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'SOC Tr...<len=669 sha1=938a5d141071>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -3003,8 +3107,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_network_forensics_analyst\", \"arguments\": {\"task\": \"Step 'Network Forensics Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3013,8 +3117,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_endpoint_malware_analyst\", \"arguments\": {\"task\": \"Step 'Endpoint/Malware Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3023,8 +3127,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_identity_access_analyst\", \"arguments\": {\"task\": \"Step 'Identity/Access Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3033,8 +3137,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cloud_security_analyst\", \"arguments\": {\"task\": \"Step 'Cloud Security Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3043,8 +3147,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_email_phishing_analyst\", \"arguments\": {\"task\": \"Step 'Email/Phishing Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3053,8 +3157,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_threat_intelligence_analyst\", \"arguments\": {\"task\": \"Step 'Threat Intelligence Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3063,8 +3167,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_data_loss_analyst\", \"arguments\": {\"task\": \"Step 'Data Loss Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3073,8 +3177,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_incident_report_writer\", \"arguments\": {\"task\": \"Step 'Incident Report Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",

@@ -605,7 +605,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_study_designer\", \"arguments\": {\"task\": \"Step 'Study Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Study Designer\", \"agent_output\": \"study_design result for: Step 'Study Designer': work on: Prepare \"}"
       ]
      ]
     },
@@ -631,11 +635,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_study_designer\", \"arguments\": {\"task\": \"Step 'Study Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Study Designer\", \"agent_output\": \"study_design result for: Step 'Study Designer': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_regulatory_advisor\", \"arguments\": {\"task\": \"Step 'Regulatory Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Regulatory Advisor\", \"agent_output\": \"regulatory_review result for: Step 'Regulatory Advisor': work on: Prep\"}"
       ]
      ]
     },
@@ -660,15 +672,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_study_designer\", \"arguments\": {\"task\": \"Step 'Study Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Study Designer\", \"agent_output\": \"study_design result for: Step 'Study Designer': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_regulatory_advisor\", \"arguments\": {\"task\": \"Step 'Regulatory Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Regulatory Advisor\", \"agent_output\": \"regulatory_review result for: Step 'Regulatory Advisor': work on: Prep\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_statistical_analyst\", \"arguments\": {\"task\": \"Step 'Statistical Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Statistical Analyst\", \"agent_output\": \"statistical_plan result for: Step 'Statistical Analyst': work on: Pre\"}"
       ]
      ]
     },
@@ -691,19 +715,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_study_designer\", \"arguments\": {\"task\": \"Step 'Study Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Study Designer\", \"agent_output\": \"study_design result for: Step 'Study Designer': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_regulatory_advisor\", \"arguments\": {\"task\": \"Step 'Regulatory Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Regulatory Advisor\", \"agent_output\": \"regulatory_review result for: Step 'Regulatory Advisor': work on: Prep\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_statistical_analyst\", \"arguments\": {\"task\": \"Step 'Statistical Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Statistical Analyst\", \"agent_output\": \"statistical_plan result for: Step 'Statistical Analyst': work on: Pre\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_protocol_compiler\", \"arguments\": {\"task\": \"Step 'Protocol Compiler': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Protocol Compiler\", \"agent_output\": \"protocol_synopsis result for: Step 'Protocol Compiler': work on: Prepa\"}"
       ]
      ]
     }
@@ -730,8 +770,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_study_designer\", \"arguments\": {\"task\": \"Step 'Study Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -771,8 +811,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_study_designer\", \"arguments\": {\"task\": \"Step 'Study Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -781,8 +821,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_regulatory_advisor\", \"arguments\": {\"task\": \"Step 'Regulatory Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -825,8 +865,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_study_designer\", \"arguments\": {\"task\": \"Step 'Study Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -835,8 +875,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_regulatory_advisor\", \"arguments\": {\"task\": \"Step 'Regulatory Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -845,8 +885,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_statistical_analyst\", \"arguments\": {\"task\": \"Step 'Statistical Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -892,8 +932,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_study_designer\", \"arguments\": {\"task\": \"Step 'Study Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -902,8 +942,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_regulatory_advisor\", \"arguments\": {\"task\": \"Step 'Regulatory Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -912,8 +952,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_statistical_analyst\", \"arguments\": {\"task\": \"Step 'Statistical Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -922,8 +962,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_protocol_compiler\", \"arguments\": {\"task\": \"Step 'Protocol Compiler': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",

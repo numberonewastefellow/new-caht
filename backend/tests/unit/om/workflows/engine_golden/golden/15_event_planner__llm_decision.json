@@ -254,8 +254,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"Step 'Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -1060,11 +1060,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"Step 'Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=5a4839734c86>"
+       "tool_call_response",
+       "event_requirements result for: TASK:\nStep 'Requirements Collector': wor"
       ]
      ]
     },
@@ -1093,15 +1093,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"Step 'Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "event_requirements result for: TASK:\nStep 'Requirements Collector': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=5a4839734c86>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_venue_logistics_planner\", \"arguments\": {\"task\": \"Step 'Venue & Logistics Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Venue & Logistics Planner\", \"agent_output\": \"venue_logistics result for: Step 'Venue & Logistics Planner': work o\"}"
       ]
      ]
     },
@@ -1130,19 +1134,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"Step 'Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "event_requirements result for: TASK:\nStep 'Requirements Collector': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=5a4839734c86>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Venue & Logistics Planner\", \"agent_output\": \"venue_logistics result for: Step 'Venue & Logistics Planner': work o\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_venue_logistics_planner\", \"arguments\": {\"task\": \"Step 'Venue & Logistics Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_menu_catering_designer\", \"arguments\": {\"task\": \"Step 'Menu & Catering Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Menu & Catering Designer\", \"agent_output\": \"menu_catering result for: Step 'Menu & Catering Designer': work on\"}"
       ]
      ]
     },
@@ -1171,23 +1183,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"Step 'Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "event_requirements result for: TASK:\nStep 'Requirements Collector': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=5a4839734c86>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Venue & Logistics Planner\", \"agent_output\": \"venue_logistics result for: Step 'Venue & Logistics Planner': work o\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_venue_logistics_planner\", \"arguments\": {\"task\": \"Step 'Venue & Logistics Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Menu & Catering Designer\", \"agent_output\": \"menu_catering result for: Step 'Menu & Catering Designer': work on\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_menu_catering_designer\", \"arguments\": {\"task\": \"Step 'Menu & Catering Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_entertainment_curator\", \"arguments\": {\"task\": \"Step 'Entertainment Curator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Entertainment Curator\", \"agent_output\": \"entertainment result for: Step 'Entertainment Curator': work on: P\"}"
       ]
      ]
     },
@@ -1216,27 +1240,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"Step 'Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "event_requirements result for: TASK:\nStep 'Requirements Collector': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=5a4839734c86>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Venue & Logistics Planner\", \"agent_output\": \"venue_logistics result for: Step 'Venue & Logistics Planner': work o\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_venue_logistics_planner\", \"arguments\": {\"task\": \"Step 'Venue & Logistics Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Menu & Catering Designer\", \"agent_output\": \"menu_catering result for: Step 'Menu & Catering Designer': work on\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_menu_catering_designer\", \"arguments\": {\"task\": \"Step 'Menu & Catering Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Entertainment Curator\", \"agent_output\": \"entertainment result for: Step 'Entertainment Curator': work on: P\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_entertainment_curator\", \"arguments\": {\"task\": \"Step 'Entertainment Curator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_budget_timeline_finalizer\", \"arguments\": {\"task\": \"Step 'Budget & Timeline Finalizer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Budget & Timeline Finalizer\", \"agent_output\": \"budget_timeline result for: Step 'Budget & Timeline Finalizer': work\"}"
       ]
      ]
     }
@@ -1265,13 +1305,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"Step 'Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=5a4839734c86>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -1280,8 +1315,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_venue_logistics_planner\", \"arguments\": {\"task\": \"Step 'Venue & Logistics Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1324,13 +1359,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"Step 'Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=5a4839734c86>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -1339,8 +1369,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_venue_logistics_planner\", \"arguments\": {\"task\": \"Step 'Venue & Logistics Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1349,8 +1379,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_menu_catering_designer\", \"arguments\": {\"task\": \"Step 'Menu & Catering Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1396,13 +1426,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"Step 'Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=5a4839734c86>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -1411,8 +1436,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_venue_logistics_planner\", \"arguments\": {\"task\": \"Step 'Venue & Logistics Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1421,8 +1446,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_menu_catering_designer\", \"arguments\": {\"task\": \"Step 'Menu & Catering Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1431,8 +1456,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_entertainment_curator\", \"arguments\": {\"task\": \"Step 'Entertainment Curator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1481,13 +1506,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"Step 'Requirements Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_event_requirements_collector\", \"arguments\": {\"task\": \"TASK:\\nSt...<len=684 sha1=5a4839734c86>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -1496,8 +1516,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_venue_logistics_planner\", \"arguments\": {\"task\": \"Step 'Venue & Logistics Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1506,8 +1526,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_menu_catering_designer\", \"arguments\": {\"task\": \"Step 'Menu & Catering Designer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1516,8 +1536,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_entertainment_curator\", \"arguments\": {\"task\": \"Step 'Entertainment Curator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1526,8 +1546,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_budget_timeline_finalizer\", \"arguments\": {\"task\": \"Step 'Budget & Timeline Finalizer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",

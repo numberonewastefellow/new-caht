@@ -12,7 +12,7 @@ From Git Bash on the host. This mounts the worktree backend into a throwaway con
 
 ```bash
 export MSYS_NO_PATHCONV=1
-docker run --rm -v "D:\llm\danswer_flow_wt\backend:/app" -w /app om/om-backend:latest \
+docker run --rm -v "D:\llm\danswer20022026\backend:/app" -w /app om/om-backend:latest \
   python -m pytest tests/unit/om/workflows/engine_golden -q -p no:cacheprovider
 ```
 

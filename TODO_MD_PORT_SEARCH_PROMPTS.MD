@@ -130,12 +130,12 @@ Upstream code is **reference only**. Every folder, file, identifier and env name
 - **Isolation:** measure L2 against the **L4 baseline alone** (no L3 ranking or L5 provider changes in the same build). `ENABLE_COMPLETE_ANSWER_PROMPTS=false` gives the A side on the same image.
 
 ## 9. Gates and lane boundaries
-- [ ] Naming grep on new and changed files (no upstream product name).
-- [ ] `pytest backend/tests/unit/migration_safety` (the new module adds a name. **Do not edit** `tests/unit/migration_safety/snapshots/baseline.json` in this lane. If the snapshot check flags `om.secondary_llm_flows.evidence_selection_llm`, report it to the integrator.)
-- [ ] `backend/tests/route_rename` (no route changes expected).
-- [ ] Import check of every caller module in §6, plus `compileall`.
+- [x] Naming grep on new and changed files (no upstream product name). (2026-10-30, see §12 "Gates")
+- [x] `pytest backend/tests/unit/migration_safety` (2026-10-30: only the expected added module; baseline regenerated at integration) (the new module adds a name. **Do not edit** `tests/unit/migration_safety/snapshots/baseline.json` in this lane. If the snapshot check flags `om.secondary_llm_flows.evidence_selection_llm`, report it to the integrator.)
+- [x] `backend/tests/route_rename` (no route changes expected). (2026-10-30: 2 pre-existing stale-snapshot failures, unrelated)
+- [x] Import check of every caller module in §6, plus `compileall`. (2026-10-30)
 - [ ] `python -I rename-audit/build_inventory.py --check`: **not run by this lane** (it rewrites report files); run it at commit time.
-- [ ] Web `tsc`: not needed (no web changes).
+- [x] Web `tsc`: not needed (no web changes).
 - **Files this lane owns:** `om/prompts/chat_prompts.py`, `om/prompts/prompt_utils.py`, `om/chat/prompt_utils.py`, `om/secondary_llm_flows/evidence_selection_llm.py` (new), `om/tools/tool_implementations/search/search_tool.py` (selection call sites only), and the new tests above.
 - **Shared hot files:** `om/configs/app_configs.py`, only inside `# --- search-prompts ---`. Must **not** touch: `om/document_index/opensearch/` (L3), `om/llm/` provider/factory modules (L5; read and call only), the migration snapshot, `alembic/`. No new deps, no migration.
 

@@ -2,7 +2,7 @@
   "$schema": "https://schema.tauri.app/config/2.0.0",
   "productName": "VertualAI",
   "version": "0.0.0-dev",
-  "identifier": "app.onyx.desktop",
+  "identifier": "com.virtualai.desktop",
   "build": {
     "beforeBuildCommand": "",
     "beforeDevCommand": "",
@@ -27,7 +27,7 @@
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
         "acceptFirstMouse": true,
-        "tabbingIdentifier": "onyx"
+        "tabbingIdentifier": "virtualai"
       }
     ],
     "security": {
@@ -50,7 +50,7 @@
     "longDescription": "A lightweight desktop wrapper for VertualAI Cloud - your AI-powered knowledge assistant.",
     "macOS": {
       "entitlements": null,
-      "exceptionDomain": "cloud.onyx.app",
+      "exceptionDomain": "virtualai.com",
       "minimumSystemVersion": "10.15",
       "signingIdentity": null,
       "dmg": {

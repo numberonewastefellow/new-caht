@@ -13,6 +13,7 @@ import type { NodeProps, NodeTypes } from "@xyflow/react";
 import type { NodeEditorKind } from "@/lib/workflows/nodeRegistry";
 import { AgentNode } from "./AgentNode";
 import { ConditionalRouterNode } from "./ConditionalRouterNode";
+import { ContainerNode } from "./ContainerNode";
 import { FinishNode } from "./FinishNode";
 import { GenericNode } from "./GenericNode";
 import { OrchestratorNode } from "./OrchestratorNode";
@@ -55,6 +56,13 @@ export const NODE_KIND_UI: Record<NodeEditorKind, NodeKindUi> = {
   },
   schema: {
     CanvasNode: GenericNode,
+    ConfigPanel: GenericConfigPanel,
+    PaletteIcon: GenericNodeIcon,
+    paletteVariant: "generic",
+    inUtilsPalette: true,
+  },
+  container: {
+    CanvasNode: ContainerNode,
     ConfigPanel: GenericConfigPanel,
     PaletteIcon: GenericNodeIcon,
     paletteVariant: "generic",

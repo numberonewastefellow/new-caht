@@ -17,8 +17,8 @@ import { processPacket } from "./services/stream-parser";
 import { saveSession, loadSession, clearSession } from "./utils/storage";
 import { DEFAULT_LOGO } from "./assets/logo";
 
-@customElement("onyx-chat-widget")
-export class OnyxChatWidget extends LitElement {
+@customElement("virtualai-chat-widget")
+export class VirtualAIChatWidget extends LitElement {
   static styles = [theme, widgetStyles];
 
   // Configuration attributes
@@ -541,7 +541,7 @@ export class OnyxChatWidget extends LitElement {
         <div class="powered-by">
           Powered by
           <a
-            href="https://onyx.app"
+            href="https://virtualai.com"
             target="_blank"
             rel="noopener noreferrer"
             style="text-decoration: underline;"
@@ -601,6 +601,6 @@ export class OnyxChatWidget extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "onyx-chat-widget": OnyxChatWidget;
+    "virtualai-chat-widget": VirtualAIChatWidget;
   }
 }

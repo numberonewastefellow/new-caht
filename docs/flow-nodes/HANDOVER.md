@@ -1,8 +1,11 @@
 # Flow nodes — HANDOVER (read this first)
 
-Last updated: 2026-10-30. Worktree `D:/llm/danswer_flow_wt`, branch `feature/flow-nodes` (off `main_multi_agent_stable`).
-**Nothing is committed** (user rule: commit only when asked; never push; explicit `git add` paths — the repo is public).
-Never touch the main checkout `D:/llm/danswer20022026` or the `virtualai-*` stack. Never run the alembic CLI.
+Last updated: 2026-10-31. **Work now lives in the main checkout `D:/llm/danswer20022026` on branch
+`main_multi_agent_stable`.** It was developed on `feature/flow-nodes` (worktree `D:/llm/danswer_flow_wt`, both now
+removed) and merged locally in commit `3b2074ed3` (user's commits `88eb334e5` "flow-wise" + `e36f48d15`
+"Create flowdev.bat"). **Not pushed.** Rules: commit only when the user asks; never push; explicit `git add`
+paths (the repo is public); never run the alembic CLI. Other uncommitted work by the user/other agents lives in this
+checkout too — touch only flow-nodes files.
 
 Companion docs in this folder: `PROGRESS.md` (status + test stack), `DESIGN.md` (architecture),
 `REFERENCE_STUDY.md` + `research/` (where ideas came from), `OPERATIONS.md` (sandbox settings).
@@ -12,43 +15,74 @@ Parallel branches, loops, Python code steps and webhook triggers for workflows (
 flexibility), **easy to extend and upgradeable**, built step by step with readable, industry-standard code,
 plus security hardening of the code sandbox. Old workflows must keep working.
 
-## ▶ IN PROGRESS when this handover was written — resume here
-**Task: "workflow steps use dedicated agents" (fixes the error the user hit in the Wizard).**
-The user opened `/admin/workflows/edit/76` on the preview, clicked Next, and got
-`"Getting there" needs an agent` (×3). Cause: demo workflow 76 uses agent **0** (the default "Assistant"); the
-frontend validation used `!step.agent_id` (0 is falsy) and the old Wizard used `0` as its placeholder value.
-Product convention (Visual Builder since 2026-03 "agentic ui"): steps use **dedicated** agents — never the default
-Assistant (id 0) nor a workflow wrapper agent (`agent.workflow_id` set). Main DB has 0 steps violating this.
-The user said: **no workarounds — proper implementation.**
+## ▶ CURRENT STATUS — resume here
+**Work from [TODO.md](TODO.md), top to bottom, one item at a time.** Details and evidence: [FIX_PLAN.md](FIX_PLAN.md). The table below is the summary per step.
 
-Done so far (uncompiled/untested yet):
-- `web/src/lib/workflows/stepAgents.ts` (new): `selectableStepAgents()`, `isSelectableStepAgent()`, `DEFAULT_ASSISTANT_AGENT_ID`.
-- Used by `components/workflow-builder/AgentSidebar.tsx`, `NodeConfigPanel.tsx`, and the Wizard `refresh-pages/WorkflowEditorPage.tsx`.
-- Wizard agent `<select>`: placeholder `value=""`, value `step.agent_id ?? ""`, onChange `"" → null`, else `Number(v)`.
-- `lib/workflows/validation.ts`: `agent_id == null` → "needs an agent"; `agent_id === 0` → "uses the default Assistant; choose a dedicated agent".
+| Step | What | Status |
+|---|---|---|
+| 1 | Steps use dedicated agents (save + run rule) | **Code done, uncommitted; verified on the main stack (below). OPEN: the user's look at the timeline and the Wizard.** |
+| 2 | Safe saves, same errors in backend and frontend, `llm_decision` core fix | Done except the user's screen check of 2f. See below. |
+| 3 | Container UI + full config editing (both editors) | Not started |
+| 4 | Run display: fork/join in the trace and timeline | Not started |
+| 5 | Webhook triggers in Pulse (P4) | Not started |
+| 6 | Engine hardening (concurrency cap, cancel, retry, error kinds, loop, checkpoints) | Not started |
+| 7 | Rollout readiness, review, docs, cleanup | Not started |
 
-Remaining for this task:
-1. Backend rule in `backend/om/workflows/nodes/agent.py::prepare_agent_step_v1`: reject agent 0 and wrapper agents
-   (`agent.workflow_id is not None`) with clear messages; unit + DB tests
-   (`tests/external_dependency_unit/workflow/test_workflow_saving_db.py` — its `agent_id` fixture must exclude id 0).
-2. Jest: add cases to `web/src/lib/workflows/validation.test.ts` (null vs 0 vs dedicated) and a `stepAgents` test; run
-   `npx tsc --noEmit` and `npx jest src/lib/workflows src/components/workflows src/components/workflow-builder`.
-3. Re-seed the demo (workflow 76 in `flow_dev`) with dedicated agents (`D:/tmp/flow_preview_seed.py` uses agent 0;
-   pick/create named agents) and switch the live E2E scripts (`D:/tmp/flow_e2e_*.py`) off agent 0.
-4. Rebuild the preview web image (`docker build -t om/om-web-server:flowdev web`), recreate `flow_web`, re-run
-   `python D:/tmp/flow_preview_browser.py` and add a check that the Wizard passes step 2 for workflow 76.
+**User decisions for this plan (2026-10-31):** dedicated agents only (agent 0 and wrapper agents rejected at save and at
+run); publishing a workflow grants access to its step agents; order = Steps 1–2, container UI, trace, webhooks, hardening.
 
-## Then continue with (in order)
-1. Write `research/00-platform-survey.md` (the 11-platform web survey; summary table below is the seed).
-2. **Container UI** — users can't yet put a step inside Parallel/Loop from either editor (see "How the next session
-   should research a remaining feature" below; research notes first, then design, then code).
-3. **Webhook triggers in Pulse (P4).**
-4. Multi-agent review (correctness / security / UX), fixes, `graphify update .`, docs, test-stack cleanup.
-5. Commit only when the user asks.
+**Step 1 as built:**
+- `backend/om/workflows/nodes/agent.py`: `load_step_agent()` + `UnusableStepAgentError` are the one rule, used by
+  `prepare_agent_step_v1` (save), `AgentToolCache` (run: the step FAILS) and `workflow_engine._build_agent_tools`
+  (`llm_decision`: the step isn't offered to the orchestrator, and a warning is logged).
+- A deleted agent now fails the run instead of being skipped (`fx_deleted_agent` in `ALLOWED_DIFFS`). Real DB: 0 of 277
+  steps were on agent 0, a wrapper or a deleted agent.
+- `AgentTool` no longer falls back to the first user in the DB (every workflow path passes the running user).
+- Frontend: `lib/workflows/stepAgents.ts` (pickers), `validation.ts`, same error wording as the backend.
+- Tests: `tests/unit/om/workflows/nodes/test_step_agents.py`, DB test cases, jest `stepAgents.test.ts` + `validation.test.ts`.
+- Results: unit + pulse 391 (v2), goldens legacy 116, DB 28, jest 65, tsc clean, live smoke 21, code 15, parallel 10, loop 9
+  (all on the former preview). Browser 16/23: the 7 failures were the chat run and its dependants, with the sandbox stopped.
+
+**Step 1 verified on the main stack (2026-10-31), port 3000, real DB:**
+| Check | Result | Script (in `D:/tmp`, `docker cp` into `virtualai-api_server-1:/tmp`; lost on API restart) |
+|---|---|---|
+| Sandbox: token required, no network, read-only root, uid 65532, code step, chat Python tool | 9/9; code step 0.17 s, `run_function` p50 171 ms | `main_sandbox_check.py` |
+| Old data loads, read-only | 49 workflows, 284 steps, 0 problems; 114 paused: 66 of 67 sequential resumable, 1 restarts with what the user said, 47 `llm_decision` on their unchanged path | `main_dry_run.py` |
+| Demo run through the API + agent-rule rejections | 22/22; 11.8 s; parallel step 3.7 s vs 5.9 s serial; pinned to version 1; temporary key removed | `main_demo_e2e.py` |
+| Suites | unit + pulse 391, goldens legacy 116, jest 65; `tsc`: only the 2 known `dotenv` errors in Playwright configs | see FIX_PLAN "Verification" |
+| User's chat runs of the demo | 3 runs, all `completed` | executions 510, 512, 513 of workflow 49 |
+
+**Found while testing, not fixed:**
+- The API logs `ERROR ... provider.py: No active trace ... Returning NoOpSpan` about once per agent call during demo runs (one run had none). Runs complete. It may mean LLM spans don't reach Phoenix/Langfuse for these steps. Cause not established, and not known whether it predates flow nodes. Look at it under Step 7 (observability).
+- `dev.bat` has no `code-interpreter` shortcut, so `dev.bat build code-interpreter` silently does nothing. Use `docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml build code-interpreter`, then `up -d --no-deps code-interpreter`; the executor image is `docker build -t om/python-executor-sci:latest -f code-interpreter\executor\Dockerfile code-interpreter\executor`.
+
+**Step 2 as built (2026-10-31). Real-DB backup first: `D:/llm/backups/virtualai_postgres_before_flow_step2_20261031_095036.dump`.**
+- **Core bug fixed: an `llm_decision` orchestrator never saw what its agents returned.** Results were stored as tool responses with no `tool_call_id`, and `construct_message_history` drops those, so the orchestrator delegated blind, repeated calls, and could imitate the JSON-text calls as its "final answer". The drop dates from 2026-02-18, so this affected every `llm_decision` run so far, not flow nodes. Fix: `om/workflows/orchestrator_history.py` stores real linked calls; old paused checkpoints upgrade on read; a call waiting for the user is removed on resume because resuming records it again.
+  - Evidence: Customer Support Triage went from 6 calls and a raw-JSON answer to 1 call to Billing and a real answer. Patient Intake ran pause → reply → Triage → Diagnosis → Care Navigator. 48/48 real paused runs build a valid request (`D:/tmp/main_paused_history_check.py`). Cybercrime 5/5, Medical P1 pass (`D:/tmp/main_regression.sh`). Only `orchestrator_history` and the LLM-input history changed across 41 goldens.
+  - Not yet run after this fix: the other 26 `llm_decision` workflows and the rest of their suites. If one fails, upgrade that workflow; no fallbacks (user's rule).
+- **Saves:** one transaction with a row lock (`get_workflow_for_update`); a stale save is 409; the definition being replaced is snapshotted first, so old workflows keep a restorable "before" version. `save_workflow_update`, `_snapshot_current_definition`.
+- **Rules:** duplicate `output_key` and reserved `loop` / `user_input` are refused on save. Frontend mirrors the backend: `lib/workflows/containerRules.ts`, `nodeConfigRules.ts`.
+- **Version on `llm_decision` runs:** recorded for history. These runs still execute and resume on the live steps, not the pinned definition (follow-up in TODO).
+- **Editors:** shared `StepOptionsSection`, `workflowLimits.ts`.
+
+## Building / running — use `dev.bat` (`flowdev.bat` is retired)
+**The user's decision, 2026-10-31: do NOT use `flowdev.bat` or the `flowdev` containers.** They existed for the separate
+worktree. Everything now runs on the main stack (port 3000), `deployment\docker_compose\dev.bat`.
+
+**State of the main stack (checked 2026-10-31 after the user's rebuild):**
+- Migration `0002_workflow_nodes` applied to the real DB; 277/277 steps have a `node_key`; 48 workflows intact.
+- API runs this code; `WORKFLOW_ENGINE_V2` is on by default; `CODE_INTERPRETER_API_TOKEN` is set on the API and sandbox.
+- Demo created on the real DB: workflow 49 "Demo: Trip planner (code + parallel + loop)", wrapper agent 481, step agents
+  478 "Demo: Travel researcher", 479 "Demo: Stay researcher", 480 "Demo: Day planner" (`D:/tmp/main_demo_seed.py`).
+- `virtualai-code-interpreter-1` and the executor image are rebuilt: track H (auth, tenant binding, read-only sandbox) and the warm pool are live. Rollback image: `om/code-interpreter:pre-flow`.
+- Host port of the code interpreter is now `127.0.0.1:8001` (the user's change; the Windows port proxy holds 8000).
+
+**Testing on the main stack:** the `D:/tmp/flow_e2e_*.py` and browser scripts target the old preview. They create and
+delete data, so don't point them at the real DB without asking the user.
 
 ## What was built — explained from the UI
 
-**Preview** at `http://localhost:3091` (log in with your own account; DB `flow_dev` is a clone of the main DB):
+On the main stack, `http://localhost:3000`:
 
 | Where in the UI | What you can do now | Status |
 |---|---|---|
@@ -57,7 +91,7 @@ Remaining for this task:
 | Visual builder → **Utils** palette | Lists Code, Parallel, Loop, Condition (from the server catalog `GET /workflow/node-types`) | A new backend node type appears automatically. |
 | **Versions** button (both editors) | History of every save, view a version, **restore** | Every save = immutable version; runs are pinned to the version they started on. |
 | "Upgrade available" badge on a node | Opt-in upgrade of a node's config to a newer node version (diff preview) | e.g. old Condition v1 → v2. |
-| Chat (agent "Demo: Trip planner…", workflow 76) | Ask "a 3 day trip to Goa" | The timeline shows "Code: Read the request" → "Parallel: Research in parallel" (2 branches at once) → "Loop: Plan each day" (1/3, 2/3, 3/3) → a formatted answer. |
+| Chat (agent "Demo: Trip planner…", workflow 49 on the main stack) | Ask "a 3 day trip to Goa" | The timeline shows "Code: Read the request" → "Parallel: Research in parallel" (2 branches at once) → "Loop: Plan each day" (1/3, 2/3, 3/3) → a formatted answer. |
 | Admin → Pulse | Unchanged | Webhooks not built yet (gap #2). |
 
 ## Where the ideas came from (read before reviewing or extending)
@@ -67,7 +101,7 @@ Remaining for this task:
 2. Code-level study of local clones.
 3. Design deltas, approved by the user.
 
-**Written up in** `D:/llm/danswer_flow_wt/docs/flow-nodes/`:
+**Written up in** `D:/llm/danswer20022026/docs/flow-nodes/`:
 - `REFERENCE_STUDY.md`: summary + every design delta E1–E9, V1–V3, C1–C5, W1–W5, each with its source.
 - `research/01-engines.md`: parallel / loop / checkpoint.
 - `research/02-sandboxes.md`: code execution + our sandbox gap analysis.
@@ -112,7 +146,7 @@ Remaining for this task:
 
 ## How it is built (for the review)
 
-**Docs, read first:** `D:/llm/danswer_flow_wt/docs/flow-nodes/`
+**Docs, read first:** `D:/llm/danswer20022026/docs/flow-nodes/`
 - `PROGRESS.md`: status per phase, test results, test stack.
 - `DESIGN.md`: architecture, versioning, containers.
 - `REFERENCE_STUDY.md` + `research/01-03`: what we adopted from Dify/graphon, LangGraph, n8n, Windmill and Activepieces.
@@ -158,38 +192,16 @@ Remaining for this task:
 - Web: jest `src/lib/workflows src/components/workflows src/components/workflow-builder` (61), tsc 0 errors.
 - Migration-safety suite (snapshot recaptured).
 
-**Test stack (isolated):**
-- **flow_api** on 8091 and **flow_web** on 3091 (`deployment/docker_compose/docker-compose.flow-dev.yml`, project `flowdev`, env `D:/tmp/flowdev.env`).
-- Sandbox `flowdev-code-interpreter` (image `om/code-interpreter:flowtest-p1b`, executor `om/python-executor-sci:flowtest`, token in `D:/tmp/flowdev_ci_token.txt`).
-- DB `flow_dev`.
-- Test admin login in `D:/tmp/flow_preview_login.json`.
-
-## Next steps, in order (after approval)
-
-1. **Fix the agent-id-0 bug** (Wizard select + validation + jest). Also swap the demo's agents to a named agent, so the demo is clearer.
-2. **Write `docs/flow-nodes/HANDOVER.md`** in the worktree: a copy of the "explained from the UI", "where the ideas came from" and "how it is built" sections above. Write `research/00-platform-survey.md` (the 11-platform web survey). Update `PROGRESS.md`. Save a memory pointer to HANDOVER.md.
-3. **Container UI** (gap #1), so users can build parallel/loop without JSON:
-   - **Wizard:** each step gets a "Run inside" dropdown (top level or a Parallel/Loop step) plus a "Branch" dropdown (parallel only). Children render indented under their container. The Parallel/Loop config form gets proper fields (branch labels list; loop mode/items/condition/max/collect). Code inputs/outputs editors replace the "edit via JSON" note.
-   - **Visual builder:** Parallel/Loop render as React Flow group nodes (`parentId`, `extent:"parent"`). Drag a node into or out of a group to set `parent_key`, and a branch lane sets `branch_index`. Use a layered layout (dagre) instead of the grid.
-   - Both go through the shared `serializer.ts` and `validation.ts` (dual-editor rule).
-   - **Tests:** jest (serializer/validation round-trip with containers); browser test that builds the demo from the UI in both editors, saves, reloads and runs.
-4. **Webhook triggers in Pulse (P4)**, as designed in DESIGN.md / REFERENCE_STUDY W1–W5:
-   - migration `0003_pulse_webhooks`;
-   - public `POST /hooks/{token}` (cheap checks first, HMAC over the raw body, dedup, 429, size cap);
-   - Listen test mode; `{{payload.x}}` templates;
-   - a Webhooks tab in Pulse;
-   - tests.
-5. **Multi-agent review** (correctness, security, UX) of the whole branch, then fixes, `graphify update .`, final docs, and cleanup of the test stack.
-6. **Commit** only when the user asks (local branch commits; never push).
-
 ## Verification for the next session
-- Re-run the suites listed above (commands in `PROGRESS.md` → "Test stack").
-- The browser test must also cover:
-  - editing workflow 76 in the Wizard past step 2 without errors (agent 0);
-  - building a parallel + loop workflow from the UI.
-
+Commands are in `PROGRESS.md` ("Test stack": unit, mypy) and FIX_PLAN.md ("Verification").
 
 ## Session log
+- 2026-10-31 (later): sandbox service rebuilt on the main stack; Step 1 verified there (results above).
+- 2026-10-31 (later): user rejected "just fix it" and asked for a design-vs-code analysis first; result + plan in
+  `FIX_PLAN.md`. Step 1 built. User rebuilt the main stack with `dev.bat` and retired `flowdev.bat`. Demo created on the
+  real DB. Found the main code-interpreter image was not rebuilt.
+- 2026-10-31: user committed the branch (88eb334e5, e36f48d15); merged into `main_multi_agent_stable` (3b2074ed3, not pushed);
+  worktree + branch removed; preview re-pointed at the main checkout; added `flowdev.bat`.
 - 2026-10-30: research (web + code-level clones), P0 foundation, track H security, P1 code node (+P1b warm pool),
   P2 parallel, P3 loop, frontend P0, preview stack + browser smoke 21/21. Handover written mid-way through the
   "dedicated agents" fix.

@@ -964,8 +964,36 @@ def _fetch_models_json(
     except Exception as e:
         raise HTTPException(
             status_code=400,
-            detail=f"Failed to fetch {server_label} models: {e}",
+            detail=_describe_fetch_error(e, url, server_label, timeout),
         )
+
+
+def _describe_fetch_error(
+    error: Exception, url: str, server_label: str, timeout: float
+) -> str:
+    """A model-fetch failure in words an admin can act on.
+
+    httpx reports only the last address it tried, so an unreachable local
+    server shows up as e.g. "[Errno 101] Network is unreachable" (the IPv6
+    attempt) although the real cause is that nothing listens on the port.
+    """
+    prefix = f"Failed to fetch {server_label} models from {url}"
+    if isinstance(error, httpx.ConnectError):
+        return (
+            f"{prefix}: could not connect. Check that the {server_label} server "
+            "is running, listens on that port and is reachable from the "
+            "VertualAI server (inside Docker use http://host.docker.internal:<port> "
+            f"for a server on the host machine). Details: {error}"
+        )
+    if isinstance(error, httpx.TimeoutException):
+        return f"{prefix}: no response within {timeout:g} seconds."
+    if isinstance(error, httpx.HTTPStatusError):
+        status = error.response.status_code
+        hint = " Check the API key." if status in (401, 403) else ""
+        return f"{prefix}: the server answered HTTP {status}.{hint}"
+    if isinstance(error, ValueError):
+        return f"{prefix}: the response is not valid JSON. Is this the right URL?"
+    return f"{prefix}: {error}"
 
 
 def _resolve_stored_api_key_for_fetch(

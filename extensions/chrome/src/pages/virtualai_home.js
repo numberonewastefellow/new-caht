@@ -8,10 +8,10 @@ import {
   hideErrorModal,
   initErrorModal,
 } from "../utils/error-modal.js";
-import { getOnyxDomain } from "../utils/storage.js";
+import { getVirtualAIDomain } from "../utils/storage.js";
 
 (function () {
-  let mainIframe = document.getElementById("onyx-iframe");
+  let mainIframe = document.getElementById("virtualai-iframe");
   let preloadedIframe = null;
   const background = document.getElementById("background");
   const content = document.getElementById("content");
@@ -28,7 +28,7 @@ import { getOnyxDomain } from "../utils/storage.js";
   async function preloadChatInterface() {
     preloadedIframe = document.createElement("iframe");
 
-    const domain = await getOnyxDomain();
+    const domain = await getVirtualAIDomain();
     preloadedIframe.src = domain + "/chat";
     preloadedIframe.style.opacity = "0";
     preloadedIframe.style.visibility = "hidden";
@@ -103,29 +103,29 @@ import { getOnyxDomain } from "../utils/storage.js";
     });
   }
 
-  function checkOnyxPreference() {
+  function checkVirtualAIPreference() {
     chrome.storage.local.get(
       [
-        CHROME_SPECIFIC_STORAGE_KEYS.USE_ONYX_AS_DEFAULT_NEW_TAB,
-        CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN,
+        CHROME_SPECIFIC_STORAGE_KEYS.USE_VIRTUALAI_AS_DEFAULT_NEW_TAB,
+        CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN,
       ],
       (items) => {
-        let useOnyxAsDefaultNewTab =
-          items[CHROME_SPECIFIC_STORAGE_KEYS.USE_ONYX_AS_DEFAULT_NEW_TAB];
+        let useVirtualAIAsDefaultNewTab =
+          items[CHROME_SPECIFIC_STORAGE_KEYS.USE_VIRTUALAI_AS_DEFAULT_NEW_TAB];
 
-        if (useOnyxAsDefaultNewTab === undefined) {
-          useOnyxAsDefaultNewTab = !!(
+        if (useVirtualAIAsDefaultNewTab === undefined) {
+          useVirtualAIAsDefaultNewTab = !!(
             localStorage.getItem(
-              CHROME_SPECIFIC_STORAGE_KEYS.USE_ONYX_AS_DEFAULT_NEW_TAB,
+              CHROME_SPECIFIC_STORAGE_KEYS.USE_VIRTUALAI_AS_DEFAULT_NEW_TAB,
             ) === "1"
           );
           chrome.storage.local.set({
-            [CHROME_SPECIFIC_STORAGE_KEYS.USE_ONYX_AS_DEFAULT_NEW_TAB]:
-              useOnyxAsDefaultNewTab,
+            [CHROME_SPECIFIC_STORAGE_KEYS.USE_VIRTUALAI_AS_DEFAULT_NEW_TAB]:
+              useVirtualAIAsDefaultNewTab,
           });
         }
 
-        if (!useOnyxAsDefaultNewTab) {
+        if (!useVirtualAIAsDefaultNewTab) {
           chrome.tabs.update({
             url: "chrome://new-tab-page",
           });
@@ -133,7 +133,7 @@ import { getOnyxDomain } from "../utils/storage.js";
         }
 
         setIframeSrc(
-          items[CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN] + "/chat/nrf",
+          items[CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN] + "/chat/nrf",
         );
       },
     );
@@ -164,7 +164,7 @@ import { getOnyxDomain } from "../utils/storage.js";
         }
 
         setTheme(theme, backgroundImage);
-        checkOnyxPreference();
+        checkVirtualAIPreference();
       },
     );
   }
@@ -194,7 +194,7 @@ import { getOnyxDomain } from "../utils/storage.js";
         }
 
         mainIframe = preloadedIframe;
-        mainIframe.id = "onyx-iframe";
+        mainIframe.id = "virtualai-iframe";
         mainIframe.style.zIndex = "";
         iframeLoaded = true;
         clearTimeout(iframeLoadTimeout);
@@ -205,15 +205,15 @@ import { getOnyxDomain } from "../utils/storage.js";
   }
 
   chrome.storage.onChanged.addListener(function (changes, namespace) {
-    if (namespace === "local" && changes.useOnyxAsDefaultNewTab) {
-      checkOnyxPreference();
+    if (namespace === "local" && changes.useVirtualAIAsDefaultNewTab) {
+      checkVirtualAIPreference();
     }
   });
 
   window.addEventListener("message", function (event) {
     if (event.data.type === CHROME_MESSAGE.SET_DEFAULT_NEW_TAB) {
-      chrome.storage.local.set({ useOnyxAsDefaultNewTab: event.data.value });
-    } else if (event.data.type === CHROME_MESSAGE.ONYX_APP_LOADED) {
+      chrome.storage.local.set({ useVirtualAIAsDefaultNewTab: event.data.value });
+    } else if (event.data.type === CHROME_MESSAGE.VIRTUALAI_APP_LOADED) {
       clearTimeout(iframeLoadTimeout);
       hideErrorModal();
       fadeInContent();

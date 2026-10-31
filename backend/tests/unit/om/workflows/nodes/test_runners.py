@@ -14,6 +14,7 @@ from om.workflows.graph import WorkflowGraph
 from om.workflows.graph import WorkflowNode
 from om.workflows.models import WorkflowContext
 from om.workflows.nodes.agent import AgentRunnerV1
+from om.workflows.nodes.agent import UnusableStepAgentError
 from om.workflows.nodes.base import StepOutcome
 from om.workflows.nodes.base import StepStatus
 from om.workflows.nodes.base import UpgradeContext
@@ -139,13 +140,18 @@ class TestAgentRunner:
             _, outcome = _drive(AgentRunnerV1().run(node, ctx))
         assert outcome.status == StepStatus.TERMINAL
 
-    def test_missing_agent_is_skipped_without_packets(self) -> None:
+    def test_unusable_agent_fails_the_step_without_packets(self) -> None:
         node = _node("a", 0)
         ctx = _ctx([node])
-        ctx.agent_tools.get.return_value = None  # type: ignore[attr-defined]
+        ctx.agent_tools.get.side_effect = UnusableStepAgentError(  # type: ignore[attr-defined]
+            "uses the default Assistant; choose a dedicated agent"
+        )
         packets, outcome = _drive(AgentRunnerV1().run(node, ctx))
         assert packets == []
-        assert outcome.status == StepStatus.SKIPPED
+        assert outcome.status == StepStatus.FAILED
+        assert outcome.error == (
+            '"Step a" uses the default Assistant; choose a dedicated agent'
+        )
         assert ctx.state.completed_keys == set()
 
     def test_cancel_closes_the_step(self) -> None:

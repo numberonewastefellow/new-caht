@@ -284,8 +284,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -1574,11 +1574,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+       "tool_call_response",
+       "discussion_brief result for: TASK:\nStep 'Topic Moderator': work on: P"
       ]
      ]
     },
@@ -1610,15 +1610,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "discussion_brief result for: TASK:\nStep 'Topic Moderator': work on: P"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Scholar\", \"agent_output\": \"scholar_perspective result for: Step 'Scholar Agent': work on: Prepare a\"}"
       ]
      ]
     },
@@ -1650,19 +1654,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "discussion_brief result for: TASK:\nStep 'Topic Moderator': work on: P"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Scholar\", \"agent_output\": \"scholar_perspective result for: Step 'Scholar Agent': work on: Prepare a\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_discussion_advocate\", \"arguments\": {\"task\": \"Step 'Advocate Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Advocate\", \"agent_output\": \"advocate_perspective result for: Step 'Advocate Agent': work on: Prepare \"}"
       ]
      ]
     },
@@ -1694,23 +1706,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "discussion_brief result for: TASK:\nStep 'Topic Moderator': work on: P"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Scholar\", \"agent_output\": \"scholar_perspective result for: Step 'Scholar Agent': work on: Prepare a\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Advocate\", \"agent_output\": \"advocate_perspective result for: Step 'Advocate Agent': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_discussion_advocate\", \"arguments\": {\"task\": \"Step 'Advocate Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_discussion_critic\", \"arguments\": {\"task\": \"Step 'Critic Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Critic\", \"agent_output\": \"critic_perspective result for: Step 'Critic Agent': work on: Prepare a \"}"
       ]
      ]
     },
@@ -1742,27 +1766,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "discussion_brief result for: TASK:\nStep 'Topic Moderator': work on: P"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Scholar\", \"agent_output\": \"scholar_perspective result for: Step 'Scholar Agent': work on: Prepare a\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Advocate\", \"agent_output\": \"advocate_perspective result for: Step 'Advocate Agent': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_discussion_advocate\", \"arguments\": {\"task\": \"Step 'Advocate Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Critic\", \"agent_output\": \"critic_perspective result for: Step 'Critic Agent': work on: Prepare a \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_discussion_critic\", \"arguments\": {\"task\": \"Step 'Critic Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_discussion_practitioner\", \"arguments\": {\"task\": \"Step 'Practitioner Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Practitioner\", \"agent_output\": \"practitioner_perspective result for: Step 'Practitioner Agent': work on: Prep\"}"
       ]
      ]
     },
@@ -1794,31 +1834,51 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "discussion_brief result for: TASK:\nStep 'Topic Moderator': work on: P"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Scholar\", \"agent_output\": \"scholar_perspective result for: Step 'Scholar Agent': work on: Prepare a\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Advocate\", \"agent_output\": \"advocate_perspective result for: Step 'Advocate Agent': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_discussion_advocate\", \"arguments\": {\"task\": \"Step 'Advocate Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Critic\", \"agent_output\": \"critic_perspective result for: Step 'Critic Agent': work on: Prepare a \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_discussion_critic\", \"arguments\": {\"task\": \"Step 'Critic Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Practitioner\", \"agent_output\": \"practitioner_perspective result for: Step 'Practitioner Agent': work on: Prep\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_discussion_practitioner\", \"arguments\": {\"task\": \"Step 'Practitioner Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_discussion_code_engineer\", \"arguments\": {\"task\": \"Step 'Code Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Code Engineer\", \"agent_output\": \"code_output result for: Step 'Code Engineer': work on: Pr...<len=258 sha1=ad9567838ef0>"
       ]
      ]
     },
@@ -1850,35 +1910,59 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "discussion_brief result for: TASK:\nStep 'Topic Moderator': work on: P"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Scholar\", \"agent_output\": \"scholar_perspective result for: Step 'Scholar Agent': work on: Prepare a\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Advocate\", \"agent_output\": \"advocate_perspective result for: Step 'Advocate Agent': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_discussion_advocate\", \"arguments\": {\"task\": \"Step 'Advocate Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Critic\", \"agent_output\": \"critic_perspective result for: Step 'Critic Agent': work on: Prepare a \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_discussion_critic\", \"arguments\": {\"task\": \"Step 'Critic Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Practitioner\", \"agent_output\": \"practitioner_perspective result for: Step 'Practitioner Agent': work on: Prep\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_discussion_practitioner\", \"arguments\": {\"task\": \"Step 'Practitioner Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Code Engineer\", \"agent_output\": \"code_output result for: Step 'Code Engineer': work on: Pr...<len=258 sha1=ad9567838ef0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_discussion_code_engineer\", \"arguments\": {\"task\": \"Step 'Code Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_discussion_data_analyst\", \"arguments\": {\"task\": \"Step 'Data Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Data Analyst\", \"agent_output\": \"data_analysis result for: Step 'Data Analyst': work on: Pr...<len=263 sha1=f68b0d97bd9b>"
       ]
      ]
     },
@@ -1910,39 +1994,67 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "discussion_brief result for: TASK:\nStep 'Topic Moderator': work on: P"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Scholar\", \"agent_output\": \"scholar_perspective result for: Step 'Scholar Agent': work on: Prepare a\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Advocate\", \"agent_output\": \"advocate_perspective result for: Step 'Advocate Agent': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_discussion_advocate\", \"arguments\": {\"task\": \"Step 'Advocate Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Critic\", \"agent_output\": \"critic_perspective result for: Step 'Critic Agent': work on: Prepare a \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_discussion_critic\", \"arguments\": {\"task\": \"Step 'Critic Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Practitioner\", \"agent_output\": \"practitioner_perspective result for: Step 'Practitioner Agent': work on: Prep\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_discussion_practitioner\", \"arguments\": {\"task\": \"Step 'Practitioner Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Code Engineer\", \"agent_output\": \"code_output result for: Step 'Code Engineer': work on: Pr...<len=258 sha1=ad9567838ef0>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_discussion_code_engineer\", \"arguments\": {\"task\": \"Step 'Code Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Data Analyst\", \"agent_output\": \"data_analysis result for: Step 'Data Analyst': work on: Pr...<len=263 sha1=f68b0d97bd9b>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_discussion_data_analyst\", \"arguments\": {\"task\": \"Step 'Data Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_discussion_synthesizer\", \"arguments\": {\"task\": \"Step 'Discussion Synthesizer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Discussion Synthesizer\", \"agent_output\": \"synthesis result for: Step 'Discussion Synthesizer': work on: \"}"
       ]
      ]
     }
@@ -1971,13 +2083,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -1986,8 +2093,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2030,13 +2137,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -2045,8 +2147,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2055,8 +2157,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_discussion_advocate\", \"arguments\": {\"task\": \"Step 'Advocate Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2102,13 +2204,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -2117,8 +2214,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2127,8 +2224,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_discussion_advocate\", \"arguments\": {\"task\": \"Step 'Advocate Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2137,8 +2234,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_discussion_critic\", \"arguments\": {\"task\": \"Step 'Critic Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2187,13 +2284,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -2202,8 +2294,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2212,8 +2304,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_discussion_advocate\", \"arguments\": {\"task\": \"Step 'Advocate Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2222,8 +2314,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_discussion_critic\", \"arguments\": {\"task\": \"Step 'Critic Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2232,8 +2324,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_discussion_practitioner\", \"arguments\": {\"task\": \"Step 'Practitioner Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2285,13 +2377,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -2300,8 +2387,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2310,8 +2397,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_discussion_advocate\", \"arguments\": {\"task\": \"Step 'Advocate Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2320,8 +2407,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_discussion_critic\", \"arguments\": {\"task\": \"Step 'Critic Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2330,8 +2417,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_discussion_practitioner\", \"arguments\": {\"task\": \"Step 'Practitioner Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2340,8 +2427,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_discussion_code_engineer\", \"arguments\": {\"task\": \"Step 'Code Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2396,13 +2483,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -2411,8 +2493,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2421,8 +2503,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_discussion_advocate\", \"arguments\": {\"task\": \"Step 'Advocate Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2431,8 +2513,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_discussion_critic\", \"arguments\": {\"task\": \"Step 'Critic Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2441,8 +2523,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_discussion_practitioner\", \"arguments\": {\"task\": \"Step 'Practitioner Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2451,8 +2533,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_discussion_code_engineer\", \"arguments\": {\"task\": \"Step 'Code Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2461,8 +2543,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_discussion_data_analyst\", \"arguments\": {\"task\": \"Step 'Data Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2520,13 +2602,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"Step 'Topic Moderator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_discussion_moderator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Topi...<len=667 sha1=43257a393a9a>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -2535,8 +2612,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_discussion_scholar\", \"arguments\": {\"task\": \"Step 'Scholar Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2545,8 +2622,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_discussion_advocate\", \"arguments\": {\"task\": \"Step 'Advocate Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2555,8 +2632,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_discussion_critic\", \"arguments\": {\"task\": \"Step 'Critic Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2565,8 +2642,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_discussion_practitioner\", \"arguments\": {\"task\": \"Step 'Practitioner Agent': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2575,8 +2652,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_discussion_code_engineer\", \"arguments\": {\"task\": \"Step 'Code Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2585,8 +2662,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_discussion_data_analyst\", \"arguments\": {\"task\": \"Step 'Data Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2595,8 +2672,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_discussion_synthesizer\", \"arguments\": {\"task\": \"Step 'Discussion Synthesizer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",

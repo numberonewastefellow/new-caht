@@ -7,7 +7,7 @@ import {
   SIDE_PANEL_PATH,
 } from "../utils/constants.js";
 (function () {
-  const iframe = document.getElementById("onyx-panel-iframe");
+  const iframe = document.getElementById("virtualai-panel-iframe");
   const loadingScreen = document.getElementById("loading-screen");
 
   let currentUrl = "";
@@ -41,7 +41,7 @@ import {
     // Check for pending input first (from selection icon click)
     const hasPendingInput = await checkPendingInput();
     if (!hasPendingInput) {
-      loadOnyxDomain();
+      loadVirtualAIDomain();
     }
   }
 
@@ -76,7 +76,7 @@ import {
   }
 
   function handleMessage(event) {
-    if (event.data.type === CHROME_MESSAGE.ONYX_APP_LOADED) {
+    if (event.data.type === CHROME_MESSAGE.VIRTUALAI_APP_LOADED) {
       clearTimeout(iframeLoadTimeout);
       iframeLoaded = true;
       showIframe();
@@ -96,24 +96,24 @@ import {
     }, 500);
   }
 
-  async function loadOnyxDomain() {
+  async function loadVirtualAIDomain() {
     const response = await chrome.runtime.sendMessage({
-      action: ACTIONS.GET_CURRENT_ONYX_DOMAIN,
+      action: ACTIONS.GET_CURRENT_VIRTUALAI_DOMAIN,
     });
-    if (response && response[CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]) {
+    if (response && response[CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]) {
       setIframeSrc(
-        response[CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN] + SIDE_PANEL_PATH,
+        response[CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN] + SIDE_PANEL_PATH,
         "",
       );
     } else {
-      console.warn("Onyx domain not found, using default");
-      const domain = await getOnyxDomain();
+      console.warn("VertualAI domain not found, using default");
+      const domain = await getVirtualAIDomain();
       setIframeSrc(domain + SIDE_PANEL_PATH, "");
     }
   }
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === ACTIONS.OPEN_ONYX_WITH_INPUT) {
+    if (request.action === ACTIONS.OPEN_VIRTUALAI_WITH_INPUT) {
       setIframeSrc(request.url, request.pageUrl);
     } else if (request.action === ACTIONS.UPDATE_PAGE_URL) {
       sendWebsiteToIframe(request.pageUrl);

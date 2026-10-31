@@ -57,6 +57,16 @@ describe("validateSteps", () => {
     ]);
   });
 
+  it("tells 'no agent' apart from the default Assistant", () => {
+    expect(messages([agent("a", { agent_id: null })])).toEqual([
+      '"a" needs an agent',
+    ]);
+    expect(messages([agent("a", { agent_id: 0 })])).toEqual([
+      '"a" uses the default Assistant; choose a dedicated agent',
+    ]);
+    expect(messages([agent("a", { agent_id: 7 })])).toEqual([]);
+  });
+
   it("requires router branches that come after the router", () => {
     expect(messages([agent("a"), router("r", [])])).toContain(
       'Condition "r" needs at least one step in its True or False branch'
@@ -103,6 +113,7 @@ describe("containers", () => {
       parallel,
       { ...router("r", ["b"]), parent_key: "p", branch_index: 0 },
       inBranch("b", 0),
+      inBranch("c", 1),
     ];
     expect(messages(steps)).toEqual([]);
   });
@@ -112,6 +123,21 @@ describe("containers", () => {
     expect(messages(steps)).toContain(
       'Condition "r" can only branch to steps in the same container branch'
     );
+  });
+
+  it("flags router targets that no longer exist", () => {
+    expect(messages([agent("a"), router("r", ["gone"])])).toContain(
+      'Condition "r" branches to a step that no longer exists'
+    );
+  });
+
+  it("flags reserved output keys", () => {
+    expect(messages([agent("a", { output_key: "loop" })])).toEqual([
+      '"a" can\'t use the reserved output key "loop"',
+    ]);
+    expect(messages([agent("a", { output_key: "user_input" })])).toEqual([
+      '"a" can\'t use the reserved output key "user_input"',
+    ]);
   });
 
   it("flags steps whose container was removed", () => {

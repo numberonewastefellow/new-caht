@@ -8,23 +8,21 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from om.db.models import Agent
 from om.llm.factory import get_llm_for_agent
 from om.llm.interfaces import LLM
 from om.llm.override_models import LLMOverride
 from om.tools.tool_implementations.agent_tool import AgentTool
-from om.utils.logger import setup_logger
 from om.workflows.nodes.agent import AgentStepConfigV1
+from om.workflows.nodes.agent import load_step_agent
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
 
     from om.chat.emitter import Emitter
+    from om.db.models import Agent
     from om.db.models import User
     from om.tools.models import ChatFile
     from om.workflows.graph import WorkflowNode
-
-logger = setup_logger()
 
 
 class AgentToolCache:
@@ -44,25 +42,21 @@ class AgentToolCache:
         self._emitter = emitter
         self._chat_files = chat_files
         self._sandbox_session_id = sandbox_session_id
-        self._tools: dict[str, AgentTool | None] = {}
+        self._tools: dict[str, AgentTool] = {}
         self._llms: dict[tuple[int, str | None, str | None], LLM] = {}
 
-    def get(self, node: WorkflowNode, config: AgentStepConfigV1) -> AgentTool | None:
-        """The AgentTool for ``node``, or None if its agent is missing or deleted."""
+    def get(self, node: WorkflowNode, config: AgentStepConfigV1) -> AgentTool:
+        """The AgentTool for ``node``.
+
+        Raises:
+            UnusableStepAgentError: the node's agent can't run workflow steps.
+        """
         if node.node_key not in self._tools:
             self._tools[node.node_key] = self._build(node, config)
         return self._tools[node.node_key]
 
-    def _build(self, node: WorkflowNode, config: AgentStepConfigV1) -> AgentTool | None:
-        if config.agent_id is None:
-            return None
-        agent = self._db_session.get(Agent, config.agent_id)
-        if agent is None or agent.deleted:
-            logger.warning(
-                "Agent %s not found for workflow node %s", config.agent_id, node.node_key
-            )
-            return None
-
+    def _build(self, node: WorkflowNode, config: AgentStepConfigV1) -> AgentTool:
+        agent = load_step_agent(self._db_session, config.agent_id)
         has_tools = (
             bool(config.tool_ids_override)
             if config.tool_ids_override is not None

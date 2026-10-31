@@ -158,11 +158,11 @@ None. All of this is open-source upstream code; no `ee/` folders.
 - Note pre-existing unrelated failures separately (e.g. `test_websearch_utils.py` cp1252 on Windows).
 
 ## 9. Gates
-- [ ] Naming grep: no upstream product name in new or changed files.
-- [ ] `pytest backend/tests/unit/om/llm backend/tests/unit/om/server/manage/llm backend/tests/unit/om/db/test_llm_sync.py`
-- [ ] `pytest backend/tests/unit/migration_safety`. **Do not touch** `snapshots/baseline.json`. If the new module `om/llm/local_providers.py` makes it fail, stop and ask the integrator; don't edit it here.
-- [ ] `backend/tests/route_rename` (new routes are additive).
-- [ ] `npx tsc --noEmit` in `web/`.
+- [x] Naming grep: no upstream product name in new or changed files. (2026-10-30, see tracker "B8 Gates")
+- [x] `pytest backend/tests/unit/om/llm backend/tests/unit/om/server/manage/llm backend/tests/unit/om/db/test_llm_sync.py` (2026-10-30: 341 passed, 4 pre-existing failures)
+- [x] `pytest backend/tests/unit/migration_safety` (2026-10-30: only the expected added module; baseline regenerated at integration). **Do not touch** `snapshots/baseline.json`. If the new module `om/llm/local_providers.py` makes it fail, stop and ask the integrator; don't edit it here.
+- [x] `backend/tests/route_rename` (new routes are additive). (2026-10-30: 2 pre-existing failures, none LLM)
+- [x] `npx tsc --noEmit` in `web/`. (2026-10-30: clean except the known dotenv noise)
 - [ ] `python -I rename-audit/build_inventory.py --check`: **not run by this lane** (it rewrites tracked files); the user runs it at commit time.
 
 ## 10. Rollout
@@ -211,7 +211,8 @@ Goal: show that our clean-room code behaves like the upstream reference on the c
 - [x] 2026-10-30 C5 OpenAI `/v1/models` parsing + masked-key cases — result: 5/5 PASS (2 chat models sorted, context_length mapped, empty → 400; masked key used for same base incl. /v1-less spelling, NOT sent to changed host).
 - [x] 2026-10-30 C6 LiteLLM routing per provider + golden no-change — result: PASS: 5 routing cases (lm_studio ±key, openai_compatible ±key, ollama unchanged) + 10/10 existing-provider golden kwargs byte-identical.
 - [x] 2026-10-30 C7 Intentional differences: (a) LM Studio reasoning uses the name heuristic only when `capabilities.reasoning` is absent (reference ORs both); (b) OpenAI-compatible vision is always False at fetch (no catalog in our tree; admin ticks it); (c) also reads `max_model_len` (vLLM) as fallback for context; (d) masked key resolved by `provider_name` and /v1-normalised base compare; (e) providers not in onboarding (Q2).
-- [ ] User: Docker rebuild + manual checks M1–M6
+- [x] 2026-10-30 Docker rebuild (api, background, web, pulse) + headless Chrome walk-through: Admin → Language Models shows the LM Studio and OpenAI-Compatible tiles; both forms open (Docker hint, manual model entry). With no local server running, the LM Studio fetch said only "[Errno 101] Network is unreachable" (httpx reports the last address tried, IPv6). `_fetch_models_json` now explains connect / timeout / HTTP status / non-JSON failures (`_describe_fetch_error`, test `test_connect_error_explains_unreachable_server`; `tests/unit/om/server/manage/llm` 76 passed).
+- [ ] User: manual checks M1–M4 against a real LM Studio / vLLM server (save provider, chat with it)
 - [ ] User: review + commit (run `build_inventory.py --check` first)
 - [ ] Mirror status in the backlog table (`TODO_MD_UPSTREAM_PORT_CONNECTORS_AND_FEATURES.MD` §4)
 

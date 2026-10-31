@@ -8,7 +8,7 @@
     if (selectionIcon) return;
 
     selectionIcon = document.createElement("div");
-    selectionIcon.id = "onyx-selection-icon";
+    selectionIcon.id = "virtualai-selection-icon";
 
     const img = document.createElement("img");
     img.src = chrome.runtime.getURL("public/icon32.png");
@@ -97,8 +97,8 @@
 
   document.addEventListener("mouseup", (e) => {
     if (
-      e.target.id === "onyx-selection-icon" ||
-      e.target.closest("#onyx-selection-icon")
+      e.target.id === "virtualai-selection-icon" ||
+      e.target.closest("#virtualai-selection-icon")
     ) {
       return;
     }
@@ -117,8 +117,8 @@
 
   document.addEventListener("mousedown", (e) => {
     if (
-      e.target.id !== "onyx-selection-icon" &&
-      !e.target.closest("#onyx-selection-icon")
+      e.target.id !== "virtualai-selection-icon" &&
+      !e.target.closest("#virtualai-selection-icon")
     ) {
       const selection = window.getSelection();
       const selectedText = selection.toString().trim();

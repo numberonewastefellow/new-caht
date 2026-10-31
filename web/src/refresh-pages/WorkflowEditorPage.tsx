@@ -17,6 +17,21 @@ import { Formik, Form, FieldArray, useFormikContext } from "formik";
 import * as Yup from "yup";
 import { useAgents } from "@/hooks/useAgents";
 import { selectableStepAgents } from "@/lib/workflows/stepAgents";
+import { StepPlacementFields } from "@/components/workflows/StepPlacementFields";
+import { ancestorsOf } from "@/lib/workflows/containerRules";
+import {
+  canReorder,
+  descendantKeys,
+  moveStep,
+  removeStep,
+  reorderInBlock,
+} from "@/lib/workflows/stepTree";
+import {
+  MAX_CALLS_PER_AGENT,
+  MAX_ORCHESTRATOR_STEPS,
+  MAX_TIMEOUT_SECONDS,
+  MIN_TIMEOUT_SECONDS,
+} from "@/lib/workflows/workflowLimits";
 import { useWorkflows } from "@/hooks/useWorkflows";
 import { useLLMProviders } from "@/lib/hooks/useLLMProviders";
 import { parseLlmDescriptor, structureValue } from "@/lib/llm/utils";
@@ -34,7 +49,6 @@ import {
   type EditorStep,
   type WorkflowMeta,
   DEFAULT_WORKFLOW_META,
-  containerInfo,
   createEditorStep,
   newNodeKey,
   nextOutputKey,
@@ -189,6 +203,14 @@ function stepTypeOptions(
   return options;
 }
 
+const CONTAINER_INDENT_PX = 28;
+
+const PLACEMENT_CLASSES = {
+  section: "min-w-[12rem]",
+  label: "flex flex-col gap-1 text-xs text-text-03",
+  select: "h-9 px-2 rounded-8 border border-border bg-background text-sm text-text-05",
+};
+
 interface WorkflowStepRowProps {
   index: number;
   agents: { id: number; name: string; description: string }[];
@@ -245,9 +267,13 @@ function WorkflowStepRow({
         promote_output: step.promote_output,
       })
     );
-  const container = containerInfo(step, values.steps);
+  const depth = ancestorsOf(
+    step,
+    new Map(values.steps.map((s) => [s.node_key, s]))
+  ).length;
 
   return (
+    <div style={{ marginLeft: depth * CONTAINER_INDENT_PX }}>
     <Card padding={1}>
       <div className="flex items-start gap-3">
         {/* Step number */}
@@ -322,20 +348,21 @@ function WorkflowStepRow({
             </div>
           </div>
 
-          {(container.childCount > 0 || container.containerName) && (
-            <Text secondaryBody text03 className="text-xs">
-              {container.childCount > 0
-                ? `Contains ${container.childCount} step(s). `
-                : ""}
-              {container.containerName
-                ? `Inside "${container.containerName}"${
-                    container.branchIndex != null
-                      ? `, branch ${container.branchIndex + 1}`
-                      : ""
-                  }. `
-                : ""}
-              Container structure is kept when you save; edit it in a later version of the editor.
-            </Text>
+          {values.orchestration_mode === "sequential" && (
+            <div className="flex flex-wrap gap-3">
+              <StepPlacementFields
+                step={step}
+                steps={values.steps}
+                catalog={catalog}
+                classes={PLACEMENT_CLASSES}
+                onMove={(place) =>
+                  setFieldValue(
+                    "steps",
+                    moveStep(values.steps, step.node_key, place)
+                  )
+                }
+              />
+            </div>
           )}
 
           {modeConflict && (
@@ -400,7 +427,7 @@ function WorkflowStepRow({
           )}
 
           {/* Other catalog node types: form from their config schema */}
-          {kind === "schema" && typeInfo && (
+          {(kind === "schema" || kind === "container") && typeInfo && (
             <div className="space-y-2 p-3 rounded-8 border border-border bg-background-tint-01">
               <Text secondaryBody text04 className="text-xs font-medium">
                 {typeInfo.label} Settings
@@ -463,7 +490,8 @@ function WorkflowStepRow({
             </div>
           </div>
 
-          {/* Row 4: Toggle switches — horizontal with comfortable spacing */}
+          {/* Row 4: Toggle switches — a step inside a container has none */}
+          {!step.parent_key && (
           <div className="flex items-center gap-6 pt-1 border-t border-border-01">
             <div className="flex items-center gap-2">
               <SwitchField name={`steps.${index}.is_terminal`} />
@@ -495,6 +523,7 @@ function WorkflowStepRow({
               </div>
             </div>
           </div>
+          )}
         </div>
 
         {/* Reorder + Remove buttons */}
@@ -537,6 +566,7 @@ function WorkflowStepRow({
         </div>
       </div>
     </Card>
+    </div>
   );
 }
 
@@ -636,9 +666,9 @@ export default function WorkflowEditorPage({
     description: Yup.string().optional(),
     orchestration_mode: Yup.string().oneOf(["sequential", "llm_decision"]).required(),
     orchestrator_prompt: Yup.string().optional(),
-    max_steps: Yup.number().min(1, "Must be at least 1").max(50, "Maximum 50 steps").required("Required"),
-    max_calls_per_agent: Yup.number().min(1, "Must be at least 1").max(20, "Maximum 20").required("Required"),
-    timeout_seconds: Yup.number().min(30, "Minimum 30 seconds").max(7200, "Maximum 2 hours").required("Required"),
+    max_steps: Yup.number().min(1, "Must be at least 1").max(MAX_ORCHESTRATOR_STEPS, `Maximum ${MAX_ORCHESTRATOR_STEPS} steps`).required("Required"),
+    max_calls_per_agent: Yup.number().min(1, "Must be at least 1").max(MAX_CALLS_PER_AGENT, `Maximum ${MAX_CALLS_PER_AGENT}`).required("Required"),
+    timeout_seconds: Yup.number().min(MIN_TIMEOUT_SECONDS, `Minimum ${MIN_TIMEOUT_SECONDS} seconds`).max(MAX_TIMEOUT_SECONDS, "Maximum 2 hours").required("Required"),
     steps: Yup.array()
       .of(
         Yup.object().shape({
@@ -929,12 +959,26 @@ export default function WorkflowEditorPage({
                                       stepOrderToNodeKey: stepOrderToNodeKey(values.steps),
                                     })
                                   }
-                                  onRemove={() => arrayHelpers.remove(index)}
+                                  onRemove={() => {
+                                    const inside = descendantKeys(values.steps, step.node_key).size;
+                                    if (
+                                      inside === 0 ||
+                                      window.confirm(
+                                        `Remove "${stepDisplayName(step, index)}" and the ${inside} step(s) inside it?`
+                                      )
+                                    ) {
+                                      setFieldValue("steps", removeStep(values.steps, step.node_key));
+                                    }
+                                  }}
                                   canRemove={values.steps.length > 1}
-                                  canMoveUp={index > 0}
-                                  canMoveDown={index < values.steps.length - 1}
-                                  onMoveUp={() => arrayHelpers.swap(index, index - 1)}
-                                  onMoveDown={() => arrayHelpers.swap(index, index + 1)}
+                                  canMoveUp={canReorder(values.steps, step.node_key, -1)}
+                                  canMoveDown={canReorder(values.steps, step.node_key, 1)}
+                                  onMoveUp={() =>
+                                    setFieldValue("steps", reorderInBlock(values.steps, step.node_key, -1))
+                                  }
+                                  onMoveDown={() =>
+                                    setFieldValue("steps", reorderInBlock(values.steps, step.node_key, 1))
+                                  }
                                 />
                               ))}
 
@@ -1103,6 +1147,8 @@ export default function WorkflowEditorPage({
 
                         <GeneralLayouts.Section gap={0.5}>
                           <Card>
+                            {values.orchestration_mode === "llm_decision" && (
+                              <>
                             <InputLayouts.Horizontal
                               name="max_steps"
                               title="Max Total Steps"
@@ -1113,7 +1159,7 @@ export default function WorkflowEditorPage({
                                 value={values.max_steps}
                                 onChange={(e) => setFieldValue("max_steps", parseInt(e.target.value) || 10)}
                                 min={1}
-                                max={50}
+                                max={MAX_ORCHESTRATOR_STEPS}
                                 className="w-20 h-10 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm text-center"
                               />
                             </InputLayouts.Horizontal>
@@ -1127,10 +1173,12 @@ export default function WorkflowEditorPage({
                                 value={values.max_calls_per_agent}
                                 onChange={(e) => setFieldValue("max_calls_per_agent", parseInt(e.target.value) || 2)}
                                 min={1}
-                                max={20}
+                                max={MAX_CALLS_PER_AGENT}
                                 className="w-20 h-10 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm text-center"
                               />
                             </InputLayouts.Horizontal>
+                              </>
+                            )}
                             <InputLayouts.Horizontal
                               name="timeout_seconds"
                               title="Timeout"

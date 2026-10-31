@@ -193,7 +193,7 @@
         </p>
 
         <div class="code-block">
-          &lt;onyx-chat-widget mode="launcher"&gt;&lt;/onyx-chat-widget&gt;
+          &lt;virtualai-chat-widget mode="launcher"&gt;&lt;/virtualai-chat-widget&gt;
         </div>
 
         <div class="demo-grid">
@@ -219,12 +219,12 @@
         </p>
 
         <div class="code-block">
-          &lt;onyx-chat-widget mode="inline"&gt;&lt;/onyx-chat-widget&gt;
+          &lt;virtualai-chat-widget mode="inline"&gt;&lt;/virtualai-chat-widget&gt;
           &lt;!-- Automatically compact when no messages --&gt;
         </div>
 
         <div class="compact-demo">
-          <onyx-chat-widget mode="inline"></onyx-chat-widget>
+          <virtualai-chat-widget mode="inline"></virtualai-chat-widget>
         </div>
       </div>
 
@@ -239,17 +239,17 @@
 
         <h3>Basic Setup</h3>
         <div class="code-block">
-          &lt;onyx-chat-widget backend-url="https://api.onyx.app"
-          api-key="your_api_key_here"&gt; &lt;/onyx-chat-widget&gt;
+          &lt;virtualai-chat-widget backend-url="https://virtualai.com"
+          api-key="your_api_key_here"&gt; &lt;/virtualai-chat-widget&gt;
         </div>
 
         <h3>Custom Branding</h3>
         <div class="code-block">
-          &lt;onyx-chat-widget backend-url="https://api.onyx.app"
+          &lt;virtualai-chat-widget backend-url="https://virtualai.com"
           api-key="your_api_key_here" agent-id="42" agent-name="Support Bot"
           logo="https://yoursite.com/logo.png" primary-color="#FF6B35"
           background-color="#FFFFFF" text-color="#1A1A1A"&gt;
-          &lt;/onyx-chat-widget&gt;
+          &lt;/virtualai-chat-widget&gt;
         </div>
 
         <div class="info-box">
@@ -261,16 +261,16 @@
     </div>
 
     <!-- Launcher widget instance -->
-    <onyx-chat-widget
+    <virtualai-chat-widget
       backend-url="http://localhost:8080"
       api-key="your-api-key-here"
       mode="launcher"
-    ></onyx-chat-widget>
+    ></virtualai-chat-widget>
 
     <!-- Load widget source via Vite for local development -->
-    <script type="module" src="./dist/onyx-widget.js"></script>
+    <script type="module" src="./dist/virtualai-widget.js"></script>
 
     <!-- Load widget source via CDN for production -->
-    <!-- <script type="module" src="https://cdn.onyx.app/widget/1.0/dist/onyx-widget.js"></script> -->
+    <!-- <script type="module" src="https://virtualai.com/widget/1.0/dist/virtualai-widget.js"></script> -->
   </body>
 </html>

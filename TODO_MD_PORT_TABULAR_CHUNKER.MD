@@ -274,6 +274,7 @@ None. Spreadsheets keep showing up as normal search results and citations. Their
 ### 10.3 Expected, intended differences (not bugs)
 - **Our extraction:** the 100-consecutive-empty-rows guard in `xlsx_sheets_to_csv` (cross-verification feeds rows directly, so this shows up only in end-to-end runs).
 - **Labels:** wording of sheet titles uses `sheet_name` instead of a parsed heading. That is allowed only if the information is the same.
+- **Record count next to the row count (added 2026-10-30, after the live test):** when the first column numbers the records (unique numbers or ids in at least half of the rows) and some rows leave it empty (a note or total line), the overview, all-rows and summary lines say `17 rows (16 with a Serial# value)`. Sheets where every row has a value are byte-identical to the reference. Reason: the live test read "17 rows" of 16 conferences plus a note row as 17 conferences (count question 0/2).
 - Anything else counts as a bug. Fix it, or add it here with a reason, before ticking the step.
 
 ## 11. Metric hook (L4 eval, backlog item 15)
@@ -358,7 +359,8 @@ None. Spreadsheets keep showing up as normal search results and citations. Their
   - xlsx row questions went from 10/12 correct (old chunker) to **0/12**. The model said values were "not mentioned", or mixed rows up.
   - **Fix: the default is now 12.** Sheets up to about 6k tokens keep every row, written as `Column=value` with the header repeated in each chunk (11 chunks here).
   - The unit tests still pass. A re-test is pending (next item).
-- [ ] Live re-test with default 12 (new workspace, same 12 questions)
+- [x] 2026-10-30 Live re-test with default 12 (workspace 6, same 12 questions): xlsx back to 9/12, row lookups 6/6; results in `docs/rag-eval/results/2026-10-30_workspace_smoke.md` (column "ws6"). The count question stayed 0/2: "17 rows" includes a note row.
+- [x] 2026-10-30 Count fix: `chunk_builder._records_note` adds "(16 with a Serial# value)" next to the row count when the record-number column is empty in some rows (§10.3). Tests `test_note_row_is_not_counted_as_a_record`, `test_record_note_absent_when_every_row_is_numbered`; indexing + connector unit tests 211 passed, only the 3 pre-existing `test_censoring` failures. Re-index the xlsx to see it in answers.
 - [ ] User: Docker rebuild + checks A/B (§15)
 - [ ] User: review + commit (run `build_inventory.py --check` first)
 - [ ] Tick item 3 in `TODO_MD_RAG_UPGRADES_FROM_UPSTREAM.MD`; add the deferred rows (staging, re-chunk task, more connectors, python-tool bridge)
@@ -381,7 +383,8 @@ None. Spreadsheets keep showing up as normal search results and citations. Their
 
 ## 15. Rollout and verification (user)
 1. Rebuild `api_server` and `background`. No new dependency and no migration.
-2. In-container: `python -m pytest tests/unit/om/indexing tests/unit/om/connectors/cross_connector_utils -q`.
+2. Unit tests in a throwaway container (the backend image has no `tests/` folder and the dev compose mounts only `backend/om`, so `docker exec` into api_server cannot run them). From PowerShell at the repo root:
+   `docker run --rm -v "${PWD}\backend\om:/app/om:ro" -v "${PWD}\backend\tests:/app/tests:ro" -v "${PWD}\backend\pytest.ini:/app/pytest.ini:ro" -w /app om/om-backend:latest python -m pytest tests/unit/om/indexing tests/unit/om/connectors/cross_connector_utils -q -p no:cacheprovider`
 3. **Check A, workspace:**
    - Upload a multi-sheet xlsx (for example a dept register) to a workspace.
    - Ask "how many rows / total X by district".

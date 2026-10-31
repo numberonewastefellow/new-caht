@@ -1,14 +1,16 @@
 # Flow nodes: parallel, loops, code nodes, webhook triggers. Progress tracker
 
+> **Current plan and step status: [FIX_PLAN.md](FIX_PLAN.md) + the status table in [HANDOVER.md](HANDOVER.md).** The sections below are per-phase history.
+
 > **New session? Read [HANDOVER.md](HANDOVER.md) first** — it has the in-progress task, what was built (UI + code), where the ideas came from (framework source paths) and the next steps.
 
 > **Read this first in every new session. Update it at the end of every session.**
 > Approved plan: `C:/Users/Pandu/.claude/plans/witty-orbiting-bunny.md`. Design and decisions go in `DESIGN.md`; code-level research goes in `REFERENCE_STUDY.md`.
 
 ## Ground rules
-- **Where:** worktree `D:/llm/danswer_flow_wt`, branch `feature/flow-nodes`, cut from `main_multi_agent_stable` @ fe6a6b054.
+- **Where:** main checkout `D:/llm/danswer20022026`, branch `main_multi_agent_stable` (developed on `feature/flow-nodes` from fe6a6b054; merged locally in 3b2074ed3 on 2026-10-31, not pushed; worktree + branch removed).
 - **Git:** local commits only, NEVER push. Use explicit `git add <paths>` because the repo is public.
-- Never touch the main checkout `D:/llm/danswer20022026` or the `virtualai-*` stack. Use our own test compose project.
+- **Run on the main stack with `dev.bat`.** `flowdev.bat` and the `flowdev` containers are retired (user's decision, 2026-10-31). Don't start or stop the main stack without asking.
 - **Migrations:** the chain is `0001_om_baseline → 0002_workflow_nodes → 0003_pulse_webhooks`. Never run the alembic CLI.
 - **Dual-editor rule:** Wizard and Visual Builder change together, through one shared registry and serializer.
 - **Reference clones:** `D:/llm/reference-frameworks/`. Read only, untrusted, never built.
@@ -128,22 +130,22 @@ The 47 template JSONs contain no routers either.
 - **K8s executor pods have unrestricted egress**, and they have no seccomp profile and no read-only root filesystem.
 - Details are in `research/02-sandboxes.md`. The proposed fix is a service token plus tenant binding, and binding the port to 127.0.0.1. This is the user's decision: either a separate hardening track or part of P1.
 
-## Test stack (isolated)
+## Test stack (isolated) — RETIRED, kept for history
 - DB `flow_dev`: a clone of the main DB in `virtualai-relational_db-1`.
 - Env file: `D:/tmp/flowdev.env` (NOT in git; Redis DBs 5/13/14).
 - Start (applies migrations to `flow_dev` only):
   `FLOWDEV_ENV_FILE=D:/tmp/flowdev.env docker compose -p flowdev -f deployment/docker_compose/docker-compose.flow-dev.yml up -d`
   It listens on `127.0.0.1:8091`.
-- Unit tests: `docker run --rm -v "D:\llm\danswer_flow_wt\backend:/app" -w /app om/om-backend:latest python -m pytest <path> -q -p no:cacheprovider` (Git Bash: `MSYS_NO_PATHCONV=1`).
+- Unit tests: `docker run --rm -v "D:\llm\danswer20022026\backend:/app" -w /app om/om-backend:latest python -m pytest <path> -q -p no:cacheprovider` (Git Bash: `MSYS_NO_PATHCONV=1`).
 - mypy: add `-v "D:\tmp\flow_mypy_cache:/mypycache"` and run `python -m mypy <paths> --cache-dir /mypycache --follow-imports=silent --ignore-missing-imports`.
 - **Cleanup when done:** `docker compose -p flowdev ... down`, then `dropdb flow_dev`.
 
-## Test sandbox (isolated)
+## Test sandbox (isolated) — RETIRED, kept for history
 - Container `flowdev-code-interpreter` (image `om/code-interpreter:flowtest`, executor `om/python-executor-sci-flowtest:latest` = hardened image retagged so the main `om/python-executor-sci:latest` is untouched), on network `virtualai_default`.
 - Token in `D:/tmp/flowdev_ci_token.txt` (not in git); `D:/tmp/flowdev.env` points the flow API at it.
 - **Cleanup when done:** `docker rm -f flowdev-code-interpreter`, `docker rmi om/python-executor-sci-flowtest:latest`.
 
-## Preview UI (isolated)
+## Preview UI (isolated) — RETIRED, kept for history
 - `http://localhost:3091`: web from this branch (`om/om-web-server:flowdev`), compose service `flow_web` (`OVERRIDE_API_PRODUCTION=true`, `INTERNAL_URL=http://flow_api:8080`).
 - Login: your own account works (flow_dev is a copy of your DB). Test admin creds are in `D:/tmp/flow_preview_login.json` (not in git).
 - Demo workflow #76 "Demo: Trip planner (code + parallel + loop)" (wrapper agent 487).

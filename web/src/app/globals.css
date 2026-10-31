@@ -1,5 +1,6 @@
-/* Inter is loaded via next/font in layout.tsx */
-@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&display=swap");
+/* Inter is loaded via next/font in layout.tsx. DM Mono is not loaded from
+   Google Fonts: the CSP (next.config.js) only allows same-origin styles and
+   fonts, so --font-dm-mono falls back to the local monospace fonts. */
 
 @import "css/attachment-button.css";
 @import "css/button.css";

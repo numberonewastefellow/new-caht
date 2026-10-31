@@ -1,5 +1,5 @@
 import {
-  DEFAULT_ONYX_DOMAIN,
+  DEFAULT_VIRTUALAI_DOMAIN,
   CHROME_SPECIFIC_STORAGE_KEYS,
   ACTIONS,
   SIDE_PANEL_PATH,
@@ -43,16 +43,16 @@ async function openSidePanel(tabId) {
   }
 }
 
-async function sendToOnyx(info, tab) {
+async function sendToVirtualAI(info, tab) {
   const selectedText = encodeURIComponent(info.selectionText);
   const currentUrl = encodeURIComponent(tab.url);
 
   try {
     const result = await chrome.storage.local.get({
-      [CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]: DEFAULT_ONYX_DOMAIN,
+      [CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]: DEFAULT_VIRTUALAI_DOMAIN,
     });
     const url = `${
-      result[CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]
+      result[CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]
     }${SIDE_PANEL_PATH}?user-prompt=${selectedText}`;
 
     await openSidePanel(tab.id);
@@ -69,12 +69,12 @@ async function sendToOnyx(info, tab) {
 async function toggleNewTabOverride() {
   try {
     const result = await chrome.storage.local.get(
-      CHROME_SPECIFIC_STORAGE_KEYS.USE_ONYX_AS_DEFAULT_NEW_TAB,
+      CHROME_SPECIFIC_STORAGE_KEYS.USE_VIRTUALAI_AS_DEFAULT_NEW_TAB,
     );
     const newValue =
-      !result[CHROME_SPECIFIC_STORAGE_KEYS.USE_ONYX_AS_DEFAULT_NEW_TAB];
+      !result[CHROME_SPECIFIC_STORAGE_KEYS.USE_VIRTUALAI_AS_DEFAULT_NEW_TAB];
     await chrome.storage.local.set({
-      [CHROME_SPECIFIC_STORAGE_KEYS.USE_ONYX_AS_DEFAULT_NEW_TAB]: newValue,
+      [CHROME_SPECIFIC_STORAGE_KEYS.USE_VIRTUALAI_AS_DEFAULT_NEW_TAB]: newValue,
     });
 
     chrome.notifications.create({
@@ -105,7 +105,7 @@ chrome.action.onClicked.addListener((tab) => {
 });
 
 chrome.commands.onCommand.addListener(async (command) => {
-  if (command === ACTIONS.SEND_TO_ONYX) {
+  if (command === ACTIONS.SEND_TO_VIRTUALAI) {
     try {
       const [tab] = await chrome.tabs.query({
         active: true,
@@ -116,7 +116,7 @@ chrome.commands.onCommand.addListener(async (command) => {
           action: ACTIONS.GET_SELECTED_TEXT,
         });
         const selectedText = response?.selectedText || "";
-        sendToOnyx({ selectionText: selectedText }, tab);
+        sendToVirtualAI({ selectionText: selectedText }, tab);
       }
     } catch (error) {
       console.error("Error sending to VertualAI:", error);
@@ -154,13 +154,13 @@ chrome.commands.onCommand.addListener(async (command) => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === ACTIONS.GET_CURRENT_ONYX_DOMAIN) {
+  if (request.action === ACTIONS.GET_CURRENT_VIRTUALAI_DOMAIN) {
     chrome.storage.local.get(
-      { [CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]: DEFAULT_ONYX_DOMAIN },
+      { [CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]: DEFAULT_VIRTUALAI_DOMAIN },
       (result) => {
         sendResponse({
-          [CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]:
-            result[CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN],
+          [CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]:
+            result[CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN],
         });
       },
     );
@@ -169,10 +169,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === ACTIONS.CLOSE_SIDE_PANEL) {
     closeSidePanel();
     chrome.storage.local.get(
-      { [CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]: DEFAULT_ONYX_DOMAIN },
+      { [CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]: DEFAULT_VIRTUALAI_DOMAIN },
       (result) => {
         chrome.tabs.create({
-          url: `${result[CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]}/auth/login`,
+          url: `${result[CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]}/auth/login`,
           active: true,
         });
       },
@@ -186,11 +186,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     if (tabId && windowId) {
       chrome.storage.local.get(
-        { [CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]: DEFAULT_ONYX_DOMAIN },
+        { [CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]: DEFAULT_VIRTUALAI_DOMAIN },
         (result) => {
           const encodedText = encodeURIComponent(selectedText);
-          const onyxDomain = result[CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN];
-          const url = `${onyxDomain}${SIDE_PANEL_PATH}?user-prompt=${encodedText}`;
+          const virtualaiDomain = result[CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN];
+          const url = `${virtualaiDomain}${SIDE_PANEL_PATH}?user-prompt=${encodedText}`;
 
           chrome.storage.session.set({
             pendingInput: {
@@ -204,7 +204,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             .open({ windowId })
             .then(() => {
               chrome.runtime.sendMessage({
-                action: ACTIONS.OPEN_ONYX_WITH_INPUT,
+                action: ACTIONS.OPEN_VIRTUALAI_WITH_INPUT,
                 url: url,
                 pageUrl: pageUrl,
               });
@@ -227,10 +227,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.storage.onChanged.addListener((changes, namespace) => {
   if (
     namespace === "local" &&
-    changes[CHROME_SPECIFIC_STORAGE_KEYS.USE_ONYX_AS_DEFAULT_NEW_TAB]
+    changes[CHROME_SPECIFIC_STORAGE_KEYS.USE_VIRTUALAI_AS_DEFAULT_NEW_TAB]
   ) {
     const newValue =
-      changes[CHROME_SPECIFIC_STORAGE_KEYS.USE_ONYX_AS_DEFAULT_NEW_TAB]
+      changes[CHROME_SPECIFIC_STORAGE_KEYS.USE_VIRTUALAI_AS_DEFAULT_NEW_TAB]
         .newValue;
 
     if (newValue === false) {
@@ -250,10 +250,10 @@ chrome.omnibox.setDefaultSuggestion({
 chrome.omnibox.onInputEntered.addListener(async (text) => {
   try {
     const result = await chrome.storage.local.get({
-      [CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]: DEFAULT_ONYX_DOMAIN,
+      [CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]: DEFAULT_VIRTUALAI_DOMAIN,
     });
 
-    const domain = result[CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN];
+    const domain = result[CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN];
     const searchUrl = `${domain}/chat?user-prompt=${encodeURIComponent(text)}`;
 
     chrome.tabs.update({ url: searchUrl });

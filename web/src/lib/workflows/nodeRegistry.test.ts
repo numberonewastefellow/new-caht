@@ -34,6 +34,7 @@ describe("paletteTypes", () => {
       "conditional_router",
       "code",
       "parallel",
+      "loop",
       "transform",
     ]);
   });

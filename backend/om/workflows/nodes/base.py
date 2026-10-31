@@ -44,8 +44,7 @@ class StepStatus(str, enum.Enum):
     # Completed, and the node asks the coordinator to stop the workflow
     # (e.g. ``is_terminal`` steps).
     TERMINAL = "terminal"
-    # The node could not run and was passed over without being completed
-    # (e.g. an agent step whose agent was deleted).
+    # The node was passed over without being completed.
     SKIPPED = "skipped"
     # Waiting for human input; the runner persisted a pause checkpoint.
     PAUSED = "paused"

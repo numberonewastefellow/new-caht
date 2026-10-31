@@ -244,8 +244,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"Step 'Intake Coordinator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -926,11 +926,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"Step 'Intake Coordinator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Intake...<len=666 sha1=2ab1fa8d46cc>"
+       "tool_call_response",
+       "patient_intake result for: TASK:\nStep 'Intake Coordinator': work on"
       ]
      ]
     },
@@ -958,15 +958,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"Step 'Intake Coordinator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "patient_intake result for: TASK:\nStep 'Intake Coordinator': work on"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Intake...<len=666 sha1=2ab1fa8d46cc>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_triage_classifier\", \"arguments\": {\"task\": \"Step 'Triage Classifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Triage Classifier\", \"agent_output\": \"triage_result result for: Step 'Triage Classifier': work on: Prepa\"}"
       ]
      ]
     },
@@ -994,19 +998,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"Step 'Intake Coordinator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "patient_intake result for: TASK:\nStep 'Intake Coordinator': work on"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Intake...<len=666 sha1=2ab1fa8d46cc>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Triage Classifier\", \"agent_output\": \"triage_result result for: Step 'Triage Classifier': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_triage_classifier\", \"arguments\": {\"task\": \"Step 'Triage Classifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_differential_diagnosis_advisor\", \"arguments\": {\"task\": \"Step 'Differential Diagnosis Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Differential Diagnosis Advisor\", \"agent_output\": \"differential_diagnosis result for: Step 'Differential Diagnosis Advisor': w\"}"
       ]
      ]
     },
@@ -1034,23 +1046,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"Step 'Intake Coordinator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "patient_intake result for: TASK:\nStep 'Intake Coordinator': work on"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Intake...<len=666 sha1=2ab1fa8d46cc>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Triage Classifier\", \"agent_output\": \"triage_result result for: Step 'Triage Classifier': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_triage_classifier\", \"arguments\": {\"task\": \"Step 'Triage Classifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Differential Diagnosis Advisor\", \"agent_output\": \"differential_diagnosis result for: Step 'Differential Diagnosis Advisor': w\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_differential_diagnosis_advisor\", \"arguments\": {\"task\": \"Step 'Differential Diagnosis Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_care_navigator\", \"arguments\": {\"task\": \"Step 'Care Navigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Care Navigator\", \"agent_output\": \"care_plan result for: Step 'Care Navigator': work on: Prepare \"}"
       ]
      ]
     }
@@ -1079,13 +1103,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"Step 'Intake Coordinator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Intake...<len=666 sha1=2ab1fa8d46cc>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -1094,8 +1113,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_triage_classifier\", \"arguments\": {\"task\": \"Step 'Triage Classifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1138,13 +1157,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"Step 'Intake Coordinator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Intake...<len=666 sha1=2ab1fa8d46cc>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -1153,8 +1167,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_triage_classifier\", \"arguments\": {\"task\": \"Step 'Triage Classifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1163,8 +1177,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_differential_diagnosis_advisor\", \"arguments\": {\"task\": \"Step 'Differential Diagnosis Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -1210,13 +1224,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"Step 'Intake Coordinator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_intake_coordinator\", \"arguments\": {\"task\": \"TASK:\\nStep 'Intake...<len=666 sha1=2ab1fa8d46cc>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -1225,8 +1234,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_triage_classifier\", \"arguments\": {\"task\": \"Step 'Triage Classifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1235,8 +1244,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_differential_diagnosis_advisor\", \"arguments\": {\"task\": \"Step 'Differential Diagnosis Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -1245,8 +1254,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_care_navigator\", \"arguments\": {\"task\": \"Step 'Care Navigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",

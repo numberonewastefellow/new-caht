@@ -40,7 +40,7 @@ export function NRFPreferencesProvider({
   children: React.ReactNode;
 }) {
   const [useOmAsNewTab, setUseOmAsNewTab] = useLocalStorageState<boolean>(
-    LocalStorageKeys.USE_ONYX_AS_NEW_TAB,
+    LocalStorageKeys.USE_VIRTUALAI_AS_NEW_TAB,
     true
   );
 

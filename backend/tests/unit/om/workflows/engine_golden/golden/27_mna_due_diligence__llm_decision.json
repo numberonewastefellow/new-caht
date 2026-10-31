@@ -306,8 +306,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -1946,11 +1946,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Deal Triage Analyst': work o"
       ]
      ]
     },
@@ -1984,15 +1984,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Deal Triage Analyst': work o"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Financial Analyst\", \"agent_output\": \"financial_analysis result for: Step 'Financial Analyst': wor...<len=276 sha1=66cfec5e3c7e>"
       ]
      ]
     },
@@ -2026,19 +2030,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Deal Triage Analyst': work o"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Financial Analyst\", \"agent_output\": \"financial_analysis result for: Step 'Financial Analyst': wor...<len=276 sha1=66cfec5e3c7e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Tax Specialist\", \"agent_output\": \"tax_analysis result for: Step 'Tax Specialist': work on: Prepare \"}"
       ]
      ]
     },
@@ -2072,23 +2084,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Deal Triage Analyst': work o"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Financial Analyst\", \"agent_output\": \"financial_analysis result for: Step 'Financial Analyst': wor...<len=276 sha1=66cfec5e3c7e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Tax Specialist\", \"agent_output\": \"tax_analysis result for: Step 'Tax Specialist': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Legal Analyst\", \"agent_output\": \"legal_analysis result for: Step 'Legal/Regulatory Analyst': work on\"}"
       ]
      ]
     },
@@ -2122,27 +2146,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Deal Triage Analyst': work o"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Financial Analyst\", \"agent_output\": \"financial_analysis result for: Step 'Financial Analyst': wor...<len=276 sha1=66cfec5e3c7e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Tax Specialist\", \"agent_output\": \"tax_analysis result for: Step 'Tax Specialist': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Legal Analyst\", \"agent_output\": \"legal_analysis result for: Step 'Legal/Regulatory Analyst': work on\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_m_a_commercial_analyst\", \"arguments\": {\"task\": \"Step 'Commercial/Market Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Commercial Analyst\", \"agent_output\": \"commercial_analysis result for: Step 'Commercial/Market Ana...<len=280 sha1=245c706b9407>"
       ]
      ]
     },
@@ -2176,31 +2216,51 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Deal Triage Analyst': work o"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Financial Analyst\", \"agent_output\": \"financial_analysis result for: Step 'Financial Analyst': wor...<len=276 sha1=66cfec5e3c7e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Tax Specialist\", \"agent_output\": \"tax_analysis result for: Step 'Tax Specialist': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Legal Analyst\", \"agent_output\": \"legal_analysis result for: Step 'Legal/Regulatory Analyst': work on\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Commercial Analyst\", \"agent_output\": \"commercial_analysis result for: Step 'Commercial/Market Ana...<len=280 sha1=245c706b9407>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_m_a_commercial_analyst\", \"arguments\": {\"task\": \"Step 'Commercial/Market Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_m_a_technology_analyst\", \"arguments\": {\"task\": \"Step 'Technology/IP Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Technology Analyst\", \"agent_output\": \"technology_analysis result for: Step 'Technology/IP Analyst': work on: P\"}"
       ]
      ]
     },
@@ -2234,35 +2294,59 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Deal Triage Analyst': work o"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Financial Analyst\", \"agent_output\": \"financial_analysis result for: Step 'Financial Analyst': wor...<len=276 sha1=66cfec5e3c7e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Tax Specialist\", \"agent_output\": \"tax_analysis result for: Step 'Tax Specialist': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Legal Analyst\", \"agent_output\": \"legal_analysis result for: Step 'Legal/Regulatory Analyst': work on\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Commercial Analyst\", \"agent_output\": \"commercial_analysis result for: Step 'Commercial/Market Ana...<len=280 sha1=245c706b9407>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_m_a_commercial_analyst\", \"arguments\": {\"task\": \"Step 'Commercial/Market Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Technology Analyst\", \"agent_output\": \"technology_analysis result for: Step 'Technology/IP Analyst': work on: P\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_m_a_technology_analyst\", \"arguments\": {\"task\": \"Step 'Technology/IP Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_m_a_hr_analyst\", \"arguments\": {\"task\": \"Step 'HR/Culture Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A HR Analyst\", \"agent_output\": \"hr_analysis result for: Step 'HR/Culture Analyst': work on: Prep\", ...<len=248 sha1=56f9c62e0aa7>"
       ]
      ]
     },
@@ -2296,39 +2380,67 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Deal Triage Analyst': work o"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Financial Analyst\", \"agent_output\": \"financial_analysis result for: Step 'Financial Analyst': wor...<len=276 sha1=66cfec5e3c7e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Tax Specialist\", \"agent_output\": \"tax_analysis result for: Step 'Tax Specialist': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Legal Analyst\", \"agent_output\": \"legal_analysis result for: Step 'Legal/Regulatory Analyst': work on\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Commercial Analyst\", \"agent_output\": \"commercial_analysis result for: Step 'Commercial/Market Ana...<len=280 sha1=245c706b9407>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_m_a_commercial_analyst\", \"arguments\": {\"task\": \"Step 'Commercial/Market Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Technology Analyst\", \"agent_output\": \"technology_analysis result for: Step 'Technology/IP Analyst': work on: P\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_m_a_technology_analyst\", \"arguments\": {\"task\": \"Step 'Technology/IP Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A HR Analyst\", \"agent_output\": \"hr_analysis result for: Step 'HR/Culture Analyst': work on: Prep\", ...<len=248 sha1=56f9c62e0aa7>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_m_a_hr_analyst\", \"arguments\": {\"task\": \"Step 'HR/Culture Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_m_a_operations_analyst\", \"arguments\": {\"task\": \"Step 'Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Operations Analyst\", \"agent_output\": \"operations_analysis result for: Step 'Operations Analyst': ...<len=280 sha1=42767e45d245>"
       ]
      ]
     },
@@ -2362,43 +2474,75 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Deal Triage Analyst': work o"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Financial Analyst\", \"agent_output\": \"financial_analysis result for: Step 'Financial Analyst': wor...<len=276 sha1=66cfec5e3c7e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Tax Specialist\", \"agent_output\": \"tax_analysis result for: Step 'Tax Specialist': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Legal Analyst\", \"agent_output\": \"legal_analysis result for: Step 'Legal/Regulatory Analyst': work on\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Commercial Analyst\", \"agent_output\": \"commercial_analysis result for: Step 'Commercial/Market Ana...<len=280 sha1=245c706b9407>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_m_a_commercial_analyst\", \"arguments\": {\"task\": \"Step 'Commercial/Market Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Technology Analyst\", \"agent_output\": \"technology_analysis result for: Step 'Technology/IP Analyst': work on: P\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_m_a_technology_analyst\", \"arguments\": {\"task\": \"Step 'Technology/IP Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A HR Analyst\", \"agent_output\": \"hr_analysis result for: Step 'HR/Culture Analyst': work on: Prep\", ...<len=248 sha1=56f9c62e0aa7>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_m_a_hr_analyst\", \"arguments\": {\"task\": \"Step 'HR/Culture Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Operations Analyst\", \"agent_output\": \"operations_analysis result for: Step 'Operations Analyst': ...<len=280 sha1=42767e45d245>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_m_a_operations_analyst\", \"arguments\": {\"task\": \"Step 'Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_m_a_esg_analyst\", \"arguments\": {\"task\": \"Step 'ESG/Compliance Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A ESG Analyst\", \"agent_output\": \"esg_analysis result for: Step 'ESG/Compliance Analyst': work on: \"}"
       ]
      ]
     },
@@ -2432,47 +2576,83 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Deal Triage Analyst': work o"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Financial Analyst\", \"agent_output\": \"financial_analysis result for: Step 'Financial Analyst': wor...<len=276 sha1=66cfec5e3c7e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Tax Specialist\", \"agent_output\": \"tax_analysis result for: Step 'Tax Specialist': work on: Prepare \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Legal Analyst\", \"agent_output\": \"legal_analysis result for: Step 'Legal/Regulatory Analyst': work on\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Commercial Analyst\", \"agent_output\": \"commercial_analysis result for: Step 'Commercial/Market Ana...<len=280 sha1=245c706b9407>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_m_a_commercial_analyst\", \"arguments\": {\"task\": \"Step 'Commercial/Market Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Technology Analyst\", \"agent_output\": \"technology_analysis result for: Step 'Technology/IP Analyst': work on: P\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_m_a_technology_analyst\", \"arguments\": {\"task\": \"Step 'Technology/IP Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A HR Analyst\", \"agent_output\": \"hr_analysis result for: Step 'HR/Culture Analyst': work on: Prep\", ...<len=248 sha1=56f9c62e0aa7>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_m_a_hr_analyst\", \"arguments\": {\"task\": \"Step 'HR/Culture Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A Operations Analyst\", \"agent_output\": \"operations_analysis result for: Step 'Operations Analyst': ...<len=280 sha1=42767e45d245>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_m_a_operations_analyst\", \"arguments\": {\"task\": \"Step 'Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF M&A ESG Analyst\", \"agent_output\": \"esg_analysis result for: Step 'ESG/Compliance Analyst': work on: \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_m_a_esg_analyst\", \"arguments\": {\"task\": \"Step 'ESG/Compliance Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_10_0\", \"name\": \"delegate_to_wf_investment_memo_writer\", \"arguments\": {\"task\": \"Step 'Investment Memo Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Investment Memo Writer\", \"agent_output\": \"investment_memo result for: Step 'Investment Memo Writer': work on: \"}"
       ]
      ]
     }
@@ -2501,13 +2681,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2516,8 +2691,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2560,13 +2735,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2575,8 +2745,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2585,8 +2755,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2632,13 +2802,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2647,8 +2812,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2657,8 +2822,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2667,8 +2832,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2717,13 +2882,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2732,8 +2892,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2742,8 +2902,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2752,8 +2912,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2762,8 +2922,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_m_a_commercial_analyst\", \"arguments\": {\"task\": \"Step 'Commercial/Market Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2815,13 +2975,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2830,8 +2985,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2840,8 +2995,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2850,8 +3005,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2860,8 +3015,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_m_a_commercial_analyst\", \"arguments\": {\"task\": \"Step 'Commercial/Market Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2870,8 +3025,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_m_a_technology_analyst\", \"arguments\": {\"task\": \"Step 'Technology/IP Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2926,13 +3081,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2941,8 +3091,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2951,8 +3101,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2961,8 +3111,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2971,8 +3121,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_m_a_commercial_analyst\", \"arguments\": {\"task\": \"Step 'Commercial/Market Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2981,8 +3131,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_m_a_technology_analyst\", \"arguments\": {\"task\": \"Step 'Technology/IP Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2991,8 +3141,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_m_a_hr_analyst\", \"arguments\": {\"task\": \"Step 'HR/Culture Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3050,13 +3200,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -3065,8 +3210,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3075,8 +3220,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3085,8 +3230,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3095,8 +3240,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_m_a_commercial_analyst\", \"arguments\": {\"task\": \"Step 'Commercial/Market Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3105,8 +3250,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_m_a_technology_analyst\", \"arguments\": {\"task\": \"Step 'Technology/IP Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3115,8 +3260,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_m_a_hr_analyst\", \"arguments\": {\"task\": \"Step 'HR/Culture Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3125,8 +3270,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_m_a_operations_analyst\", \"arguments\": {\"task\": \"Step 'Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3187,13 +3332,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -3202,8 +3342,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3212,8 +3352,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3222,8 +3362,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3232,8 +3372,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_m_a_commercial_analyst\", \"arguments\": {\"task\": \"Step 'Commercial/Market Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3242,8 +3382,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_m_a_technology_analyst\", \"arguments\": {\"task\": \"Step 'Technology/IP Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3252,8 +3392,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_m_a_hr_analyst\", \"arguments\": {\"task\": \"Step 'HR/Culture Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3262,8 +3402,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_m_a_operations_analyst\", \"arguments\": {\"task\": \"Step 'Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3272,8 +3412,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_m_a_esg_analyst\", \"arguments\": {\"task\": \"Step 'ESG/Compliance Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3337,13 +3477,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"Step 'Deal Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_deal_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Deal ...<len=671 sha1=55ded58a2b85>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -3352,8 +3487,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_m_a_financial_analyst\", \"arguments\": {\"task\": \"Step 'Financial Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3362,8 +3497,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_m_a_tax_specialist\", \"arguments\": {\"task\": \"Step 'Tax Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3372,8 +3507,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_m_a_legal_analyst\", \"arguments\": {\"task\": \"Step 'Legal/Regulatory Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3382,8 +3517,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_m_a_commercial_analyst\", \"arguments\": {\"task\": \"Step 'Commercial/Market Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3392,8 +3527,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_m_a_technology_analyst\", \"arguments\": {\"task\": \"Step 'Technology/IP Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3402,8 +3537,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_m_a_hr_analyst\", \"arguments\": {\"task\": \"Step 'HR/Culture Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3412,8 +3547,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_m_a_operations_analyst\", \"arguments\": {\"task\": \"Step 'Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3422,8 +3557,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_m_a_esg_analyst\", \"arguments\": {\"task\": \"Step 'ESG/Compliance Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3432,8 +3567,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_10_0\", \"name\": \"delegate_to_wf_investment_memo_writer\", \"arguments\": {\"task\": \"Step 'Investment Memo Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",

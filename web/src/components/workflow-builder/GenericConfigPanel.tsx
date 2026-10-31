@@ -4,6 +4,7 @@ import React from "react";
 import { SchemaConfigForm } from "@/components/workflows/SchemaConfigForm";
 import { humanizeNodeType, resolveVersion } from "@/lib/workflows/nodeRegistry";
 import { ConfigPanelHeader } from "./ConfigPanelHeader";
+import { StepOptionsSection, StepPlacementSection } from "./StepOptionsSection";
 import type { StepConfigPanelProps, StepNodeData } from "./types";
 
 /** Step fields every node type has (name, description, output, flags). */
@@ -76,11 +77,15 @@ export function GenericConfigPanel({
   nodeId,
   data,
   catalog,
+  steps,
+  onMove,
   onUpdate,
   onDelete,
+  onDeleteKeepingSteps,
   onClose,
   onToggleCollapse,
 }: StepConfigPanelProps) {
+  const childCount = steps.filter((s) => s.parent_key === nodeId).length;
   const info = resolveVersion(catalog, data.step_type, data.type_version);
   const label = info?.label ?? humanizeNodeType(data.step_type);
 
@@ -103,6 +108,19 @@ export function GenericConfigPanel({
           readOnly={false}
           onUpdate={onUpdate}
         />
+        <StepPlacementSection
+          nodeId={nodeId}
+          data={data}
+          steps={steps}
+          catalog={catalog}
+          onMove={onMove}
+        />
+        <StepOptionsSection
+          nodeId={nodeId}
+          data={data}
+          canPause={info?.can_pause ?? false}
+          onUpdate={onUpdate}
+        />
         <div className="wfb-config-section">
           <div className="wfb-config-label">Settings</div>
           {info ? (
@@ -117,11 +135,21 @@ export function GenericConfigPanel({
         </div>
       </div>
       <div className="wfb-config-footer">
+        {childCount > 0 && onDeleteKeepingSteps && (
+          <button
+            className="wfb-config-delete-btn"
+            onClick={() => onDeleteKeepingSteps(nodeId)}
+          >
+            Remove, but keep its {childCount} step{childCount === 1 ? "" : "s"}
+          </button>
+        )}
         <button
           className="wfb-config-delete-btn"
           onClick={() => onDelete(nodeId)}
         >
-          Remove from workflow
+          {childCount > 0
+            ? `Remove with its ${childCount} step${childCount === 1 ? "" : "s"}`
+            : "Remove from workflow"}
         </button>
       </div>
     </div>

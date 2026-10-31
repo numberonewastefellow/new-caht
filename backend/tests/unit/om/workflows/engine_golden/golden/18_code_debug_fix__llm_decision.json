@@ -254,8 +254,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"Step 'Bug Report Intake': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -1279,11 +1279,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"Step 'Bug Report Intake': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"TASK:\\nStep 'Bug ...<len=663 sha1=72a27b41bc3e>"
+       "tool_call_response",
+       "bug_report result for: TASK:\nStep 'Bug Report Intake': work on:"
       ]
      ]
     },
@@ -1312,15 +1312,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"Step 'Bug Report Intake': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "bug_report result for: TASK:\nStep 'Bug Report Intake': work on:"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"TASK:\\nStep 'Bug ...<len=663 sha1=72a27b41bc3e>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_bug_reproducer\", \"arguments\": {\"task\": \"Step 'Reproducer & Diagnoser': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Bug Reproducer\", \"agent_output\": \"diagnosis result for: Step 'Reproducer & Diagnoser': work on: \", \"_...<len=242 sha1=d551d2a1af10>"
       ]
      ]
     },
@@ -1349,19 +1353,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"Step 'Bug Report Intake': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "bug_report result for: TASK:\nStep 'Bug Report Intake': work on:"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"TASK:\\nStep 'Bug ...<len=663 sha1=72a27b41bc3e>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Bug Reproducer\", \"agent_output\": \"diagnosis result for: Step 'Reproducer & Diagnoser': work on: \", \"_...<len=242 sha1=d551d2a1af10>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_bug_reproducer\", \"arguments\": {\"task\": \"Step 'Reproducer & Diagnoser': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_fix_generator\", \"arguments\": {\"task\": \"Step 'Fix Generator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Fix Generator\", \"agent_output\": \"fix result for: Step 'Fix Generator': work on: Prepare a\", \"_file_ids\": [\"file_103_0_0\"], \"_file_details\": [{\"file_path\": \"/app/output/fix.docx\", \"filename\": \"fix.docx\"}]}"
       ]
      ]
     },
@@ -1390,23 +1402,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"Step 'Bug Report Intake': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "bug_report result for: TASK:\nStep 'Bug Report Intake': work on:"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"TASK:\\nStep 'Bug ...<len=663 sha1=72a27b41bc3e>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Bug Reproducer\", \"agent_output\": \"diagnosis result for: Step 'Reproducer & Diagnoser': work on: \", \"_...<len=242 sha1=d551d2a1af10>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_bug_reproducer\", \"arguments\": {\"task\": \"Step 'Reproducer & Diagnoser': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Fix Generator\", \"agent_output\": \"fix result for: Step 'Fix Generator': work on: Prepare a\", \"_file_ids\": [\"file_103_0_0\"], \"_file_details\": [{\"file_path\": \"/app/output/fix.docx\", \"filename\": \"fix.docx\"}]}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_fix_generator\", \"arguments\": {\"task\": \"Step 'Fix Generator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_test_writer\", \"arguments\": {\"task\": \"Step 'Test Writer & Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Test Writer\", \"agent_output\": \"tests result for: Step 'Test Writer & Verifier': work on: \", \"_file_ids\": [\"file_104_0_0\"], \"_file_details\": [{\"file_path\": \"/app/output/tests.docx\", \"filename\": \"tests.docx\"}]}"
       ]
      ]
     },
@@ -1435,27 +1459,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"Step 'Bug Report Intake': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "bug_report result for: TASK:\nStep 'Bug Report Intake': work on:"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"TASK:\\nStep 'Bug ...<len=663 sha1=72a27b41bc3e>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Bug Reproducer\", \"agent_output\": \"diagnosis result for: Step 'Reproducer & Diagnoser': work on: \", \"_...<len=242 sha1=d551d2a1af10>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_bug_reproducer\", \"arguments\": {\"task\": \"Step 'Reproducer & Diagnoser': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Fix Generator\", \"agent_output\": \"fix result for: Step 'Fix Generator': work on: Prepare a\", \"_file_ids\": [\"file_103_0_0\"], \"_file_details\": [{\"file_path\": \"/app/output/fix.docx\", \"filename\": \"fix.docx\"}]}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_fix_generator\", \"arguments\": {\"task\": \"Step 'Fix Generator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Test Writer\", \"agent_output\": \"tests result for: Step 'Test Writer & Verifier': work on: \", \"_file_ids\": [\"file_104_0_0\"], \"_file_details\": [{\"file_path\": \"/app/output/tests.docx\", \"filename\": \"tests.docx\"}]}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_test_writer\", \"arguments\": {\"task\": \"Step 'Test Writer & Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_pr_summary_drafter\", \"arguments\": {\"task\": \"Step 'PR Summary Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF PR Summary Drafter\", \"agent_output\": \"pr_summary result for: Step 'PR Summary Drafter': work on: Prep\"}"
       ]
      ]
     }
@@ -1484,13 +1524,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"Step 'Bug Report Intake': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"TASK:\\nStep 'Bug ...<len=663 sha1=72a27b41bc3e>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1499,8 +1534,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_bug_reproducer\", \"arguments\": {\"task\": \"Step 'Reproducer & Diagnoser': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -1543,13 +1578,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"Step 'Bug Report Intake': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"TASK:\\nStep 'Bug ...<len=663 sha1=72a27b41bc3e>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1558,8 +1588,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_bug_reproducer\", \"arguments\": {\"task\": \"Step 'Reproducer & Diagnoser': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -1568,8 +1598,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_fix_generator\", \"arguments\": {\"task\": \"Step 'Fix Generator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1615,13 +1645,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"Step 'Bug Report Intake': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"TASK:\\nStep 'Bug ...<len=663 sha1=72a27b41bc3e>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1630,8 +1655,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_bug_reproducer\", \"arguments\": {\"task\": \"Step 'Reproducer & Diagnoser': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -1640,8 +1665,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_fix_generator\", \"arguments\": {\"task\": \"Step 'Fix Generator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1650,8 +1675,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_test_writer\", \"arguments\": {\"task\": \"Step 'Test Writer & Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1700,13 +1725,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"Step 'Bug Report Intake': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_bug_report_intake_v2\", \"arguments\": {\"task\": \"TASK:\\nStep 'Bug ...<len=663 sha1=72a27b41bc3e>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1715,8 +1735,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_bug_reproducer\", \"arguments\": {\"task\": \"Step 'Reproducer & Diagnoser': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -1725,8 +1745,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_fix_generator\", \"arguments\": {\"task\": \"Step 'Fix Generator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1735,8 +1755,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_test_writer\", \"arguments\": {\"task\": \"Step 'Test Writer & Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1745,8 +1765,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_pr_summary_drafter\", \"arguments\": {\"task\": \"Step 'PR Summary Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",

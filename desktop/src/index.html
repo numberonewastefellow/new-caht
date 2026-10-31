@@ -356,7 +356,7 @@
             <div class="settings-group">
               <div class="setting-row">
                 <div class="setting-row-content">
-                  <label class="setting-label" for="onyxDomain"
+                  <label class="setting-label" for="virtualaiDomain"
                     >Root Domain</label
                   >
                   <div class="setting-description">
@@ -368,9 +368,9 @@
               <div class="setting-row" style="padding: 12px">
                 <input
                   type="text"
-                  id="onyxDomain"
+                  id="virtualaiDomain"
                   class="input-field"
-                  placeholder="https://cloud.onyx.app"
+                  placeholder="https://virtualai.com"
                   autocomplete="off"
                   autocorrect="off"
                   autocapitalize="off"
@@ -393,11 +393,11 @@
       const { invoke } = window.__TAURI__.core;
 
       // Configuration
-      const DEFAULT_DOMAIN = "https://cloud.onyx.app";
+      const DEFAULT_DOMAIN = "https://virtualai.com";
       let currentServerUrl = "";
 
       // DOM elements
-      const domainInput = document.getElementById("onyxDomain");
+      const domainInput = document.getElementById("virtualaiDomain");
       const errorMessage = document.getElementById("errorMessage");
       const saveBtn = document.getElementById("saveBtn");
 

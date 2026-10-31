@@ -42,7 +42,7 @@ goto status
 
 :build_web
 docker build -t om/om-web-server:flowdev "%REPO_ROOT%\web" || exit /b 1
-%COMPOSE_CMD% up -d --force-recreate flow_web
+%COMPOSE_CMD% up -d --force-recreate --no-deps flow_web
 goto status
 
 :restart_api

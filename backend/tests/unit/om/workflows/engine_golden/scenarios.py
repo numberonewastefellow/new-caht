@@ -699,6 +699,10 @@ ALLOWED_DIFFS: dict[str, list[tuple[str, str]]] = {
         ("runs[0].*", "sequential honours step LLM/tool overrides (tool_ids_override=[] "
                       "means no tools), like llm_decision mode"),
     ],
+    "fx_deleted_agent": [
+        ("runs[0].*", "a deleted agent fails the run with a clear error instead of silently "
+                      "skipping the step and answering without it"),
+    ],
     "fx_router_skip_lost_on_resume": [
         ("runs[1].*", "router skip set restored on resume: the inactive-branch step no "
                       "longer runs"),

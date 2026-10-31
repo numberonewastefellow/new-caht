@@ -234,8 +234,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ppt_planner\", \"arguments\": {\"task\": \"Step 'PPT Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -809,11 +809,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ppt_planner\", \"arguments\": {\"task\": \"Step 'PPT Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ppt_planner\", \"arguments\": {\"task\": \"TASK:\\nStep 'PPT Planner':...<len=658 sha1=93ebd28ba853>"
+       "tool_call_response",
+       "presentation_outline result for: TASK:\nStep 'PPT Planner': work on: Prepa"
       ]
      ]
     },
@@ -840,15 +840,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ppt_planner\", \"arguments\": {\"task\": \"Step 'PPT Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "presentation_outline result for: TASK:\nStep 'PPT Planner': work on: Prepa"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ppt_planner\", \"arguments\": {\"task\": \"TASK:\\nStep 'PPT Planner':...<len=658 sha1=93ebd28ba853>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_ppt_builder\", \"arguments\": {\"task\": \"Step 'PPT Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF PPT Builder\", \"agent_output\": \"build_result result for: Step 'PPT Builder': work on: Prepare a c\"}"
       ]
      ]
     },
@@ -875,19 +879,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ppt_planner\", \"arguments\": {\"task\": \"Step 'PPT Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "presentation_outline result for: TASK:\nStep 'PPT Planner': work on: Prepa"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ppt_planner\", \"arguments\": {\"task\": \"TASK:\\nStep 'PPT Planner':...<len=658 sha1=93ebd28ba853>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF PPT Builder\", \"agent_output\": \"build_result result for: Step 'PPT Builder': work on: Prepare a c\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_ppt_builder\", \"arguments\": {\"task\": \"Step 'PPT Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_ppt_reviewer\", \"arguments\": {\"task\": \"Step 'PPT Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF PPT Reviewer\", \"agent_output\": \"review_result result for: Step 'PPT Reviewer': work on: Prepare a \"}"
       ]
      ]
     }
@@ -916,13 +928,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ppt_planner\", \"arguments\": {\"task\": \"Step 'PPT Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ppt_planner\", \"arguments\": {\"task\": \"TASK:\\nStep 'PPT Planner':...<len=658 sha1=93ebd28ba853>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -931,8 +938,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_ppt_builder\", \"arguments\": {\"task\": \"Step 'PPT Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -975,13 +982,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_ppt_planner\", \"arguments\": {\"task\": \"Step 'PPT Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_ppt_planner\", \"arguments\": {\"task\": \"TASK:\\nStep 'PPT Planner':...<len=658 sha1=93ebd28ba853>"
+        75,
+        ""
        ],
        [
         "tool_call_response",
@@ -990,8 +992,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_ppt_builder\", \"arguments\": {\"task\": \"Step 'PPT Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1000,8 +1002,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_ppt_reviewer\", \"arguments\": {\"task\": \"Step 'PPT Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",

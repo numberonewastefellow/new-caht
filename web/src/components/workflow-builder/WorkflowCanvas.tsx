@@ -41,6 +41,7 @@ interface WorkflowCanvasProps {
   onEdgesChange: OnEdgesChange<WorkflowEdge>;
   onConnect: OnConnect;
   onNodeClick: (nodeId: string) => void;
+  onNodeDragStop?: (nodeId: string) => void;
   onDrop: (agent: DragAgentData, position: { x: number; y: number }) => void;
   /** A node type dragged from the Utils palette. */
   onNodeTypeDrop?: (stepType: string, position: { x: number; y: number }) => void;
@@ -96,10 +97,16 @@ function FlowLegend({ nodes }: { nodes: WorkflowNode[] }) {
           <>
             <div className="wfb-legend-line">
               <span className="wfb-legend-solid" />
-              <span>Agents run one after another</span>
+              <span>Steps run one after another</span>
             </div>
             <div className="wfb-legend-line wfb-legend-flow">
               Step 1 &rarr; Step 2 &rarr; Step 3
+            </div>
+            <div className="wfb-legend-line wfb-legend-flow">
+              Parallel: its lanes run at the same time
+            </div>
+            <div className="wfb-legend-line wfb-legend-flow">
+              Loop: its steps repeat
             </div>
           </>
         ) : (
@@ -125,6 +132,7 @@ export function WorkflowCanvas({
   onEdgesChange,
   onConnect,
   onNodeClick,
+  onNodeDragStop,
   onDrop,
   onNodeTypeDrop,
   warnings = [],
@@ -190,6 +198,7 @@ export function WorkflowCanvas({
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeClick={handleNodeClick}
+        onNodeDragStop={(_, node) => onNodeDragStop?.(node.id)}
         onPaneClick={handlePaneClick}
         onDragOver={handleDragOver}
         onDrop={handleDrop}

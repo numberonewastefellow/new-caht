@@ -58,32 +58,13 @@ export function StepNodeBadges({
   nodeId: string;
   data: StepNodeData;
 }) {
-  const childCount = data.childCount ?? 0;
-  if (
-    !data.upgrade_available &&
-    !data.modeConflict &&
-    childCount === 0 &&
-    !data.containerName
-  ) {
+  if (!data.upgrade_available && !data.modeConflict) {
     return null;
   }
   return (
     <div className="wfb-node-badges">
       {data.upgrade_available && <UpgradeBadge nodeId={nodeId} />}
       {data.modeConflict && <ModeConflictBadge />}
-      {childCount > 0 && (
-        <span className="wfb-container-badge">
-          Contains {childCount} {childCount === 1 ? "step" : "steps"}
-        </span>
-      )}
-      {data.containerName && (
-        <span className="wfb-container-badge">
-          In {data.containerName}
-          {data.branch_index != null
-            ? ` · branch ${data.branch_index + 1}`
-            : ""}
-        </span>
-      )}
     </div>
   );
 }

@@ -6,7 +6,7 @@ from enum import Enum
 
 
 OM_DEFAULT_APPLICATION_NAME = "VertualAI"
-OM_DISCORD_URL = "https://discord.gg/4NA5SbzrWb"
+OM_DISCORD_URL = "https://discord.gg/YOUR_DISCORD_INVITE"
 OM_UTM_SOURCE = "om_app"
 SLACK_USER_TOKEN_PREFIX = "xoxp-"
 SLACK_BOT_TOKEN_PREFIX = "xoxb-"

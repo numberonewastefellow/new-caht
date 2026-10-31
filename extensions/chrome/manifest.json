@@ -29,7 +29,7 @@
   },
   "options_page": "src/pages/options.html",
   "chrome_url_overrides": {
-    "newtab": "src/pages/onyx_home.html"
+    "newtab": "src/pages/virtualai_home.html"
   },
   "commands": {
     "toggleNewTabOverride": {
@@ -52,7 +52,7 @@
     "default_path": "src/pages/panel.html"
   },
   "omnibox": {
-    "keyword": "onyx"
+    "keyword": "virtualai"
   },
   "content_scripts": [
     {

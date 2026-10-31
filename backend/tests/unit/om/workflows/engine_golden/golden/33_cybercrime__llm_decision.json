@@ -274,8 +274,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -1384,11 +1384,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+       "tool_call_response",
+       "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': "
       ]
      ]
     },
@@ -1419,15 +1419,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Fraud-Ring Linker\", \"agent_output\": \"linkage_analysis result for: Step 'Fraud-Ring Linker': wor...<len=272 sha1=b9bb5101b808>"
       ]
      ]
     },
@@ -1458,19 +1462,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Fraud-Ring Linker\", \"agent_output\": \"linkage_analysis result for: Step 'Fraud-Ring Linker': wor...<len=272 sha1=b9bb5101b808>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Records Verifier\", \"agent_output\": \"verification_report result for: Step 'Records & Registry Verifier': work\"}"
       ]
      ]
     },
@@ -1501,23 +1513,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Fraud-Ring Linker\", \"agent_output\": \"linkage_analysis result for: Step 'Fraud-Ring Linker': wor...<len=272 sha1=b9bb5101b808>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Records Verifier\", \"agent_output\": \"verification_report result for: Step 'Records & Registry Verifier': work\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Golden-Hour Freeze Drafter\", \"agent_output\": \"freeze_request result for: Step 'Golden-Hour Freeze Drafter': work \"}"
       ]
      ]
     },
@@ -1548,27 +1572,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Fraud-Ring Linker\", \"agent_output\": \"linkage_analysis result for: Step 'Fraud-Ring Linker': wor...<len=272 sha1=b9bb5101b808>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Records Verifier\", \"agent_output\": \"verification_report result for: Step 'Records & Registry Verifier': work\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Golden-Hour Freeze Drafter\", \"agent_output\": \"freeze_request result for: Step 'Golden-Hour Freeze Drafter': work \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cyber_refund_petition_drafter\", \"arguments\": {\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Refund Petition Drafter\", \"agent_output\": \"refund_petition result for: Step 'Refund & MRM Petition Drafter': wo\"}"
       ]
      ]
     },
@@ -1599,31 +1639,51 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Fraud-Ring Linker\", \"agent_output\": \"linkage_analysis result for: Step 'Fraud-Ring Linker': wor...<len=272 sha1=b9bb5101b808>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Records Verifier\", \"agent_output\": \"verification_report result for: Step 'Records & Registry Verifier': work\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Golden-Hour Freeze Drafter\", \"agent_output\": \"freeze_request result for: Step 'Golden-Hour Freeze Drafter': work \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Refund Petition Drafter\", \"agent_output\": \"refund_petition result for: Step 'Refund & MRM Petition Drafter': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cyber_refund_petition_drafter\", \"arguments\": {\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_cyber_charge_sheet_drafter\", \"arguments\": {\"task\": \"Step 'Charge-Sheet Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Charge-Sheet Drafter\", \"agent_output\": \"chargesheet_skeleton result for: Step 'Charge-Sheet Drafter': work on: Pr\"}"
       ]
      ]
     },
@@ -1654,35 +1714,59 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Fraud-Ring Linker\", \"agent_output\": \"linkage_analysis result for: Step 'Fraud-Ring Linker': wor...<len=272 sha1=b9bb5101b808>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Records Verifier\", \"agent_output\": \"verification_report result for: Step 'Records & Registry Verifier': work\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Golden-Hour Freeze Drafter\", \"agent_output\": \"freeze_request result for: Step 'Golden-Hour Freeze Drafter': work \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Refund Petition Drafter\", \"agent_output\": \"refund_petition result for: Step 'Refund & MRM Petition Drafter': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cyber_refund_petition_drafter\", \"arguments\": {\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Charge-Sheet Drafter\", \"agent_output\": \"chargesheet_skeleton result for: Step 'Charge-Sheet Drafter': work on: Pr\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_cyber_charge_sheet_drafter\", \"arguments\": {\"task\": \"Step 'Charge-Sheet Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_cyber_case_synthesizer\", \"arguments\": {\"task\": \"Step 'Cyber Case Synthesizer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Cyber Case Synthesizer\", \"agent_output\": \"case_file_summary result for: Step 'Cyber Case Synthesizer': work on: \"}"
       ]
      ]
     }
@@ -1711,13 +1795,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1726,8 +1805,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1770,13 +1849,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1785,8 +1859,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1795,8 +1869,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1842,13 +1916,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1857,8 +1926,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1867,8 +1936,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1877,8 +1946,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -1927,13 +1996,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -1942,8 +2006,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1952,8 +2016,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -1962,8 +2026,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -1972,8 +2036,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cyber_refund_petition_drafter\", \"arguments\": {\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        20,
+        ""
        ],
        [
         "tool_call_response",
@@ -2025,13 +2089,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2040,8 +2099,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2050,8 +2109,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -2060,8 +2119,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2070,8 +2129,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cyber_refund_petition_drafter\", \"arguments\": {\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        20,
+        ""
        ],
        [
         "tool_call_response",
@@ -2080,8 +2139,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_cyber_charge_sheet_drafter\", \"arguments\": {\"task\": \"Step 'Charge-Sheet Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2136,13 +2195,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2151,8 +2205,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2161,8 +2215,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",
@@ -2171,8 +2225,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2181,8 +2235,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cyber_refund_petition_drafter\", \"arguments\": {\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        20,
+        ""
        ],
        [
         "tool_call_response",
@@ -2191,8 +2245,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_cyber_charge_sheet_drafter\", \"arguments\": {\"task\": \"Step 'Charge-Sheet Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2201,8 +2255,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_cyber_case_synthesizer\", \"arguments\": {\"task\": \"Step 'Cyber Case Synthesizer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",

@@ -6,6 +6,8 @@
 import type { OrchestrationMode } from "./interfaces";
 import type { EditorStep } from "./editorModel";
 import { missingRequiredFields, parseConfigSchema } from "./configSchema";
+import { validateContainerStructure } from "./containerRules";
+import { configProblems } from "./nodeConfigRules";
 import {
   type NodeCatalog,
   editorKindFor,
@@ -21,6 +23,9 @@ export interface StepValidationError {
   nodeKey?: string;
   message: string;
 }
+
+/** These names resolve before step outputs, so such a step could never be read. */
+const RESERVED_OUTPUT_KEYS: ReadonlySet<string> = new Set(["loop", "user_input"]);
 
 const MODE_LABEL: Record<OrchestrationMode, string> = {
   sequential: "Sequential",
@@ -67,10 +72,15 @@ function validateRouter(
       message: `Condition "${name}" needs a condition field`,
     });
   }
-  const targets = [...config.true_node_keys, ...config.false_node_keys].filter(
-    (key) => positionOf.has(key)
-  );
-  if (targets.length === 0) {
+  const allTargets = [...config.true_node_keys, ...config.false_node_keys];
+  const targets = allTargets.filter((key) => positionOf.has(key));
+  if (targets.length < allTargets.length) {
+    errors.push({
+      nodeKey,
+      message: `Condition "${name}" branches to a step that no longer exists`,
+    });
+  }
+  if (allTargets.length === 0) {
     errors.push({
       nodeKey,
       message: `Condition "${name}" needs at least one step in its True or False branch`,
@@ -123,12 +133,6 @@ export function validateSteps(
     if (!step.step_name.trim()) {
       errors.push({ nodeKey, message: `Step ${index + 1} needs a step name` });
     }
-    if (step.parent_key && !byKey.has(step.parent_key)) {
-      errors.push({
-        nodeKey,
-        message: `"${name}" belongs to a container that was removed; remove it too`,
-      });
-    }
     if (
       checkModes &&
       !isAllowedInMode(catalog, step.step_type, step.type_version, mode)
@@ -151,7 +155,7 @@ export function validateSteps(
       });
     } else if (kind === "router") {
       errors.push(...validateRouter(step, index, name, positionOf, byKey));
-    } else if (kind === "schema") {
+    } else if (kind === "schema" || kind === "container") {
       const info = resolveVersion(catalog, step.step_type, step.type_version);
       const missing = info
         ? missingRequiredFields(
@@ -165,11 +169,19 @@ export function validateSteps(
           message: `"${name}" needs a value for ${field.label}`,
         });
       }
+      for (const message of configProblems(step, name, steps, byKey)) {
+        errors.push({ nodeKey, message });
+      }
     }
 
     const outputKey = step.output_key.trim();
     if (!outputKey) {
       errors.push({ nodeKey, message: `"${name}" needs an output key` });
+    } else if (RESERVED_OUTPUT_KEYS.has(outputKey)) {
+      errors.push({
+        nodeKey,
+        message: `"${name}" can't use the reserved output key "${outputKey}"`,
+      });
     } else if (outputKeyOwner.has(outputKey)) {
       errors.push({
         nodeKey,
@@ -181,5 +193,9 @@ export function validateSteps(
       outputKeyOwner.set(outputKey, name);
     }
   });
+
+  const nameOf = (step: EditorStep) =>
+    stepDisplayName(step, positionOf.get(step.node_key) ?? 0);
+  errors.push(...validateContainerStructure(steps, nameOf, catalog));
   return errors;
 }

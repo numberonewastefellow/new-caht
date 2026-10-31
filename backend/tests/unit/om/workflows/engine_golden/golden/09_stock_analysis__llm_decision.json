@@ -730,7 +730,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_fundamental_analyst\", \"arguments\": {\"task\": \"Step 'Fundamental Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Fundamental Analyst\", \"agent_output\": \"fundamental_analysis result for: Step 'Fundamental Analyst': work on: Pre\"}"
       ]
      ]
     },
@@ -757,11 +761,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_fundamental_analyst\", \"arguments\": {\"task\": \"Step 'Fundamental Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Fundamental Analyst\", \"agent_output\": \"fundamental_analysis result for: Step 'Fundamental Analyst': work on: Pre\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_technical_analyst\", \"arguments\": {\"task\": \"Step 'Technical Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Technical Analyst\", \"agent_output\": \"technical_analysis result for: Step 'Technical Analyst': work on: Prepa\"}"
       ]
      ]
     },
@@ -787,15 +799,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_fundamental_analyst\", \"arguments\": {\"task\": \"Step 'Fundamental Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Fundamental Analyst\", \"agent_output\": \"fundamental_analysis result for: Step 'Fundamental Analyst': work on: Pre\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_technical_analyst\", \"arguments\": {\"task\": \"Step 'Technical Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Technical Analyst\", \"agent_output\": \"technical_analysis result for: Step 'Technical Analyst': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_macro_economist\", \"arguments\": {\"task\": \"Step 'Macro Economist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Macro Economist\", \"agent_output\": \"macro_analysis result for: Step 'Macro Economist': work on: Prepare\"}"
       ]
      ]
     },
@@ -820,19 +844,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_fundamental_analyst\", \"arguments\": {\"task\": \"Step 'Fundamental Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Fundamental Analyst\", \"agent_output\": \"fundamental_analysis result for: Step 'Fundamental Analyst': work on: Pre\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_technical_analyst\", \"arguments\": {\"task\": \"Step 'Technical Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Technical Analyst\", \"agent_output\": \"technical_analysis result for: Step 'Technical Analyst': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_macro_economist\", \"arguments\": {\"task\": \"Step 'Macro Economist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Macro Economist\", \"agent_output\": \"macro_analysis result for: Step 'Macro Economist': work on: Prepare\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Risk Assessor\", \"agent_output\": \"risk_assessment result for: Step 'Risk Assessor': work on: Prepare a\"}"
       ]
      ]
     },
@@ -855,23 +895,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_fundamental_analyst\", \"arguments\": {\"task\": \"Step 'Fundamental Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Fundamental Analyst\", \"agent_output\": \"fundamental_analysis result for: Step 'Fundamental Analyst': work on: Pre\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_technical_analyst\", \"arguments\": {\"task\": \"Step 'Technical Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Technical Analyst\", \"agent_output\": \"technical_analysis result for: Step 'Technical Analyst': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_macro_economist\", \"arguments\": {\"task\": \"Step 'Macro Economist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Macro Economist\", \"agent_output\": \"macro_analysis result for: Step 'Macro Economist': work on: Prepare\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Risk Assessor\", \"agent_output\": \"risk_assessment result for: Step 'Risk Assessor': work on: Prepare a\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_portfolio_strategist\", \"arguments\": {\"task\": \"Step 'Portfolio Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Portfolio Strategist\", \"agent_output\": \"strategy result for: Step 'Portfolio Strategist': work on: Pr\"}"
       ]
      ]
     }
@@ -898,8 +958,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_fundamental_analyst\", \"arguments\": {\"task\": \"Step 'Fundamental Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -939,8 +999,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_fundamental_analyst\", \"arguments\": {\"task\": \"Step 'Fundamental Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -949,8 +1009,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_technical_analyst\", \"arguments\": {\"task\": \"Step 'Technical Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -993,8 +1053,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_fundamental_analyst\", \"arguments\": {\"task\": \"Step 'Fundamental Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1003,8 +1063,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_technical_analyst\", \"arguments\": {\"task\": \"Step 'Technical Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1013,8 +1073,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_macro_economist\", \"arguments\": {\"task\": \"Step 'Macro Economist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1060,8 +1120,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_fundamental_analyst\", \"arguments\": {\"task\": \"Step 'Fundamental Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1070,8 +1130,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_technical_analyst\", \"arguments\": {\"task\": \"Step 'Technical Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1080,8 +1140,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_macro_economist\", \"arguments\": {\"task\": \"Step 'Macro Economist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1090,8 +1150,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1140,8 +1200,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_fundamental_analyst\", \"arguments\": {\"task\": \"Step 'Fundamental Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1150,8 +1210,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_technical_analyst\", \"arguments\": {\"task\": \"Step 'Technical Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1160,8 +1220,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_macro_economist\", \"arguments\": {\"task\": \"Step 'Macro Economist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1170,8 +1230,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -1180,8 +1240,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_portfolio_strategist\", \"arguments\": {\"task\": \"Step 'Portfolio Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",

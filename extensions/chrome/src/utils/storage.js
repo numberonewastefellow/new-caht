@@ -1,24 +1,24 @@
 import {
-  DEFAULT_ONYX_DOMAIN,
+  DEFAULT_VIRTUALAI_DOMAIN,
   CHROME_SPECIFIC_STORAGE_KEYS,
 } from "./constants.js";
 
-export async function getOnyxDomain() {
+export async function getVirtualAIDomain() {
   const result = await chrome.storage.local.get({
-    [CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]: DEFAULT_ONYX_DOMAIN,
+    [CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]: DEFAULT_VIRTUALAI_DOMAIN,
   });
-  return result[CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN];
+  return result[CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN];
 }
 
-export function setOnyxDomain(domain, callback) {
+export function setVirtualAIDomain(domain, callback) {
   chrome.storage.local.set(
-    { [CHROME_SPECIFIC_STORAGE_KEYS.ONYX_DOMAIN]: domain },
+    { [CHROME_SPECIFIC_STORAGE_KEYS.VIRTUALAI_DOMAIN]: domain },
     callback,
   );
 }
 
-export function getOnyxDomainSync() {
+export function getVirtualAIDomainSync() {
   return new Promise((resolve) => {
-    getOnyxDomain(resolve);
+    getVirtualAIDomain(resolve);
   });
 }

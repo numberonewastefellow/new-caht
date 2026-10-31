@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 
 /**
- * VirtualAI dot-cluster icon – matches the main app's OnyxIcon.
+ * VirtualAI dot-cluster icon – matches the main app's logo icon.
  * Pink → Magenta → Purple → Indigo gradient palette.
  */
 export function Logo(props: { size?: number }) {

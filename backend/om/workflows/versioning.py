@@ -44,7 +44,11 @@ def pin_workflow_version(
     if latest is not None and latest.content_hash == content_hash:
         return latest
 
-    next_version = latest.version + 1 if latest is not None else 1
+    # ``workflow.version`` may be ahead of the rows only for a workflow from before
+    # version history, whose first row takes its current number.
+    next_version = (
+        max(latest.version, workflow.version) + 1 if latest is not None else workflow.version
+    )
     try:
         # Savepoint: a concurrent save/run may record the same version number.
         with db_session.begin_nested():

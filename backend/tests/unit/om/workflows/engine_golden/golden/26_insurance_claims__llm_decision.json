@@ -300,8 +300,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -1779,11 +1779,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
       ]
      ]
     },
@@ -1816,15 +1816,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
       ]
      ]
     },
@@ -1857,19 +1861,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
       ]
      ]
     },
@@ -1902,23 +1914,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medical Claims Reviewer\", \"agent_output\": \"medical_claims_review result for: Step 'Medical Claims Reviewer': work on:\"}"
       ]
      ]
     },
@@ -1951,27 +1975,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medical Claims Reviewer\", \"agent_output\": \"medical_claims_review result for: Step 'Medical Claims Reviewer': work on:\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Fraud Investigator\", \"agent_output\": \"fraud_investigation result for: Step 'Fraud Investigator': work...<len=276 sha1=3688da6e613c>"
       ]
      ]
     },
@@ -2004,31 +2044,51 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medical Claims Reviewer\", \"agent_output\": \"medical_claims_review result for: Step 'Medical Claims Reviewer': work on:\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Fraud Investigator\", \"agent_output\": \"fraud_investigation result for: Step 'Fraud Investigator': work...<len=276 sha1=3688da6e613c>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Weather Catastrophe Analyst\", \"agent_output\": \"weather_cat_analysis result for: Step 'Weather/Catastr...<len=288 sha1=4bf35c83a88e>"
       ]
      ]
     },
@@ -2061,35 +2121,59 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medical Claims Reviewer\", \"agent_output\": \"medical_claims_review result for: Step 'Medical Claims Reviewer': work on:\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Fraud Investigator\", \"agent_output\": \"fraud_investigation result for: Step 'Fraud Investigator': work...<len=276 sha1=3688da6e613c>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Weather Catastrophe Analyst\", \"agent_output\": \"weather_cat_analysis result for: Step 'Weather/Catastr...<len=288 sha1=4bf35c83a88e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_subrogation_specialist\", \"arguments\": {\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Subrogation Specialist\", \"agent_output\": \"subrogation_assessment result for: Step 'Subrogation Specialist': work on: \"}"
       ]
      ]
     },
@@ -2122,39 +2206,67 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medical Claims Reviewer\", \"agent_output\": \"medical_claims_review result for: Step 'Medical Claims Reviewer': work on:\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Fraud Investigator\", \"agent_output\": \"fraud_investigation result for: Step 'Fraud Investigator': work...<len=276 sha1=3688da6e613c>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Weather Catastrophe Analyst\", \"agent_output\": \"weather_cat_analysis result for: Step 'Weather/Catastr...<len=288 sha1=4bf35c83a88e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Subrogation Specialist\", \"agent_output\": \"subrogation_assessment result for: Step 'Subrogation Specialist': work on: \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_subrogation_specialist\", \"arguments\": {\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_policy_coverage_analyst\", \"arguments\": {\"task\": \"Step 'Policy Coverage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Policy Coverage Analyst\", \"agent_output\": \"coverage_determination result for: Step 'Policy Coverage Analyst': work on:\"}"
       ]
      ]
     },
@@ -2187,43 +2299,75 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medical Claims Reviewer\", \"agent_output\": \"medical_claims_review result for: Step 'Medical Claims Reviewer': work on:\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Fraud Investigator\", \"agent_output\": \"fraud_investigation result for: Step 'Fraud Investigator': work...<len=276 sha1=3688da6e613c>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Weather Catastrophe Analyst\", \"agent_output\": \"weather_cat_analysis result for: Step 'Weather/Catastr...<len=288 sha1=4bf35c83a88e>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Subrogation Specialist\", \"agent_output\": \"subrogation_assessment result for: Step 'Subrogation Specialist': work on: \"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_subrogation_specialist\", \"arguments\": {\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Policy Coverage Analyst\", \"agent_output\": \"coverage_determination result for: Step 'Policy Coverage Analyst': work on:\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_policy_coverage_analyst\", \"arguments\": {\"task\": \"Step 'Policy Coverage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_settlement_report_writer\", \"arguments\": {\"task\": \"Step 'Settlement Report Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Settlement Report Writer\", \"agent_output\": \"settlement_report result for: Step 'Settlement Report Writer': work on\"}"
       ]
      ]
     }
@@ -2252,13 +2396,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2267,8 +2406,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2311,13 +2450,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2326,8 +2460,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2336,8 +2470,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2383,13 +2517,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2398,8 +2527,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2408,8 +2537,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2418,8 +2547,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2468,13 +2597,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2483,8 +2607,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2493,8 +2617,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2503,8 +2627,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2513,8 +2637,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2566,13 +2690,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2581,8 +2700,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2591,8 +2710,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2601,8 +2720,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2611,8 +2730,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2621,8 +2740,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2677,13 +2796,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2692,8 +2806,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2702,8 +2816,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2712,8 +2826,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2722,8 +2836,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2732,8 +2846,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2742,8 +2856,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_subrogation_specialist\", \"arguments\": {\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2801,13 +2915,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2816,8 +2925,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2826,8 +2935,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2836,8 +2945,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2846,8 +2955,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2856,8 +2965,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2866,8 +2975,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_subrogation_specialist\", \"arguments\": {\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2876,8 +2985,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_policy_coverage_analyst\", \"arguments\": {\"task\": \"Step 'Policy Coverage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2938,13 +3047,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2953,8 +3057,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2963,8 +3067,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2973,8 +3077,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2983,8 +3087,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2993,8 +3097,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3003,8 +3107,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_subrogation_specialist\", \"arguments\": {\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3013,8 +3117,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_policy_coverage_analyst\", \"arguments\": {\"task\": \"Step 'Policy Coverage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3023,8 +3127,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_settlement_report_writer\", \"arguments\": {\"task\": \"Step 'Settlement Report Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",

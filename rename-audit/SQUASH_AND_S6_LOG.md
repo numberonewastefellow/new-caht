@@ -27,3 +27,11 @@ Old revision files are in git history (and /d/tmp/p1/old_versions). Anyone with 
 - Live dev DB (`virtualai-relational_db-1`) restamped to `0001_om_baseline` (was `0012_om_stored_values`); pre-change `pg_dump` kept at `D:/tmp/p1/sq_live.dump`. Running containers still use the old image: do NOT restart them until the new image is built, rebuild api + background + web together.
 - Brand spelling: the code base uses "VertualAI" (355 vs 88 hits) -> that is the spelling kept; domain stays `virtualai.com`.
 - `ONYX_GITHUB_*` CI secret rename: dropped from this plan.
+
+## UI trees renamed (web extension keys, widget, Chrome extension, desktop, examples), 2026-10-31
+- Rules: URLs `*.onyx.app` -> `virtualai.com`; standalone "Onyx" -> "VertualAI"; identifiers `Onyx*` -> `VirtualAI*`, `ONYX_*` -> `VIRTUALAI_*`, `onyx` -> `virtualai`.
+- Public names now: `<virtualai-chat-widget>`, `virtualai-widget.js`, storage `virtualai-widget-session`; extension keys `virtualaiExtension*`, `virtualaiTheme`,
+  message `VIRTUALAI_APP_LOADED` (web + extension renamed together), omnibox keyword `virtualai`, page `virtualai_home.html/js`;
+  desktop bundle id `com.virtualai.desktop`, config dir `com/virtualai/virtualai-desktop`, crate `virtualai`.
+- One-way: existing extension/desktop installs lose saved settings; embedded widgets must use the new tag. `extensions/chrome/LICENSE` keeps the upstream attribution.
+- Verified: `tsc` (web) clean, extension JS syntax-checked, manifest valid, `build_inventory.py --check` = 0. Widget / Tauri NOT built (no node_modules / Rust toolchain run here).

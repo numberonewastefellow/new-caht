@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useAgents } from "@/hooks/useAgents";
@@ -17,6 +17,7 @@ import { toast } from "@/hooks/useToast";
 import { WorkflowCanvas } from "@/components/workflow-builder/WorkflowCanvas";
 import { AgentSidebar } from "@/components/workflow-builder/AgentSidebar";
 import { StepConfigPanel } from "@/components/workflow-builder/StepConfigPanel";
+import { graphToSteps } from "@/components/workflow-builder/graphUtils";
 import { GlobalConfigToolbar } from "@/components/workflow-builder/GlobalConfigToolbar";
 import { useWorkflowGraph } from "@/components/workflow-builder/useWorkflowGraph";
 import {
@@ -155,6 +156,8 @@ function WorkflowVisualBuilderInner({
     addAgentNode,
     addTypedNode,
     removeNode,
+    moveNode,
+    onNodeDragStop,
     updateNodeData,
     applyNodeUpgrade,
     selectedNode,
@@ -377,6 +380,10 @@ function WorkflowVisualBuilderInner({
   const selectedStep =
     selectedNode && isStepNode(selectedNode) ? selectedNode : null;
   const showConfigPanel = !!selectedStep;
+  const selectedSteps = useMemo(
+    () => (selectedStep ? graphToSteps(nodes, edges) : []),
+    [selectedStep, nodes, edges]
+  );
   const canvasWarnings =
     modeConflicts.length > 0
       ? [
@@ -446,6 +453,7 @@ function WorkflowVisualBuilderInner({
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodeClick={handleNodeClick}
+          onNodeDragStop={onNodeDragStop}
           onDrop={handleDrop}
           onNodeTypeDrop={handleNodeTypeDrop}
           warnings={canvasWarnings}
@@ -478,6 +486,12 @@ function WorkflowVisualBuilderInner({
                 removeNode(id);
                 selectNode(null);
               }}
+              onDeleteKeepingSteps={(id: string) => {
+                removeNode(id, { keepChildren: true });
+                selectNode(null);
+              }}
+              steps={selectedSteps}
+              onMove={moveNode}
               onClose={() => selectNode(null)}
               collapsed={configCollapsed}
               onToggleCollapse={() => setConfigCollapsed((v) => !v)}

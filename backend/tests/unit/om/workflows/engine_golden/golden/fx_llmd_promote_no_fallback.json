@@ -353,7 +353,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"Collect the facts\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: Collect the facts\"}"
       ]
      ]
     }
@@ -380,8 +384,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"Collect the facts\"}}"
+        4,
+        ""
        ],
        [
         "tool_call_response",
@@ -421,8 +425,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"Collect the facts\"}}"
+        4,
+        ""
        ],
        [
         "tool_call_response",
@@ -431,8 +435,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"Analyse the facts from Alpha\"}}"
+        6,
+        ""
        ],
        [
         "tool_call_response",

@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
+from om.configs.constants import DEFAULT_AGENT_ID
 from om.db.models import Agent
 from om.server.query_and_chat.placement import Placement
 from om.server.query_and_chat.streaming_models import AgentResponseDelta
@@ -42,6 +43,8 @@ from om.workflows.nodes.base import StepSaveError
 from om.workflows.nodes.base import StepStatus
 
 if TYPE_CHECKING:
+    from sqlalchemy.orm import Session
+
     from om.db.models import AgentWorkflowStep
     from om.tools.models import ToolResponse
     from om.workflows.graph import WorkflowNode
@@ -56,8 +59,8 @@ AGENT_NODE_TYPE = "agent"
 class AgentStepConfigV1(BaseModel):
     """Settings of an ``agent`` v1 step.
 
-    ``agent_id`` is optional here only to keep legacy rows loadable (the legacy
-    engine skipped agent steps without an agent); the save API still requires it.
+    ``agent_id`` is optional here only to keep legacy rows loadable; the save API
+    requires it and a run fails on a step without one (``load_step_agent``).
     The ``*_override`` fields override the agent's own settings for this step.
     """
 
@@ -84,16 +87,46 @@ def store_agent_config_v1(config: dict[str, Any]) -> dict[str, Any]:
     return AgentStepConfigV1.model_validate(config).model_dump()
 
 
+class UnusableStepAgentError(Exception):
+    """A step's agent can't run workflow steps. The message completes "<step> ..."."""
+
+
+def load_step_agent(db_session: Session, agent_id: int | None) -> Agent:
+    """The agent a step runs, checked at save time and again at run time.
+
+    Steps run dedicated agents. The default Assistant is excluded because admins
+    change its tools and prompt globally for chat, which would silently change
+    every workflow using it. A workflow's wrapper agent is excluded because it has
+    no tools or prompt of its own: as a step it is an empty LLM call, not its
+    workflow.
+
+    Raises:
+        UnusableStepAgentError: the agent is missing, deleted, or not dedicated.
+    """
+    agent = db_session.get(Agent, agent_id) if agent_id is not None else None
+    if agent is None or agent.deleted:
+        raise UnusableStepAgentError(
+            f"uses agent {agent_id}, which was not found or deleted"
+        )
+    if agent.id == DEFAULT_AGENT_ID:
+        raise UnusableStepAgentError(
+            "uses the default Assistant; choose a dedicated agent"
+        )
+    if agent.workflow_id is not None:
+        raise UnusableStepAgentError(
+            "uses a workflow's own agent; choose a dedicated agent"
+        )
+    return agent
+
+
 def prepare_agent_step_v1(
     step: WorkflowStepCreate, ctx: SaveContext
 ) -> WorkflowStepCreate:
-    """The step's agent must exist; settings stay in the legacy fields."""
-    # agent id 0 is valid (the default assistant), so test for None explicitly.
-    agent = (
-        ctx.db_session.get(Agent, step.agent_id) if step.agent_id is not None else None
-    )
-    if agent is None or agent.deleted:
-        raise StepSaveError(f"Agent with id {step.agent_id} not found or deleted")
+    """The step must use a dedicated agent; settings stay in the legacy fields."""
+    try:
+        load_step_agent(ctx.db_session, step.agent_id)
+    except UnusableStepAgentError as e:
+        raise StepSaveError(f'"{step.step_name}" {e}') from e
     return step.model_copy(update={"config": None})
 
 
@@ -126,10 +159,10 @@ class AgentRunnerV1:
         self, node: WorkflowNode, ctx: RunContext
     ) -> Generator[Packet, None, StepOutcome]:
         config = AgentStepConfigV1.model_validate(node.config)
-        agent_tool = ctx.agent_tools.get(node, config)
-        if agent_tool is None:
-            logger.warning(f"Skipping step {node.name}: no agent tool")
-            return StepOutcome(status=StepStatus.SKIPPED)
+        try:
+            agent_tool = ctx.agent_tools.get(node, config)
+        except UnusableStepAgentError as e:
+            return StepOutcome(status=StepStatus.FAILED, error=f'"{node.name}" {e}')
 
         state = ctx.state
         agent_name = agent_tool._agent.name

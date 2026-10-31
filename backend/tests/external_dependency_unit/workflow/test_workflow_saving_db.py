@@ -14,8 +14,10 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from om.configs.constants import DEFAULT_AGENT_ID
 from om.db.models import Agent
 from om.db.models import AgentWorkflow
+from om.db.workflow import create_or_update_workflow_agent
 from om.db.workflow import get_workflow_by_id
 from om.db.workflow_version import list_workflow_versions
 from om.workflows.graph import graph_from_workflow
@@ -38,10 +40,11 @@ def agent_id(db_session: Session) -> int:
         select(Agent)
         .where(Agent.deleted.is_(False))
         .where(Agent.workflow_id.is_(None))
+        .where(Agent.id != DEFAULT_AGENT_ID)
         .limit(1)
     ).scalar_one_or_none()
     if agent is None:
-        pytest.skip("needs at least one non-workflow agent in the test database")
+        pytest.skip("needs at least one dedicated agent in the test database")
     return agent.id
 
 
@@ -219,6 +222,87 @@ def test_router_cannot_target_an_earlier_step(
     )
     with pytest.raises(WorkflowSaveError, match="after it"):
         _create(db_session, created, [_agent(0, agent_id, "A"), router])
+
+
+def test_default_assistant_rejected_as_step_agent(
+    db_session: Session, created: list[int]
+) -> None:
+    with pytest.raises(WorkflowSaveError, match="default Assistant"):
+        _create(db_session, created, [_agent(0, DEFAULT_AGENT_ID, "A")])
+
+
+def test_workflow_wrapper_agent_rejected_as_step_agent(
+    db_session: Session, created: list[int], agent_id: int
+) -> None:
+    workflow = _create(db_session, created, [_agent(0, agent_id, "A")])
+    wrapper = create_or_update_workflow_agent(db_session, workflow)
+    db_session.commit()
+    try:
+        with pytest.raises(WorkflowSaveError, match="a workflow's own agent"):
+            _create(db_session, created, [_agent(0, wrapper.id, "A")])
+    finally:
+        db_session.rollback()
+        db_session.delete(wrapper)
+        db_session.commit()
+
+
+def test_duplicate_output_key_rejected(
+    db_session: Session, created: list[int], agent_id: int
+) -> None:
+    first = _agent(0, agent_id, "Draft")
+    second = _agent(1, agent_id, "Review").model_copy(update={"output_key": "draft"})
+    with pytest.raises(WorkflowSaveError, match='Duplicate output key "draft"'):
+        _create(db_session, created, [first, second])
+
+
+def test_duplicate_output_key_rejected_across_parallel_branches(
+    db_session: Session, created: list[int], agent_id: int
+) -> None:
+    steps = [
+        _parallel(0),
+        _agent(1, agent_id, "Flights", parent_key="par", branch_index=0),
+        _agent(2, agent_id, "Hotels", parent_key="par", branch_index=1).model_copy(
+            update={"output_key": "flights"}
+        ),
+    ]
+    with pytest.raises(WorkflowSaveError, match='Duplicate output key "flights"'):
+        _create(db_session, created, steps)
+
+
+@pytest.mark.parametrize("reserved", ["loop", "user_input"])
+def test_reserved_output_key_rejected(
+    db_session: Session, created: list[int], agent_id: int, reserved: str
+) -> None:
+    step = _agent(0, agent_id, "A").model_copy(update={"output_key": reserved})
+    with pytest.raises(WorkflowSaveError, match="reserved output key"):
+        _create(db_session, created, [step])
+
+
+@pytest.mark.parametrize(
+    "step_type,config",
+    [
+        ("parallel", {"branches": [{"label": "A"}, {"label": "B"}]}),
+        ("loop", {"mode": "for_each", "items": "$a.output", "max_iterations": 3}),
+        ("code", {"code": "def main(inputs):\n    return {'result': 1}\n"}),
+    ],
+)
+def test_sequential_only_nodes_rejected_in_llm_decision(
+    db_session: Session,
+    created: list[int],
+    agent_id: int,
+    step_type: str,
+    config: dict[str, object],
+) -> None:
+    node = WorkflowStepCreate(
+        node_key="n",
+        step_type=step_type,
+        step_order=1,
+        step_name="Node",
+        output_key="node",
+        config=config,
+    )
+    with pytest.raises(WorkflowSaveError, match="llm_decision"):
+        _create(db_session, created, [_agent(0, agent_id, "A"), node], mode="llm_decision")
 
 
 def test_router_not_allowed_in_llm_decision(

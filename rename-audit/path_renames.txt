@@ -71,5 +71,3 @@ deployment/terraform/modules/aws/onyx/main.tf
 deployment/terraform/modules/aws/onyx/outputs.tf
 deployment/terraform/modules/aws/onyx/variables.tf
 deployment/terraform/modules/aws/onyx/versions.tf
-extensions/chrome/src/pages/onyx_home.html
-extensions/chrome/src/pages/onyx_home.js

@@ -20,7 +20,7 @@ To contribute, please follow the
 
 
 ## Getting Help 🙋
-We have support channels and generally interesting discussions on our [Discord](https://discord.gg/4NA5SbzrWb).
+We have support channels and generally interesting discussions on our [Discord](https://discord.gg/YOUR_DISCORD_INVITE).
 
 See you there!
 

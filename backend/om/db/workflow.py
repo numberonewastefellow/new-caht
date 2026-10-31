@@ -3,6 +3,7 @@
 import datetime
 from uuid import UUID
 
+from sqlalchemy import Select
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import selectinload
@@ -59,11 +60,8 @@ def create_workflow(
     return workflow
 
 
-def get_workflow_by_id(
-    db_session: Session,
-    workflow_id: int,
-) -> AgentWorkflow | None:
-    return db_session.execute(
+def _select_workflow(workflow_id: int) -> Select[tuple[AgentWorkflow]]:
+    return (
         select(AgentWorkflow)
         .where(AgentWorkflow.id == workflow_id)
         .where(AgentWorkflow.deleted.is_(False))
@@ -72,6 +70,25 @@ def get_workflow_by_id(
             .selectinload(AgentWorkflowStep.agent)
             .selectinload(Agent.tools)
         )
+    )
+
+
+def get_workflow_by_id(
+    db_session: Session,
+    workflow_id: int,
+) -> AgentWorkflow | None:
+    return db_session.execute(_select_workflow(workflow_id)).scalar_one_or_none()
+
+
+def get_workflow_for_update(
+    db_session: Session,
+    workflow_id: int,
+) -> AgentWorkflow | None:
+    """The workflow, freshly read, with its row locked until the transaction ends."""
+    return db_session.execute(
+        _select_workflow(workflow_id)
+        .with_for_update(of=AgentWorkflow)
+        .execution_options(populate_existing=True)
     ).scalar_one_or_none()
 
 
@@ -106,6 +123,7 @@ def update_workflow(
     db_session: Session,
     workflow_id: int,
     workflow_update: WorkflowUpdate,
+    commit: bool = True,
 ) -> AgentWorkflow | None:
     workflow = get_workflow_by_id(db_session, workflow_id)
     if workflow is None:
@@ -137,7 +155,10 @@ def update_workflow(
     if workflow_update.steps is not None:
         _replace_steps(db_session, workflow, workflow_update.steps)
 
-    db_session.commit()
+    if commit:
+        db_session.commit()
+    else:
+        db_session.flush()
     # Steps were changed through the session; reload them on next access.
     db_session.expire(workflow, ["steps"])
     return workflow

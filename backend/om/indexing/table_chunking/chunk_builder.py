@@ -459,6 +459,38 @@ def _sheet_title(file_name: str, summary: SheetSummary) -> str:
     return f"{file_name} :: sheets {', '.join(names)} (same columns)"
 
 
+def _record_key_column(summary: SheetSummary) -> ColumnSummary | None:
+    """The first column when it numbers the records (Serial#, S.No, an ID):
+    unique values that are numbers or ids, in at least half of the rows."""
+    if summary.synthetic_header or not summary.columns:
+        return None
+    col = summary.columns[0]
+    if not col.name.strip() or col.non_empty < 0.5 * summary.row_count:
+        return None
+    unique = col.counts_complete and col.distinct == col.non_empty
+    id_like = (
+        is_id_column_name(col.name)
+        or col.is_numeric
+        or col.id_like_values == col.non_empty
+    )
+    return col if unique and id_like else None
+
+
+def _records_note(summary: SheetSummary) -> str:
+    """'16 with a Serial# value' when some rows (a note, a total line) leave
+    the record-number column empty; '' otherwise. Without it, "17 rows" of
+    16 records and one note is read as 17 records."""
+    key = _record_key_column(summary)
+    if key is None or key.non_empty >= summary.row_count:
+        return ""
+    return f"{key.non_empty} with a {key.name.strip()} value"
+
+
+def _rows_text(summary: SheetSummary) -> str:
+    note = _records_note(summary)
+    return f"{summary.row_count} rows" + (f" ({note})" if note else "")
+
+
 def _columns_line(summary: SheetSummary) -> str:
     if summary.synthetic_header:
         return f"Columns: {len(summary.header)} unnamed columns"
@@ -503,7 +535,7 @@ def _overview_block(
             continue
         label = ", ".join(summary.names) if any(summary.names) else "Data"
         lines.append(
-            f"Sheet {label}: {summary.row_count} rows; " + _columns_line(summary)
+            f"Sheet {label}: {_rows_text(summary)}; " + _columns_line(summary)
         )
     return ChunkBlock(lines=lines, repeat=1, max_chunks=_OVERVIEW_MAX_CHUNKS)
 
@@ -518,8 +550,10 @@ def _all_rows_block(
     if not summary.all_rows:
         return None
     repeat = 2
+    note = _records_note(summary)
     lines = [
-        f"{_sheet_title(file_name, summary)} (all {summary.row_count} rows)",
+        f"{_sheet_title(file_name, summary)} (all {summary.row_count} rows"
+        f"{', ' + note if note else ''})",
         _columns_line(summary),
         *summary.all_rows,
     ]
@@ -636,7 +670,7 @@ def _summary_block(
     header = summary.header
     roles = [col.role() for col in summary.columns]
     lines = [
-        f"{_sheet_title(file_name, summary)}: {summary.row_count} rows x "
+        f"{_sheet_title(file_name, summary)}: {_rows_text(summary)} x "
         f"{sum(1 for h in header if h.strip())} columns "
         "(summary; not every row is shown)",
         _columns_line(summary),

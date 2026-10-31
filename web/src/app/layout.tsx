@@ -120,7 +120,12 @@ export default async function RootLayout({
   const [combinedSettings, user, authTypeMetadata] = await Promise.all([
     fetchSettingsSS(),
     getCurrentUserSS(),
-    getAuthTypeMetadataSS(),
+    // Rejects while the API is unreachable (e.g. still starting). Must not throw
+    // here: that would replace the whole app with global-error.tsx.
+    getAuthTypeMetadataSS().catch((e) => {
+      console.error("getAuthTypeMetadataSS exception: ", e);
+      return null;
+    }),
   ]);
 
   const { folded } = await fetchAppSidebarMetadata(user);
@@ -198,7 +203,7 @@ export default async function RootLayout({
     </html>
   );
 
-  if (!combinedSettings) {
+  if (!combinedSettings || !authTypeMetadata) {
     return getPageContent(
       NEXT_PUBLIC_CLOUD_ENABLED ? <CloudError /> : <Error />
     );

@@ -93,8 +93,8 @@ ALLOWED_FILES = {
     "TODO_MD_INDEX_REINDEX_IMPLEMENTATION_PLAN.MD",
     "AGENTS.md",  # upstream attribution + pointer to DO_NOT_RENAME.md
     "LICENSE",
-    "web/src/lib/extension/constants.ts",  # Phase 7: extension storage keys
-    "web/src/components/context/NRFPreferencesContext.tsx",
+    "extensions/chrome/LICENSE",  # upstream attribution
+    "backend/tests/unit/om/server/test_renamed_contracts.py",  # asserts old names are gone
     "backend/tests/workflow_creator/workflows/28_drug_development.json",  # fictional sponsor name
     # tests that assert the OLD names are rejected / that the one-off script maps them
     "backend/tests/unit/om/auth/test_pat_prefixes.py",
@@ -106,18 +106,14 @@ ALLOWED_FILES = {
 }
 ALLOWED_PREFIXES = (
     "deployment/",  # Phase 6
-    "widget/",
-    "extensions/",
-    "desktop/",  # Phase 7
     ".github/",  # Phase 7 (CI secrets)
     "backend/tests/unit/migration_safety/",  # guard tests name the old packages on purpose
     "backend/tests/route_rename/",  # recorded "before" snapshots
     "rewrite-plans/",  # historical clean-room plans, name the upstream product on purpose
     "docs/scheduled-workflows/",
-    "examples/widget/",  # Phase 7
 )
 # Lines that are fine anywhere: the checkout directory name and the required upstream notice.
-ALLOWED_LINE = re.compile(r"danswer20022026|Onyx / Danswer project|NOTICE\.md")
+ALLOWED_LINE = re.compile(r"danswer20022026|llm/danswer_|Onyx / Danswer project|NOTICE\.md")
 ALLOWED_CATEGORIES = {("X", "ci-secret"), ("P", "client-identity"), ("P", "deploy-resource-name"), ("P", "compose-volume-or-project")}
 
 

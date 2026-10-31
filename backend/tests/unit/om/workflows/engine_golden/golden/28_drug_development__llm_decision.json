@@ -308,8 +308,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -1848,11 +1848,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Program Triage Manager': wor"
       ]
      ]
     },
@@ -1886,15 +1886,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Program Triage Manager': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medicinal Chemist\", \"agent_output\": \"medchem_assessment result for: Step 'Medicinal Chemist': work on: Prepa\"}"
       ]
      ]
     },
@@ -1928,19 +1932,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Program Triage Manager': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medicinal Chemist\", \"agent_output\": \"medchem_assessment result for: Step 'Medicinal Chemist': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Biostatistician\", \"agent_output\": \"biostatistics_assessment result for: Step 'Biostatistician': work ...<len=288 sha1=76b27414fb1b>"
       ]
      ]
     },
@@ -1974,23 +1986,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Program Triage Manager': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medicinal Chemist\", \"agent_output\": \"medchem_assessment result for: Step 'Medicinal Chemist': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Biostatistician\", \"agent_output\": \"biostatistics_assessment result for: Step 'Biostatistician': work ...<len=288 sha1=76b27414fb1b>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Toxicologist\", \"agent_output\": \"toxicology_assessment result for: Step 'Toxicologist': work on: Prepa...<len=276 sha1=4461bfbc11f7>"
       ]
      ]
     },
@@ -2024,27 +2048,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Program Triage Manager': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medicinal Chemist\", \"agent_output\": \"medchem_assessment result for: Step 'Medicinal Chemist': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Biostatistician\", \"agent_output\": \"biostatistics_assessment result for: Step 'Biostatistician': work ...<len=288 sha1=76b27414fb1b>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Toxicologist\", \"agent_output\": \"toxicology_assessment result for: Step 'Toxicologist': work on: Prepa...<len=276 sha1=4461bfbc11f7>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_regulatory_affairs_specialist\", \"arguments\": {\"task\": \"Step 'Regulatory Affairs Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Regulatory Affairs Specialist\", \"agent_output\": \"regulatory_assessment result for: Step 'Regulatory Affairs Specialist': wo\"}"
       ]
      ]
     },
@@ -2078,31 +2118,51 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Program Triage Manager': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medicinal Chemist\", \"agent_output\": \"medchem_assessment result for: Step 'Medicinal Chemist': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Biostatistician\", \"agent_output\": \"biostatistics_assessment result for: Step 'Biostatistician': work ...<len=288 sha1=76b27414fb1b>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Toxicologist\", \"agent_output\": \"toxicology_assessment result for: Step 'Toxicologist': work on: Prepa...<len=276 sha1=4461bfbc11f7>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Regulatory Affairs Specialist\", \"agent_output\": \"regulatory_assessment result for: Step 'Regulatory Affairs Specialist': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_regulatory_affairs_specialist\", \"arguments\": {\"task\": \"Step 'Regulatory Affairs Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_clinical_operations_analyst\", \"arguments\": {\"task\": \"Step 'Clinical Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Clinical Operations Analyst\", \"agent_output\": \"clinical_ops_assessment result for: Step 'Clinical Operations Analyst': work\"}"
       ]
      ]
     },
@@ -2136,35 +2196,59 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Program Triage Manager': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medicinal Chemist\", \"agent_output\": \"medchem_assessment result for: Step 'Medicinal Chemist': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Biostatistician\", \"agent_output\": \"biostatistics_assessment result for: Step 'Biostatistician': work ...<len=288 sha1=76b27414fb1b>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Toxicologist\", \"agent_output\": \"toxicology_assessment result for: Step 'Toxicologist': work on: Prepa...<len=276 sha1=4461bfbc11f7>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Regulatory Affairs Specialist\", \"agent_output\": \"regulatory_assessment result for: Step 'Regulatory Affairs Specialist': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_regulatory_affairs_specialist\", \"arguments\": {\"task\": \"Step 'Regulatory Affairs Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Clinical Operations Analyst\", \"agent_output\": \"clinical_ops_assessment result for: Step 'Clinical Operations Analyst': work\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_clinical_operations_analyst\", \"arguments\": {\"task\": \"Step 'Clinical Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_pharmacoeconomist\", \"arguments\": {\"task\": \"Step 'Pharmacoeconomist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Pharmacoeconomist\", \"agent_output\": \"pharmacoeconomics_assessment result for: Step 'Pharmacoeconomist...<len=302 sha1=5c2a84a20d4f>"
       ]
      ]
     },
@@ -2198,39 +2282,67 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Program Triage Manager': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medicinal Chemist\", \"agent_output\": \"medchem_assessment result for: Step 'Medicinal Chemist': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Biostatistician\", \"agent_output\": \"biostatistics_assessment result for: Step 'Biostatistician': work ...<len=288 sha1=76b27414fb1b>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Toxicologist\", \"agent_output\": \"toxicology_assessment result for: Step 'Toxicologist': work on: Prepa...<len=276 sha1=4461bfbc11f7>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Regulatory Affairs Specialist\", \"agent_output\": \"regulatory_assessment result for: Step 'Regulatory Affairs Specialist': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_regulatory_affairs_specialist\", \"arguments\": {\"task\": \"Step 'Regulatory Affairs Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Clinical Operations Analyst\", \"agent_output\": \"clinical_ops_assessment result for: Step 'Clinical Operations Analyst': work\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_clinical_operations_analyst\", \"arguments\": {\"task\": \"Step 'Clinical Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Pharmacoeconomist\", \"agent_output\": \"pharmacoeconomics_assessment result for: Step 'Pharmacoeconomist...<len=302 sha1=5c2a84a20d4f>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_pharmacoeconomist\", \"arguments\": {\"task\": \"Step 'Pharmacoeconomist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_ip_patent_analyst\", \"arguments\": {\"task\": \"Step 'IP/Patent Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF IP Patent Analyst\", \"agent_output\": \"ip_assessment result for: Step 'IP/Patent Analyst': work on: Prepa\"}"
       ]
      ]
     },
@@ -2264,43 +2376,75 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Program Triage Manager': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medicinal Chemist\", \"agent_output\": \"medchem_assessment result for: Step 'Medicinal Chemist': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Biostatistician\", \"agent_output\": \"biostatistics_assessment result for: Step 'Biostatistician': work ...<len=288 sha1=76b27414fb1b>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Toxicologist\", \"agent_output\": \"toxicology_assessment result for: Step 'Toxicologist': work on: Prepa...<len=276 sha1=4461bfbc11f7>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Regulatory Affairs Specialist\", \"agent_output\": \"regulatory_assessment result for: Step 'Regulatory Affairs Specialist': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_regulatory_affairs_specialist\", \"arguments\": {\"task\": \"Step 'Regulatory Affairs Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Clinical Operations Analyst\", \"agent_output\": \"clinical_ops_assessment result for: Step 'Clinical Operations Analyst': work\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_clinical_operations_analyst\", \"arguments\": {\"task\": \"Step 'Clinical Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Pharmacoeconomist\", \"agent_output\": \"pharmacoeconomics_assessment result for: Step 'Pharmacoeconomist...<len=302 sha1=5c2a84a20d4f>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_pharmacoeconomist\", \"arguments\": {\"task\": \"Step 'Pharmacoeconomist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF IP Patent Analyst\", \"agent_output\": \"ip_assessment result for: Step 'IP/Patent Analyst': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_ip_patent_analyst\", \"arguments\": {\"task\": \"Step 'IP/Patent Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_manufacturing_cmc_specialist\", \"arguments\": {\"task\": \"Step 'Manufacturing/CMC Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Manufacturing CMC Specialist\", \"agent_output\": \"cmc_assessment result for: Step 'Manufacturing/CMC Specialist': wor\"}"
       ]
      ]
     },
@@ -2334,47 +2478,83 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Program Triage Manager': wor"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Medicinal Chemist\", \"agent_output\": \"medchem_assessment result for: Step 'Medicinal Chemist': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Biostatistician\", \"agent_output\": \"biostatistics_assessment result for: Step 'Biostatistician': work ...<len=288 sha1=76b27414fb1b>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Toxicologist\", \"agent_output\": \"toxicology_assessment result for: Step 'Toxicologist': work on: Prepa...<len=276 sha1=4461bfbc11f7>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Regulatory Affairs Specialist\", \"agent_output\": \"regulatory_assessment result for: Step 'Regulatory Affairs Specialist': wo\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_regulatory_affairs_specialist\", \"arguments\": {\"task\": \"Step 'Regulatory Affairs Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Clinical Operations Analyst\", \"agent_output\": \"clinical_ops_assessment result for: Step 'Clinical Operations Analyst': work\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_clinical_operations_analyst\", \"arguments\": {\"task\": \"Step 'Clinical Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Pharmacoeconomist\", \"agent_output\": \"pharmacoeconomics_assessment result for: Step 'Pharmacoeconomist...<len=302 sha1=5c2a84a20d4f>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_pharmacoeconomist\", \"arguments\": {\"task\": \"Step 'Pharmacoeconomist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF IP Patent Analyst\", \"agent_output\": \"ip_assessment result for: Step 'IP/Patent Analyst': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_ip_patent_analyst\", \"arguments\": {\"task\": \"Step 'IP/Patent Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Manufacturing CMC Specialist\", \"agent_output\": \"cmc_assessment result for: Step 'Manufacturing/CMC Specialist': wor\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_manufacturing_cmc_specialist\", \"arguments\": {\"task\": \"Step 'Manufacturing/CMC Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_10_0\", \"name\": \"delegate_to_wf_stage_gate_report_writer\", \"arguments\": {\"task\": \"Step 'Stage Gate Report Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Stage Gate Report Writer\", \"agent_output\": \"stage_gate_report result for: Step 'Stage Gate Report Writer': work on\"}"
       ]
      ]
     }
@@ -2403,13 +2583,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2418,8 +2593,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2462,13 +2637,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2477,8 +2647,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2487,8 +2657,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2534,13 +2704,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2549,8 +2714,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2559,8 +2724,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2569,8 +2734,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2619,13 +2784,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2634,8 +2794,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2644,8 +2804,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2654,8 +2814,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2664,8 +2824,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_regulatory_affairs_specialist\", \"arguments\": {\"task\": \"Step 'Regulatory Affairs Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2717,13 +2877,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2732,8 +2887,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2742,8 +2897,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2752,8 +2907,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2762,8 +2917,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_regulatory_affairs_specialist\", \"arguments\": {\"task\": \"Step 'Regulatory Affairs Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2772,8 +2927,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_clinical_operations_analyst\", \"arguments\": {\"task\": \"Step 'Clinical Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2828,13 +2983,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2843,8 +2993,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2853,8 +3003,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2863,8 +3013,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2873,8 +3023,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_regulatory_affairs_specialist\", \"arguments\": {\"task\": \"Step 'Regulatory Affairs Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2883,8 +3033,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_clinical_operations_analyst\", \"arguments\": {\"task\": \"Step 'Clinical Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2893,8 +3043,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_pharmacoeconomist\", \"arguments\": {\"task\": \"Step 'Pharmacoeconomist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2952,13 +3102,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2967,8 +3112,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2977,8 +3122,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2987,8 +3132,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -2997,8 +3142,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_regulatory_affairs_specialist\", \"arguments\": {\"task\": \"Step 'Regulatory Affairs Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3007,8 +3152,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_clinical_operations_analyst\", \"arguments\": {\"task\": \"Step 'Clinical Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3017,8 +3162,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_pharmacoeconomist\", \"arguments\": {\"task\": \"Step 'Pharmacoeconomist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3027,8 +3172,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_ip_patent_analyst\", \"arguments\": {\"task\": \"Step 'IP/Patent Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3089,13 +3234,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -3104,8 +3244,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3114,8 +3254,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3124,8 +3264,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3134,8 +3274,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_regulatory_affairs_specialist\", \"arguments\": {\"task\": \"Step 'Regulatory Affairs Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3144,8 +3284,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_clinical_operations_analyst\", \"arguments\": {\"task\": \"Step 'Clinical Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3154,8 +3294,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_pharmacoeconomist\", \"arguments\": {\"task\": \"Step 'Pharmacoeconomist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3164,8 +3304,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_ip_patent_analyst\", \"arguments\": {\"task\": \"Step 'IP/Patent Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3174,8 +3314,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_manufacturing_cmc_specialist\", \"arguments\": {\"task\": \"Step 'Manufacturing/CMC Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3239,13 +3379,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"Step 'Program Triage Manager': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_program_triage_manager\", \"arguments\": {\"task\": \"TASK:\\nStep 'Pr...<len=677 sha1=650cce5e0357>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -3254,8 +3389,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_medicinal_chemist\", \"arguments\": {\"task\": \"Step 'Medicinal Chemist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3264,8 +3399,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_biostatistician\", \"arguments\": {\"task\": \"Step 'Biostatistician': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3274,8 +3409,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_toxicologist\", \"arguments\": {\"task\": \"Step 'Toxicologist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3284,8 +3419,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_regulatory_affairs_specialist\", \"arguments\": {\"task\": \"Step 'Regulatory Affairs Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3294,8 +3429,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_clinical_operations_analyst\", \"arguments\": {\"task\": \"Step 'Clinical Operations Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3304,8 +3439,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_pharmacoeconomist\", \"arguments\": {\"task\": \"Step 'Pharmacoeconomist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        16,
+        ""
        ],
        [
         "tool_call_response",
@@ -3314,8 +3449,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_ip_patent_analyst\", \"arguments\": {\"task\": \"Step 'IP/Patent Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3324,8 +3459,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_manufacturing_cmc_specialist\", \"arguments\": {\"task\": \"Step 'Manufacturing/CMC Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3334,8 +3469,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_10_0\", \"name\": \"delegate_to_wf_stage_gate_report_writer\", \"arguments\": {\"task\": \"Step 'Stage Gate Report Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        19,
+        ""
        ],
        [
         "tool_call_response",

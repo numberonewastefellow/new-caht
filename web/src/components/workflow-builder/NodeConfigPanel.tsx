@@ -17,6 +17,11 @@ import {
 } from "@/app/app/components/tools/constants";
 import { structureValue, parseLlmDescriptor } from "@/lib/llm/utils";
 import { selectableStepAgents } from "@/lib/workflows/stepAgents";
+import {
+  StepOptionsSection,
+  StepPlacementSection,
+  ToggleSwitch,
+} from "./StepOptionsSection";
 
 // Built-in tool display config
 const BUILTIN_TOOLS: {
@@ -73,6 +78,9 @@ export function AgentConfigPanel({
   onDelete,
   onClose,
   onToggleCollapse,
+  catalog,
+  steps,
+  onMove,
 }: StepConfigPanelProps) {
   const [activeTab, setActiveTab] = useState<ConfigTab>("properties");
   const currentAgent = agents.find((a) => a.id === data.agent_id);
@@ -273,53 +281,19 @@ export function AgentConfigPanel({
               />
             )}
 
-            {/* Toggles */}
-            <div className="wfb-config-section">
-              <div className="wfb-config-label">Options</div>
-
-              <div className="wfb-config-toggle-row">
-                <div>
-                  <div className="wfb-config-toggle-label">Terminal Step</div>
-                  <div className="wfb-config-toggle-desc">
-                    Marks this as a final step
-                  </div>
-                </div>
-                <ToggleSwitch
-                  checked={data.is_terminal}
-                  onChange={(v) => onUpdate(nodeId, { is_terminal: v })}
-                />
-              </div>
-
-              {!isUtilityAgent && (
-                <div className="wfb-config-toggle-row">
-                  <div>
-                    <div className="wfb-config-toggle-label">
-                      Can Request Input (HITL)
-                    </div>
-                    <div className="wfb-config-toggle-desc">
-                      Agent can pause for user input
-                    </div>
-                  </div>
-                  <ToggleSwitch
-                    checked={data.can_request_input}
-                    onChange={(v) => onUpdate(nodeId, { can_request_input: v })}
-                  />
-                </div>
-              )}
-
-              <div className="wfb-config-toggle-row">
-                <div>
-                  <div className="wfb-config-toggle-label">Show as Message</div>
-                  <div className="wfb-config-toggle-desc">
-                    Output appears in chat
-                  </div>
-                </div>
-                <ToggleSwitch
-                  checked={data.promote_output}
-                  onChange={(v) => onUpdate(nodeId, { promote_output: v })}
-                />
-              </div>
-            </div>
+            <StepPlacementSection
+              nodeId={nodeId}
+              data={data}
+              steps={steps}
+              catalog={catalog}
+              onMove={onMove}
+            />
+            <StepOptionsSection
+              nodeId={nodeId}
+              data={data}
+              canPause={!isUtilityAgent}
+              onUpdate={onUpdate}
+            />
 
             {/* Agent info (read-only) */}
             {data.agent_description && (
@@ -1454,50 +1428,3 @@ function CodeExecutorConfigSection({
 }
 
 // ── Toggle Switch ─────────────────────────────────────────────────────
-
-function ToggleSwitch({
-  checked,
-  onChange,
-  disabled,
-}: {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      onClick={() => !disabled && onChange(!checked)}
-      style={{
-        position: "relative",
-        width: 36,
-        height: 20,
-        borderRadius: 10,
-        border: "none",
-        cursor: disabled ? "not-allowed" : "pointer",
-        opacity: disabled ? 0.5 : 1,
-        background: checked
-          ? "var(--virtualai-accent, var(--theme-primary-05))"
-          : "var(--border-02, #d1d5db)",
-        transition: "background 0.2s",
-        flexShrink: 0,
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          width: 16,
-          height: 16,
-          borderRadius: "50%",
-          background: "white",
-          top: 2,
-          left: checked ? 18 : 2,
-          transition: "left 0.2s",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-        }}
-      />
-    </button>
-  );
-}

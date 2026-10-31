@@ -298,8 +298,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ]
       ],
       "cycle_count": 1,
@@ -1804,11 +1804,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Alert Triage Analyst': work "
       ]
      ]
     },
@@ -1841,15 +1841,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Alert Triage Analyst': work "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF KYC Analyst\", \"agent_output\": \"kyc_assessment result for: Step 'KYC Analyst': work on: Prepare a c\"}"
       ]
      ]
     },
@@ -1882,19 +1886,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Alert Triage Analyst': work "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF KYC Analyst\", \"agent_output\": \"kyc_assessment result for: Step 'KYC Analyst': work on: Prepare a c\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Transaction Pattern Analyst\", \"agent_output\": \"transaction_analysis result for: Step 'Transaction Pat...<len=288 sha1=54f8b1776854>"
       ]
      ]
     },
@@ -1927,23 +1939,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Alert Triage Analyst': work "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF KYC Analyst\", \"agent_output\": \"kyc_assessment result for: Step 'KYC Analyst': work on: Prepare a c\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Transaction Pattern Analyst\", \"agent_output\": \"transaction_analysis result for: Step 'Transaction Pat...<len=288 sha1=54f8b1776854>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_sanctions_screening_specialist\", \"arguments\": {\"task\": \"Step 'Sanctions Screening Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Sanctions Screening Specialist\", \"agent_output\": \"sanctions_screening result for: Step 'Sanctions Screening Specialist': w\"}"
       ]
      ]
     },
@@ -1976,27 +2000,43 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Alert Triage Analyst': work "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF KYC Analyst\", \"agent_output\": \"kyc_assessment result for: Step 'KYC Analyst': work on: Prepare a c\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Transaction Pattern Analyst\", \"agent_output\": \"transaction_analysis result for: Step 'Transaction Pat...<len=288 sha1=54f8b1776854>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Sanctions Screening Specialist\", \"agent_output\": \"sanctions_screening result for: Step 'Sanctions Screening Specialist': w\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_sanctions_screening_specialist\", \"arguments\": {\"task\": \"Step 'Sanctions Screening Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_trade_finance_investigator\", \"arguments\": {\"task\": \"Step 'Trade Finance Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Trade Finance Investigator\", \"agent_output\": \"trade_finance_assessment result for: Step 'Trade Financ...<len=299 sha1=d91c9eb6856a>"
       ]
      ]
     },
@@ -2029,31 +2069,51 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Alert Triage Analyst': work "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF KYC Analyst\", \"agent_output\": \"kyc_assessment result for: Step 'KYC Analyst': work on: Prepare a c\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Transaction Pattern Analyst\", \"agent_output\": \"transaction_analysis result for: Step 'Transaction Pat...<len=288 sha1=54f8b1776854>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Sanctions Screening Specialist\", \"agent_output\": \"sanctions_screening result for: Step 'Sanctions Screening Specialist': w\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_sanctions_screening_specialist\", \"arguments\": {\"task\": \"Step 'Sanctions Screening Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Trade Finance Investigator\", \"agent_output\": \"trade_finance_assessment result for: Step 'Trade Financ...<len=299 sha1=d91c9eb6856a>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_trade_finance_investigator\", \"arguments\": {\"task\": \"Step 'Trade Finance Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_crypto_digital_assets_analyst\", \"arguments\": {\"task\": \"Step 'Crypto/Digital Assets Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Crypto Digital Assets Analyst\", \"agent_output\": \"crypto_assessment result for: Step 'Crypto/Digital A...<len=281 sha1=ffc9516b98f8>"
       ]
      ]
     },
@@ -2086,35 +2146,59 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Alert Triage Analyst': work "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF KYC Analyst\", \"agent_output\": \"kyc_assessment result for: Step 'KYC Analyst': work on: Prepare a c\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Transaction Pattern Analyst\", \"agent_output\": \"transaction_analysis result for: Step 'Transaction Pat...<len=288 sha1=54f8b1776854>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Sanctions Screening Specialist\", \"agent_output\": \"sanctions_screening result for: Step 'Sanctions Screening Specialist': w\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_sanctions_screening_specialist\", \"arguments\": {\"task\": \"Step 'Sanctions Screening Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Trade Finance Investigator\", \"agent_output\": \"trade_finance_assessment result for: Step 'Trade Financ...<len=299 sha1=d91c9eb6856a>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_trade_finance_investigator\", \"arguments\": {\"task\": \"Step 'Trade Finance Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Crypto Digital Assets Analyst\", \"agent_output\": \"crypto_assessment result for: Step 'Crypto/Digital A...<len=281 sha1=ffc9516b98f8>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_crypto_digital_assets_analyst\", \"arguments\": {\"task\": \"Step 'Crypto/Digital Assets Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_geopolitical_risk_analyst\", \"arguments\": {\"task\": \"Step 'Geopolitical Risk Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Geopolitical Risk Analyst\", \"agent_output\": \"geopolitical_assessment result for: Step 'Geopolitical Risk Analyst': work o\"}"
       ]
      ]
     },
@@ -2147,39 +2231,67 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Alert Triage Analyst': work "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF KYC Analyst\", \"agent_output\": \"kyc_assessment result for: Step 'KYC Analyst': work on: Prepare a c\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Transaction Pattern Analyst\", \"agent_output\": \"transaction_analysis result for: Step 'Transaction Pat...<len=288 sha1=54f8b1776854>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Sanctions Screening Specialist\", \"agent_output\": \"sanctions_screening result for: Step 'Sanctions Screening Specialist': w\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_sanctions_screening_specialist\", \"arguments\": {\"task\": \"Step 'Sanctions Screening Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Trade Finance Investigator\", \"agent_output\": \"trade_finance_assessment result for: Step 'Trade Financ...<len=299 sha1=d91c9eb6856a>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_trade_finance_investigator\", \"arguments\": {\"task\": \"Step 'Trade Finance Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Crypto Digital Assets Analyst\", \"agent_output\": \"crypto_assessment result for: Step 'Crypto/Digital A...<len=281 sha1=ffc9516b98f8>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_crypto_digital_assets_analyst\", \"arguments\": {\"task\": \"Step 'Crypto/Digital Assets Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Geopolitical Risk Analyst\", \"agent_output\": \"geopolitical_assessment result for: Step 'Geopolitical Risk Analyst': work o\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_geopolitical_risk_analyst\", \"arguments\": {\"task\": \"Step 'Geopolitical Risk Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_forensic_accountant\", \"arguments\": {\"task\": \"Step 'Forensic Accountant': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF Forensic Accountant\", \"agent_output\": \"forensic_accounting result for: Step 'Forensic Accountant': wo...<len=277 sha1=a02db2f566cd>"
       ]
      ]
     },
@@ -2212,43 +2324,75 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "triage_assessment result for: TASK:\nStep 'Alert Triage Analyst': work "
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF KYC Analyst\", \"agent_output\": \"kyc_assessment result for: Step 'KYC Analyst': work on: Prepare a c\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Transaction Pattern Analyst\", \"agent_output\": \"transaction_analysis result for: Step 'Transaction Pat...<len=288 sha1=54f8b1776854>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Sanctions Screening Specialist\", \"agent_output\": \"sanctions_screening result for: Step 'Sanctions Screening Specialist': w\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_sanctions_screening_specialist\", \"arguments\": {\"task\": \"Step 'Sanctions Screening Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Trade Finance Investigator\", \"agent_output\": \"trade_finance_assessment result for: Step 'Trade Financ...<len=299 sha1=d91c9eb6856a>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_trade_finance_investigator\", \"arguments\": {\"task\": \"Step 'Trade Finance Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Crypto Digital Assets Analyst\", \"agent_output\": \"crypto_assessment result for: Step 'Crypto/Digital A...<len=281 sha1=ffc9516b98f8>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_crypto_digital_assets_analyst\", \"arguments\": {\"task\": \"Step 'Crypto/Digital Assets Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Geopolitical Risk Analyst\", \"agent_output\": \"geopolitical_assessment result for: Step 'Geopolitical Risk Analyst': work o\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_geopolitical_risk_analyst\", \"arguments\": {\"task\": \"Step 'Geopolitical Risk Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Forensic Accountant\", \"agent_output\": \"forensic_accounting result for: Step 'Forensic Accountant': wo...<len=277 sha1=a02db2f566cd>"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_forensic_accountant\", \"arguments\": {\"task\": \"Step 'Forensic Accountant': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
       ],
       [
-       "assistant",
-       "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_sar_report_writer\", \"arguments\": {\"task\": \"Step 'SAR Report Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       "tool_call_response",
+       "{\"agent_name\": \"WF SAR Report Writer\", \"agent_output\": \"sar_report result for: Step 'SAR Report Writer': work on: Prepa\"}"
       ]
      ]
     }
@@ -2277,13 +2421,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2292,8 +2431,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2336,13 +2475,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2351,8 +2485,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2361,8 +2495,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2408,13 +2542,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2423,8 +2552,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2433,8 +2562,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2443,8 +2572,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_sanctions_screening_specialist\", \"arguments\": {\"task\": \"Step 'Sanctions Screening Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2493,13 +2622,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2508,8 +2632,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2518,8 +2642,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2528,8 +2652,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_sanctions_screening_specialist\", \"arguments\": {\"task\": \"Step 'Sanctions Screening Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2538,8 +2662,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_trade_finance_investigator\", \"arguments\": {\"task\": \"Step 'Trade Finance Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2591,13 +2715,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2606,8 +2725,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2616,8 +2735,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2626,8 +2745,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_sanctions_screening_specialist\", \"arguments\": {\"task\": \"Step 'Sanctions Screening Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2636,8 +2755,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_trade_finance_investigator\", \"arguments\": {\"task\": \"Step 'Trade Finance Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2646,8 +2765,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_crypto_digital_assets_analyst\", \"arguments\": {\"task\": \"Step 'Crypto/Digital Assets Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2702,13 +2821,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2717,8 +2831,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2727,8 +2841,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2737,8 +2851,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_sanctions_screening_specialist\", \"arguments\": {\"task\": \"Step 'Sanctions Screening Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2747,8 +2861,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_trade_finance_investigator\", \"arguments\": {\"task\": \"Step 'Trade Finance Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2757,8 +2871,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_crypto_digital_assets_analyst\", \"arguments\": {\"task\": \"Step 'Crypto/Digital Assets Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2767,8 +2881,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_geopolitical_risk_analyst\", \"arguments\": {\"task\": \"Step 'Geopolitical Risk Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2826,13 +2940,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2841,8 +2950,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2851,8 +2960,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2861,8 +2970,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_sanctions_screening_specialist\", \"arguments\": {\"task\": \"Step 'Sanctions Screening Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2871,8 +2980,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_trade_finance_investigator\", \"arguments\": {\"task\": \"Step 'Trade Finance Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2881,8 +2990,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_crypto_digital_assets_analyst\", \"arguments\": {\"task\": \"Step 'Crypto/Digital Assets Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2891,8 +3000,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_geopolitical_risk_analyst\", \"arguments\": {\"task\": \"Step 'Geopolitical Risk Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2901,8 +3010,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_forensic_accountant\", \"arguments\": {\"task\": \"Step 'Forensic Accountant': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2963,13 +3072,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"Step 'Alert Triage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
-       ],
-       [
-        "assistant",
-        50,
-        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_alert_triage_analyst\", \"arguments\": {\"task\": \"TASK:\\nStep 'Aler...<len=673 sha1=734f03551251>"
+        76,
+        ""
        ],
        [
         "tool_call_response",
@@ -2978,8 +3082,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_kyc_analyst\", \"arguments\": {\"task\": \"Step 'KYC Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -2988,8 +3092,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_transaction_pattern_analyst\", \"arguments\": {\"task\": \"Step 'Transaction Pattern Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -2998,8 +3102,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_sanctions_screening_specialist\", \"arguments\": {\"task\": \"Step 'Sanctions Screening Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3008,8 +3112,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_trade_finance_investigator\", \"arguments\": {\"task\": \"Step 'Trade Finance Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3018,8 +3122,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_crypto_digital_assets_analyst\", \"arguments\": {\"task\": \"Step 'Crypto/Digital Assets Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3028,8 +3132,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_geopolitical_risk_analyst\", \"arguments\": {\"task\": \"Step 'Geopolitical Risk Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",
@@ -3038,8 +3142,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_forensic_accountant\", \"arguments\": {\"task\": \"Step 'Forensic Accountant': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -3048,8 +3152,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_sar_report_writer\", \"arguments\": {\"task\": \"Step 'SAR Report Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        18,
+        ""
        ],
        [
         "tool_call_response",

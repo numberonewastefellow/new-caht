@@ -558,7 +558,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_technical_support\", \"arguments\": {\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Technical Support\", \"agent_output\": \"tech_response result for: Step 'Technical Support': work on: Prepa\"}"
       ]
      ]
     },
@@ -585,11 +589,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_technical_support\", \"arguments\": {\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Technical Support\", \"agent_output\": \"tech_response result for: Step 'Technical Support': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_billing_support\", \"arguments\": {\"task\": \"Step 'Billing Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Billing Support\", \"agent_output\": \"billing_response result for: Step 'Billing Support': work on: Prepare\"}"
       ]
      ]
     },
@@ -616,15 +628,27 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_technical_support\", \"arguments\": {\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Technical Support\", \"agent_output\": \"tech_response result for: Step 'Technical Support': work on: Prepa\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_billing_support\", \"arguments\": {\"task\": \"Step 'Billing Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Billing Support\", \"agent_output\": \"billing_response result for: Step 'Billing Support': work on: Prepare\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_product_faq\", \"arguments\": {\"task\": \"Step 'Product FAQ': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"WF Product FAQ\", \"agent_output\": \"faq_response result for: Step 'Product FAQ': work on: Prepare a c\"}"
       ]
      ]
     }
@@ -651,8 +675,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_technical_support\", \"arguments\": {\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -692,8 +716,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_technical_support\", \"arguments\": {\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -702,8 +726,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_billing_support\", \"arguments\": {\"task\": \"Step 'Billing Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -746,8 +770,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_technical_support\", \"arguments\": {\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -756,8 +780,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_billing_support\", \"arguments\": {\"task\": \"Step 'Billing Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",
@@ -766,8 +790,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_product_faq\", \"arguments\": {\"task\": \"Step 'Product FAQ': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+        17,
+        ""
        ],
        [
         "tool_call_response",

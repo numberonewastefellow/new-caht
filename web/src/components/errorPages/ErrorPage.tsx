@@ -1,3 +1,4 @@
+import AutoReload from "@/components/errorPages/AutoReload";
 import ErrorPageLayout from "@/components/errorPages/ErrorPageLayout";
 import Text from "@/refresh-components/texts/Text";
 import { DOCS_BASE_URL } from "@/lib/constants";
@@ -14,9 +15,12 @@ export default function Error() {
       </div>
 
       <Text as="p" text03>
-        It seems there was a problem loading your VertualAI settings. This could be
-        due to a configuration issue or incomplete setup.
+        VertualAI can&apos;t reach its backend. It may still be starting up, which
+        usually takes under a minute. If this doesn&apos;t clear, the backend may
+        be down or misconfigured.
       </Text>
+
+      <AutoReload />
 
       <Text as="p" text03>
         If you&apos;re an admin, please review our{" "}
@@ -36,7 +40,7 @@ export default function Error() {
         Need help? Join our{" "}
         <a
           className="text-action-link-05"
-          href="https://discord.gg/4NA5SbzrWb"
+          href="https://discord.gg/YOUR_DISCORD_INVITE"
           target="_blank"
           rel="noopener noreferrer"
         >

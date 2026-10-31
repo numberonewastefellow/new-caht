@@ -65,10 +65,19 @@ from om.workflows.hitl import build_clarification_task as _build_clarification_t
 from om.workflows.hitl import strip_needs_input_prefix as _strip_needs_input_prefix
 from om.workflows.inputs import apply_input_mapping as _apply_input_mapping
 from om.workflows.inputs import collect_workflow_files as _collect_workflow_files
+from om.workflows.graph import graph_from_workflow
 from om.workflows.models import WorkflowCheckpoint
 from om.workflows.models import WorkflowContext
+from om.workflows.nodes.agent import load_step_agent
+from om.workflows.nodes.agent import UnusableStepAgentError
+from om.workflows.nodes.builtin import get_node_registry
+from om.workflows.orchestrator_history import agent_call
+from om.workflows.orchestrator_history import agent_result
+from om.workflows.orchestrator_history import restore_history
+from om.workflows.orchestrator_history import serialize_history
 from om.workflows.sequential import run_workflow_sequential_v2
 from om.workflows.step_runners.conditional_router import evaluate_condition
+from om.workflows.versioning import pin_workflow_version
 
 logger = setup_logger()
 
@@ -92,37 +101,6 @@ def _summarize_for_orchestrator(agent_name: str, output: str) -> str:
         f"[{agent_name}: {len(words)} words, showing first "
         f"{_ORCHESTRATOR_CONTEXT_MAX_WORDS}]\n{truncated}..."
     )
-
-
-def _serialize_history(history: list[ChatMessageSimple]) -> list[dict]:
-    """Serialize msg_history for checkpoint storage."""
-    return [
-        {
-            "message": msg.message,
-            "token_count": msg.token_count,
-            "message_type": msg.message_type.value,
-        }
-        for msg in history
-    ]
-
-
-def _deserialize_history(data: list[dict]) -> list[ChatMessageSimple]:
-    """Restore msg_history from checkpoint.
-
-    Skips entries with invalid/missing fields rather than crashing
-    the entire resume on corrupted checkpoint data.
-    """
-    result = []
-    for d in data:
-        try:
-            result.append(ChatMessageSimple(
-                message=d["message"],
-                token_count=d["token_count"],
-                message_type=MessageType(d["message_type"]),
-            ))
-        except (KeyError, ValueError) as e:
-            logger.warning("Skipping corrupted history entry: %s — %s", d, e)
-    return result
 
 
 def _drain_emitter_to_list(
@@ -202,11 +180,10 @@ def _build_agent_tools(
     llm_cache: dict[str, LLM] = {}
 
     for step in steps:
-        agent = step.agent if step.agent else db_session.get(Agent, step.agent_id)
-        if agent is None or agent.deleted:
-            logger.warning(
-                f"Agent {step.agent_id} not found for workflow step {step.id}"
-            )
+        try:
+            agent = load_step_agent(db_session, step.agent_id)
+        except UnusableStepAgentError as e:
+            logger.warning(f"Not offering workflow step {step.id}: it {e}")
             continue
 
         # Resolve effective LLM: step override > agent override > default
@@ -1101,6 +1078,15 @@ def run_workflow_sequential(
     )
 
 
+
+def _pinned_version_id(
+    db_session: Session, workflow: AgentWorkflow, user: User
+) -> int:
+    """The version an ``llm_decision`` run starts on, recorded in its history."""
+    graph = graph_from_workflow(workflow, get_node_registry())
+    return pin_workflow_version(db_session, workflow, graph, user.id).id
+
+
 def run_workflow_llm_decision(
     workflow: AgentWorkflow,
     user_message: str,
@@ -1183,7 +1169,7 @@ def run_workflow_llm_decision(
                 step_outputs=checkpoint.step_outputs,
                 shared_data=checkpoint.shared_data,
             )
-            msg_history = _deserialize_history(
+            msg_history = restore_history(
                 checkpoint.orchestrator_history
             )
             agent_call_counts = dict(checkpoint.agent_call_counts)
@@ -1230,8 +1216,8 @@ def run_workflow_llm_decision(
                 )
             else:
                 # Fallback: no clarification conversation saved (old checkpoint
-                # format or crash recovery). Inject as TOOL_CALL_RESPONSE and
-                # let the orchestrator decide.
+                # format or crash recovery). Pass on the user's reply and let the
+                # orchestrator decide.
                 user_clarification = (
                     f"The agent requested more information from the user. "
                     f"The user responded:\n\n{user_message}\n\n"
@@ -1241,7 +1227,7 @@ def run_workflow_llm_decision(
                 msg_history.append(ChatMessageSimple(
                     message=user_clarification,
                     token_count=token_counter(user_clarification),
-                    message_type=MessageType.TOOL_CALL_RESPONSE,
+                    message_type=MessageType.USER,
                 ))
                 logger.info(
                     "[LLM-Decision] FALLBACK RESUME execution_id=%d "
@@ -1281,7 +1267,8 @@ def run_workflow_llm_decision(
             )
             msg_history = [user_msg]
             execution = create_workflow_execution(
-                db_session, workflow.id, user.id, chat_session_id
+                db_session, workflow.id, user.id, chat_session_id,
+                workflow_version_id=_pinned_version_id(db_session, workflow, user),
             )
             steps_executed = []
             turn_index = 0
@@ -1295,7 +1282,8 @@ def run_workflow_llm_decision(
         )
         msg_history = [user_msg]
         execution = create_workflow_execution(
-            db_session, workflow.id, user.id, chat_session_id
+            db_session, workflow.id, user.id, chat_session_id,
+            workflow_version_id=_pinned_version_id(db_session, workflow, user),
         )
         steps_executed = []
         turn_index = 0
@@ -1468,15 +1456,10 @@ def run_workflow_llm_decision(
                     synthetic_id = (
                         f"resume_{_direct_resume_step.id}_{cycle_start}"
                     )
-                    msg_history.append(ChatMessageSimple(
-                        message=json.dumps({
-                            "tool_call_id": synthetic_id,
-                            "name": _direct_resume_tool.name,
-                            "arguments": {"task": _direct_resume_task},
-                        }),
-                        token_count=50,
-                        message_type=MessageType.ASSISTANT,
-                    ))
+                    msg_history.append(agent_call(
+                    synthetic_id, _direct_resume_tool.name,
+                    {"task": _direct_resume_task}, token_counter,
+                ))
 
                     pause_checkpoint = WorkflowCheckpoint(
                         step_outputs=dict(context.step_outputs),
@@ -1490,7 +1473,7 @@ def run_workflow_llm_decision(
                             s.id for s in steps
                             if s.output_key in context.step_outputs
                         ],
-                        orchestrator_history=_serialize_history(
+                        orchestrator_history=serialize_history(
                             msg_history
                         ),
                         cycle_count=cycle_start,
@@ -1599,23 +1582,14 @@ def run_workflow_llm_decision(
                 synthetic_id = (
                     f"resume_{_direct_resume_step.id}_{cycle_start}"
                 )
-                msg_history.append(ChatMessageSimple(
-                    message=json.dumps({
-                        "tool_call_id": synthetic_id,
-                        "name": _direct_resume_tool.name,
-                        "arguments": {"task": _direct_resume_task},
-                    }),
-                    token_count=50,
-                    message_type=MessageType.ASSISTANT,
+                msg_history.append(agent_call(
+                    synthetic_id, _direct_resume_tool.name,
+                    {"task": _direct_resume_task}, token_counter,
                 ))
                 summarized = _summarize_for_orchestrator(
                     _direct_resume_tool.display_name, agent_output
                 )
-                msg_history.append(ChatMessageSimple(
-                    message=summarized,
-                    token_count=token_counter(summarized),
-                    message_type=MessageType.TOOL_CALL_RESPONSE,
-                ))
+                msg_history.append(agent_result(synthetic_id, summarized, token_counter))
 
                 # Track execution
                 step_tokens = (
@@ -1866,14 +1840,9 @@ def run_workflow_llm_decision(
                             f"{call_count} times, skipping"
                         )
                         # Tell the orchestrator to use a different agent
-                        refuse_msg = ChatMessageSimple(
-                            message=json.dumps({
-                                "tool_call_id": tool_call.tool_call_id,
-                                "name": tool_call.tool_name,
-                                "arguments": tool_call.tool_args,
-                            }),
-                            token_count=50,
-                            message_type=MessageType.ASSISTANT,
+                        refuse_msg = agent_call(
+                            tool_call.tool_call_id, tool_call.tool_name,
+                            tool_call.tool_args, token_counter,
                         )
                         msg_history.append(refuse_msg)
                         error_response = (
@@ -1882,11 +1851,9 @@ def run_workflow_llm_decision(
                             f"Do NOT call this agent again. "
                             f"Use a DIFFERENT agent or provide the final answer."
                         )
-                        msg_history.append(ChatMessageSimple(
-                            message=error_response,
-                            token_count=token_counter(error_response),
-                            message_type=MessageType.TOOL_CALL_RESPONSE,
-                        ))
+                        msg_history.append(
+                            agent_result(tool_call.tool_call_id, error_response, token_counter)
+                        )
                         continue
                     agent_call_counts[tool_call.tool_name] = call_count + 1
 
@@ -2015,14 +1982,9 @@ def run_workflow_llm_decision(
                             time.monotonic() - start_time,
                         )
                         # Save the tool_call to msg_history so resume has it
-                        tool_call_msg = ChatMessageSimple(
-                            message=json.dumps({
-                                "tool_call_id": tool_call.tool_call_id,
-                                "name": tool_call.tool_name,
-                                "arguments": tool_call.tool_args,
-                            }),
-                            token_count=50,
-                            message_type=MessageType.ASSISTANT,
+                        tool_call_msg = agent_call(
+                            tool_call.tool_call_id, tool_call.tool_name,
+                            tool_call.tool_args, token_counter,
                         )
                         msg_history.append(tool_call_msg)
 
@@ -2049,7 +2011,7 @@ def run_workflow_llm_decision(
                                 s.id for s in steps
                                 if s.output_key in context.step_outputs
                             ],
-                            orchestrator_history=_serialize_history(
+                            orchestrator_history=serialize_history(
                                 msg_history
                             ),
                             cycle_count=cycle + 1,
@@ -2203,15 +2165,10 @@ def run_workflow_llm_decision(
                         logger.debug("[Trace] finish_agent failed", exc_info=True)
 
                     # Add tool result to orchestrator history
-                    tool_call_msg = ChatMessageSimple(
-                        message=json.dumps({
-                            "tool_call_id": tool_call.tool_call_id,
-                            "name": tool_call.tool_name,
-                            "arguments": tool_call.tool_args,
-                        }),
-                        token_count=50,
-                        message_type=MessageType.ASSISTANT,
-                    )
+                    tool_call_msg = agent_call(
+                            tool_call.tool_call_id, tool_call.tool_name,
+                            tool_call.tool_args, token_counter,
+                        )
                     msg_history.append(tool_call_msg)
 
                     # Summarize agent output for orchestrator context (Tier 2.1)
@@ -2220,12 +2177,9 @@ def run_workflow_llm_decision(
                         agent_tool.display_name,
                         result.llm_facing_response or "",
                     )
-                    tool_response_msg = ChatMessageSimple(
-                        message=summarized,
-                        token_count=token_counter(summarized),
-                        message_type=MessageType.TOOL_CALL_RESPONSE,
+                    msg_history.append(
+                        agent_result(tool_call.tool_call_id, summarized, token_counter)
                     )
-                    msg_history.append(tool_response_msg)
 
                     # Save checkpoint after step completion (crash recovery)
                     step_checkpoint = WorkflowCheckpoint(
@@ -2240,7 +2194,7 @@ def run_workflow_llm_decision(
                             s.id for s in steps
                             if s.output_key in context.step_outputs
                         ],
-                        orchestrator_history=_serialize_history(
+                        orchestrator_history=serialize_history(
                             msg_history
                         ),
                         cycle_count=cycle + 1,

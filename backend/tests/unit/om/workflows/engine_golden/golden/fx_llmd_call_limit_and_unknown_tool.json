@@ -449,7 +449,11 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: first\"}"
       ]
      ]
     },
@@ -475,11 +479,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: first\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"again\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "ERROR: Agent 'Agent: FX Alpha' has already been called 1 times. Do NOT call this agent again. Use a DIFFERENT agent or provide the final answer."
       ]
      ]
     },
@@ -505,11 +517,19 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: first\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"again\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "ERROR: Agent 'Agent: FX Alpha' has already been called 1 times. Do NOT call this agent again. Use a DIFFERENT agent or provide the final answer."
       ]
      ]
     },
@@ -532,19 +552,35 @@
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: first\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"again\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "ERROR: Agent 'Agent: FX Alpha' has already been called 1 times. Do NOT call this agent again. Use a DIFFERENT agent or provide the final answer."
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"FX Beta\", \"agent_output\": \"beta result for: b\"}"
       ],
       [
        "assistant",
-       "{\"tool_call_id\": \"call_4_1\", \"name\": \"delegate_to_fx_gamma\", \"arguments\": {\"task\": \"g\"}}"
+       ""
+      ],
+      [
+       "tool_call_response",
+       "{\"agent_name\": \"FX Gamma\", \"agent_output\": \"gamma result for: g\"}"
       ]
      ]
     }
@@ -571,8 +607,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+        2,
+        ""
        ],
        [
         "tool_call_response",
@@ -612,8 +648,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+        2,
+        ""
        ],
        [
         "tool_call_response",
@@ -622,8 +658,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"again\"}}"
+        2,
+        ""
        ],
        [
         "tool_call_response",
@@ -632,8 +668,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b\"}}"
+        2,
+        ""
        ],
        [
         "tool_call_response",
@@ -676,8 +712,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+        2,
+        ""
        ],
        [
         "tool_call_response",
@@ -686,8 +722,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"again\"}}"
+        2,
+        ""
        ],
        [
         "tool_call_response",
@@ -696,8 +732,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b\"}}"
+        2,
+        ""
        ],
        [
         "tool_call_response",
@@ -706,8 +742,8 @@
        ],
        [
         "assistant",
-        50,
-        "{\"tool_call_id\": \"call_4_1\", \"name\": \"delegate_to_fx_gamma\", \"arguments\": {\"task\": \"g\"}}"
+        2,
+        ""
        ],
        [
         "tool_call_response",
