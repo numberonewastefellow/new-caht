@@ -282,3 +282,40 @@ def test_a_path_through_nothing_is_empty_but_a_wrong_path_still_fails() -> None:
     assert render_template("[$loop.previous.x]", context, variables) == "[]"
     with pytest.raises(UnresolvedReferenceError):
         render_template("$real.output.b", context, variables)
+
+
+class TestDeclaredFields:
+    def _code(self) -> Any:
+        return _step(
+            "plan", 0, step_type="code",
+            config={"outputs": [{"name": "days", "type": "integer"}, {"name": "brief"}]},
+        )
+
+    def _agent(self) -> Any:
+        schema = {"type": "object", "properties": {"days": {"type": "array"}}}
+        return _step("outline", 0, config={"output_schema": schema})
+
+    def test_a_declared_field_passes(self) -> None:
+        reader = _step("r", 1, mapping=_reads("$plan.output.days and $plan.brief"))
+        assert reference_problem([self._code(), reader]) is None
+
+    def test_a_typo_in_a_code_steps_field_is_refused(self) -> None:
+        reader = _step("r", 1, mapping=_reads("$plan.output.dayz"))
+        problem = reference_problem([self._code(), reader]) or ""
+        assert "$plan.output.dayz" in problem and "brief, days" in problem
+
+    def test_a_typo_in_an_agents_field_is_refused(self) -> None:
+        reader = _step("r", 1, step_type="code", config={"inputs": {"x": "$outline.output.dayz"}})
+        assert "days" in (reference_problem([self._agent(), reader]) or "")
+
+    def test_the_whole_output_is_always_readable(self) -> None:
+        reader = _step("r", 1, mapping=_reads("$outline.output"))
+        assert reference_problem([self._agent(), reader]) is None
+
+    def test_a_field_deeper_down_isnt_checked(self) -> None:
+        reader = _step("r", 1, mapping=_reads("$outline.output.days[0].theme"))
+        assert reference_problem([self._agent(), reader]) is None
+
+    def test_a_step_that_declares_nothing_isnt_checked(self) -> None:
+        reader = _step("r", 1, mapping=_reads("$free.output.anything"))
+        assert reference_problem([_step("free", 0), reader]) is None

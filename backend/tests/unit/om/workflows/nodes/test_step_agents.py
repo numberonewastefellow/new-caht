@@ -8,8 +8,11 @@ import pytest
 
 from om.configs.constants import DEFAULT_AGENT_ID
 from om.workflows.models import WorkflowStepCreate
+from om.workflows.nodes.agent import AgentStepConfigV1
+from om.workflows.nodes.agent import load_agent_config_v1
 from om.workflows.nodes.agent import load_step_agent
 from om.workflows.nodes.agent import prepare_agent_step_v1
+from om.workflows.nodes.agent import store_agent_config_v1
 from om.workflows.nodes.agent import UnusableStepAgentError
 from om.workflows.nodes.agent_tools import AgentToolCache
 from om.workflows.nodes.base import StepSaveError
@@ -95,3 +98,60 @@ class TestRunHook:
         config = MagicMock(agent_id=agent_id)
         with pytest.raises(UnusableStepAgentError, match=message):
             cache.get(MagicMock(node_key="a"), config)
+
+
+class TestExpectedOutputStorage:
+    """The schema lives in the step's config column; the rest stays in its own columns."""
+
+    SCHEMA = {"type": "object", "properties": {"days": {"type": "array"}}}
+
+    def test_no_schema_leaves_the_config_as_it_was(self) -> None:
+        dumped = AgentStepConfigV1(agent_id=1).model_dump()
+        assert "output_schema" not in dumped
+        assert "output_schema" not in store_agent_config_v1({"agent_id": 1})
+        assert "config" not in store_agent_config_v1({"agent_id": 1})
+
+    def test_a_schema_round_trips(self) -> None:
+        stored = store_agent_config_v1({"agent_id": 1, "output_schema": self.SCHEMA})
+        assert stored["config"] == {"output_schema": self.SCHEMA}
+        step = SimpleNamespace(
+            **{
+                field: stored.get(field)
+                for field in AgentStepConfigV1.model_fields
+                if field != "output_schema"
+            },
+            config=stored["config"],
+        )
+        loaded = load_agent_config_v1(step)
+        assert AgentStepConfigV1.model_validate(loaded).output_schema == self.SCHEMA
+
+    def _prepare(self, schema: Any, mode: str = "sequential", **fields: Any) -> WorkflowStepCreate:
+        agent = SimpleNamespace(id=5, deleted=False, workflow_id=None)
+        return prepare_agent_step_v1(
+            WorkflowStepCreate(
+                step_name="Outline",
+                step_order=0,
+                agent_id=5,
+                config={"output_schema": schema} if schema else {"junk": 1},
+                **fields,
+            ),
+            SimpleNamespace(db_session=_session(agent), orchestration_mode=mode),
+        )
+
+    def test_save_keeps_a_good_schema(self) -> None:
+        assert self._prepare(self.SCHEMA).config == {"output_schema": self.SCHEMA}
+
+    def test_save_drops_everything_else_from_config(self) -> None:
+        assert self._prepare(None).config is None
+
+    def test_save_refuses_a_bad_schema(self) -> None:
+        with pytest.raises(StepSaveError, match="Outline"):
+            self._prepare({"type": "array"})
+
+    def test_save_refuses_it_on_a_step_that_can_pause(self) -> None:
+        with pytest.raises(StepSaveError, match="ask the user"):
+            self._prepare(self.SCHEMA, can_request_input=True)
+
+    def test_save_refuses_it_outside_sequential(self) -> None:
+        with pytest.raises(StepSaveError, match="Sequential"):
+            self._prepare(self.SCHEMA, mode="llm_decision")

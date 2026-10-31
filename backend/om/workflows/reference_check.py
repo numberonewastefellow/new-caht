@@ -4,7 +4,9 @@ A step can read the user's input, its loop's variables, and the output of steps 
 have run by then: earlier steps in its own block or in the blocks around it, plus the
 direct children of an earlier container, which are merged when the container ends. A
 parallel branch can't read a sibling branch, which runs at the same time. A while loop's
-condition also reads its own variables and what its body produced.
+condition also reads its own variables and what its body produced. Where a step declares
+its output (a code step's ``outputs``, an agent's ``output_schema``), a field read from it
+must be one it declares.
 
 Text settings can mention references anywhere (``render_template``). Other settings are
 one value, a literal or a single reference (``resolve_reference``).
@@ -20,11 +22,14 @@ from typing import Protocol
 
 from om.workflows.inputs import find_references
 from om.workflows.inputs import is_reference
+from om.workflows.inputs import reference_field
 from om.workflows.inputs import reference_name
+from om.workflows.output_contract import declared_fields
 
 USER_INPUT = "user_input"
 LOOP_VARIABLES = "loop"
 LOOP_NODE_TYPE = "loop"
+CODE_NODE_TYPE = "code"
 LOOP_FIELDS = ("item", "index", "previous")
 _LOOP_FIELD = re.compile(r"^\$loop\.([A-Za-z_][A-Za-z0-9_]*)")
 
@@ -97,7 +102,37 @@ def _visible_names(step: _Step, steps: Sequence[_Step]) -> set[str]:
     return names
 
 
-def _unavailable(step: _Step, references: Iterable[str], names: set[str]) -> str | None:
+def _fields_of(step: _Step) -> set[str] | None:
+    """The fields a step declares it returns; None if it doesn't declare any."""
+    config = step.config or {}
+    schema = config.get("output_schema")
+    if isinstance(schema, dict):
+        return declared_fields(schema)
+    outputs = config.get("outputs") if step.step_type == CODE_NODE_TYPE else None
+    if isinstance(outputs, list):
+        return {o["name"] for o in outputs if isinstance(o, dict) and "name" in o}
+    return None
+
+
+def _unknown_field(
+    step: _Step, reference: str, steps: Sequence[_Step]
+) -> str | None:
+    field = reference_field(reference)
+    source = next((s for s in steps if s.output_key == reference_name(reference)), None)
+    if field is None or source is None:
+        return None
+    fields = _fields_of(source)
+    if fields is None or field in fields:
+        return None
+    return (
+        f'"{step.step_name}" reads {reference}, but "{source.step_name}" only returns: '
+        f"{', '.join(sorted(fields))}"
+    )
+
+
+def _unavailable(
+    step: _Step, references: Iterable[str], names: set[str], steps: Sequence[_Step]
+) -> str | None:
     for reference in references:
         if reference_name(reference) not in names:
             return (
@@ -110,10 +145,15 @@ def _unavailable(step: _Step, references: Iterable[str], names: set[str]) -> str
                 f'"{step.step_name}" reads {reference}: a loop has '
                 f"{', '.join(f'$loop.{f}' for f in LOOP_FIELDS)}"
             )
+        unknown = _unknown_field(step, reference, steps)
+        if unknown:
+            return unknown
     return None
 
 
-def _value_problem(step: _Step, value: Any, names: set[str]) -> str | None:
+def _value_problem(
+    step: _Step, value: Any, names: set[str], steps: Sequence[_Step]
+) -> str | None:
     if not isinstance(value, str) or not value.startswith("$"):
         return None
     if not is_reference(value):
@@ -121,7 +161,7 @@ def _value_problem(step: _Step, value: Any, names: set[str]) -> str | None:
             f'"{step.step_name}" has {value}: a value starting with $ must be a single '
             "reference, like $step.output.field"
         )
-    return _unavailable(step, [value], names)
+    return _unavailable(step, [value], names, steps)
 
 
 def reference_problem(steps: Sequence[_Step]) -> str | None:
@@ -129,12 +169,17 @@ def reference_problem(steps: Sequence[_Step]) -> str | None:
     for step in sorted(steps, key=lambda s: s.step_order):
         visible = _visible_names(step, steps)
         problems = [
-            *(_unavailable(step, find_references(t), visible) for t in _templates_of(step)),
-            *(_value_problem(step, v, visible) for v in _values_of(step)),
+            *(
+                _unavailable(step, find_references(t), visible, steps)
+                for t in _templates_of(step)
+            ),
+            *(_value_problem(step, v, visible, steps) for v in _values_of(step)),
         ]
         body = {s.output_key for s in steps if s.parent_key == step.node_key}
         problems.append(
-            _value_problem(step, _loop_condition(step), visible | body | {LOOP_VARIABLES})
+            _value_problem(
+                step, _loop_condition(step), visible | body | {LOOP_VARIABLES}, steps
+            )
         )
         problem = next((p for p in problems if p), None)
         if problem:

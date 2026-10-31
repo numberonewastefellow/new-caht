@@ -201,6 +201,11 @@ def _check_modes(graph: WorkflowGraph, mode: str, registry: NodeTypeRegistry) ->
                 f"'{spec.label}' steps can't be used in {mode} workflows "
                 f"(step '{node.name}')"
             )
+        if mode != "sequential" and node.config.get("output_schema"):
+            raise WorkflowSaveError(
+                f"Step '{node.name}' has an expected output, which only Sequential "
+                "workflows support"
+            )
 
 
 # ── Saving ────────────────────────────────────────────────────────────────

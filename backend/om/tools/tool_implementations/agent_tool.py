@@ -138,6 +138,7 @@ class AgentTool(Tool[None]):
         tool_ids_override: list[int] | None = None,
         document_set_ids_override: list[int] | None = None,
         replace_base_system_prompt_override: bool | None = None,
+        response_format: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(emitter=emitter)
         self._agent = agent
@@ -161,10 +162,16 @@ class AgentTool(Tool[None]):
         self._tool_ids_override = tool_ids_override
         self._document_set_ids_override = document_set_ids_override
         self._replace_base_system_prompt_override = replace_base_system_prompt_override
+        self._response_format = response_format
 
     @property
     def id(self) -> int:
         return self._agent.id
+
+    @property
+    def enforces_response_format(self) -> bool:
+        """Whether the provider is constraining this agent's replies."""
+        return self._response_format is not None
 
     @property
     def step_id(self) -> int:
@@ -402,6 +409,7 @@ class AgentTool(Tool[None]):
                 final_documents=None,
                 user_identity=None,
                 max_tokens=_max_tokens,
+                structured_response_format=self._response_format,
             )
 
             # If LLM produced a text answer (no tool calls), we're done

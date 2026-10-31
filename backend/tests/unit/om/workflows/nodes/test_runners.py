@@ -367,3 +367,93 @@ class TestRouterReferences:
         )
         assert outcome.status == StepStatus.COMPLETED
         assert skipped == {"a"}
+
+
+DAYS_SCHEMA = {
+    "type": "object",
+    "properties": {"days": {"type": "array", "items": {"type": "string"}}},
+    "required": ["days"],
+}
+
+
+def _replies(*outputs: str):
+    """stream_agent_packets replaced by an agent returning each reply in turn."""
+    remaining = list(outputs)
+
+    def fake(agent_tool: Any, placement: Placement, emitter: Any, result: Any, **kw: Any):
+        result.response = MagicMock(
+            llm_facing_response=json.dumps({"agent_output": remaining.pop(0)})
+        )
+        result.cancelled = False
+        fake.tasks.append(kw.get("task"))
+        return iter(())
+
+    fake.tasks = []
+    return fake
+
+
+class TestExpectedOutput:
+    def _run(self, replies: Any, enforced: bool = True) -> tuple[list[Packet], Any, RunContext]:
+        node = _node(
+            "a", 0,
+            config={"agent_id": 7, "output_schema": DAYS_SCHEMA},
+            input_mapping={"task": "Plan 3 days"},
+        )
+        ctx = _ctx([node])
+        ctx.agent_tools.get.return_value.enforces_response_format = enforced
+        with patch("om.workflows.nodes.agent.stream_agent_packets", replies):
+            packets, outcome = _drive(AgentRunnerV1().run(node, ctx))
+        return packets, outcome, ctx
+
+    def test_good_json_goes_through_once(self) -> None:
+        replies = _replies('{"days": ["a"]}')
+        _, outcome, ctx = self._run(replies)
+        assert outcome.status == StepStatus.COMPLETED
+        assert len(replies.tasks) == 1
+        assert json.loads(ctx.state.context.step_outputs["out_a"]) == {"days": ["a"]}
+
+    def test_later_steps_read_the_repaired_json(self) -> None:
+        _, outcome, ctx = self._run(_replies('```json\n{"days": ["a"]}\n```'))
+        assert outcome.status == StepStatus.COMPLETED
+        assert json.loads(ctx.state.context.step_outputs["out_a"]) == {"days": ["a"]}
+
+    def test_a_bad_reply_gets_one_retry_with_the_problem(self) -> None:
+        replies = _replies("plain lines", '{"days": ["a"]}')
+        _, outcome, ctx = self._run(replies)
+        assert outcome.status == StepStatus.COMPLETED
+        assert len(replies.tasks) == 2
+        assert "isn't a JSON object" in replies.tasks[1]
+        assert "plain lines" in replies.tasks[1]
+        assert json.loads(ctx.state.context.step_outputs["out_a"]) == {"days": ["a"]}
+
+    def test_it_fails_clearly_when_the_retry_is_bad_too(self) -> None:
+        replies = _replies("plain lines", "still plain")
+        packets, outcome, ctx = self._run(replies)
+        assert outcome.status == StepStatus.FAILED
+        assert len(replies.tasks) == 2
+        for expected in ("Step a", "Writer", "expected output", "still plain"):
+            assert expected in (outcome.error or "")
+        assert "out_a" not in ctx.state.context.step_outputs
+        assert packets[-1].obj.type == "section_end"
+        ctx.trace.finish_agent.assert_called_once()
+        assert ctx.trace.finish_agent.call_args.kwargs["status"] == "failed"
+
+    def test_a_model_that_cant_enforce_is_told_the_schema(self) -> None:
+        replies = _replies('{"days": ["a"]}')
+        self._run(replies, enforced=False)
+        assert "JSON schema" in replies.tasks[0]
+
+    def test_a_model_that_can_enforce_gets_the_task_as_written(self) -> None:
+        replies = _replies('{"days": ["a"]}')
+        self._run(replies, enforced=True)
+        assert "JSON schema" not in replies.tasks[0]
+
+    def test_a_step_without_a_schema_is_untouched(self) -> None:
+        replies = _replies("just text")
+        node = _node("a", 0, input_mapping={"task": "Plan"})
+        ctx = _ctx([node])
+        with patch("om.workflows.nodes.agent.stream_agent_packets", replies):
+            _, outcome = _drive(AgentRunnerV1().run(node, ctx))
+        assert outcome.status == StepStatus.COMPLETED
+        assert ctx.state.context.step_outputs["out_a"] == "just text"
+        assert len(replies.tasks) == 1

@@ -22,6 +22,7 @@ import {
   StepPlacementSection,
   ToggleSwitch,
 } from "./StepOptionsSection";
+import { OutputFormatFields } from "@/components/workflows/OutputFormatFields";
 
 // Built-in tool display config
 const BUILTIN_TOOLS: {
@@ -62,6 +63,15 @@ const BUILTIN_TOOLS: {
 ];
 
 type ConfigTab = "properties" | "advanced" | "json";
+
+const OUTPUT_FORMAT_CLASSES = {
+  section: "wfb-config-section",
+  label: "wfb-config-label",
+  select: "wfb-agent-select",
+  textarea: "wfb-config-textarea wfb-config-code",
+  hint: "wfb-config-hint",
+  error: "wfb-config-error",
+};
 
 /**
  * Config panel for agent steps (the `agent` editor kind). The panel for each
@@ -278,6 +288,15 @@ export function AgentConfigPanel({
                 nodeId={nodeId}
                 data={data}
                 onUpdate={onUpdate}
+              />
+            )}
+
+            {!isUtilityAgent && data.orchestration_mode !== "llm_decision" && (
+              <OutputFormatFields
+                key={nodeId}
+                step={data}
+                classes={OUTPUT_FORMAT_CLASSES}
+                onChange={(config) => onUpdate(nodeId, { config })}
               />
             )}
 

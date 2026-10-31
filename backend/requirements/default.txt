@@ -473,6 +473,8 @@ jmespath==1.0.1
     #   botocore
 joblib==1.5.2
     # via nltk
+json-repair==0.64.2
+    # via om
 jsonpatch==1.33
     # via langchain-core
 jsonpointer==3.0.0

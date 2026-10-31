@@ -19,6 +19,8 @@ from typing import Any
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
+from pydantic import model_serializer
+from pydantic import SerializerFunctionWrapHandler
 
 from om.configs.constants import DEFAULT_AGENT_ID
 from om.db.models import Agent
@@ -40,6 +42,11 @@ from om.workflows.inputs import apply_input_mapping
 from om.workflows.inputs import apply_safe_input_mapping
 from om.workflows.inputs import SAFE_REFERENCES_SCHEMA_VERSION
 from om.workflows.inputs import UnresolvedReferenceError
+from om.workflows.output_contract import check_schema
+from om.workflows.output_contract import format_instruction
+from om.workflows.output_contract import OutputContractError
+from om.workflows.output_contract import read_output
+from om.workflows.output_contract import retry_task
 from om.workflows.nodes.base import SaveContext
 from om.workflows.nodes.base import StepOutcome
 from om.workflows.nodes.base import StepSaveError
@@ -50,6 +57,7 @@ if TYPE_CHECKING:
 
     from om.db.models import AgentWorkflowStep
     from om.tools.models import ToolResponse
+    from om.tools.tool_implementations.agent_tool import AgentTool
     from om.workflows.graph import WorkflowNode
     from om.workflows.models import WorkflowStepCreate
     from om.workflows.state import RunContext
@@ -57,6 +65,11 @@ if TYPE_CHECKING:
 logger = setup_logger()
 
 AGENT_NODE_TYPE = "agent"
+
+
+OUTPUT_SCHEMA_FIELD = "output_schema"
+SEQUENTIAL_MODE = "sequential"
+MAX_REPLY_IN_ERROR = 300
 
 
 class AgentStepConfigV1(BaseModel):
@@ -76,18 +89,36 @@ class AgentStepConfigV1(BaseModel):
     tool_ids_override: list[int] | None = None
     document_set_ids_override: list[int] | None = None
     replace_base_system_prompt_override: bool | None = None
+    # What the agent must return, as a JSON schema (see output_contract.py).
+    output_schema: dict[str, Any] | None = None
+
+    @model_serializer(mode="wrap")
+    def _omit_empty_schema(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        # Absent unless set, so existing definitions keep their content hash.
+        data = handler(self)
+        if data.get(OUTPUT_SCHEMA_FIELD) is None:
+            data.pop(OUTPUT_SCHEMA_FIELD, None)
+        return data
 
 
 def load_agent_config_v1(step: AgentWorkflowStep) -> dict[str, Any]:
-    """Read an ``agent`` v1 config from the legacy step columns."""
-    return {
-        field: getattr(step, field) for field in AgentStepConfigV1.model_fields
+    """Read an ``agent`` v1 config: the legacy step columns, plus the ``config`` column."""
+    config: dict[str, Any] = {
+        field: getattr(step, field)
+        for field in AgentStepConfigV1.model_fields
+        if field != OUTPUT_SCHEMA_FIELD
     }
+    stored = getattr(step, "config", None)
+    if isinstance(stored, dict) and stored.get(OUTPUT_SCHEMA_FIELD):
+        config[OUTPUT_SCHEMA_FIELD] = stored[OUTPUT_SCHEMA_FIELD]
+    return config
 
 
 def store_agent_config_v1(config: dict[str, Any]) -> dict[str, Any]:
     """The step payload fields for an ``agent`` v1 config (same names)."""
-    return AgentStepConfigV1.model_validate(config).model_dump()
+    fields = AgentStepConfigV1.model_validate(config).model_dump()
+    schema = fields.pop(OUTPUT_SCHEMA_FIELD, None)
+    return {**fields, "config": {OUTPUT_SCHEMA_FIELD: schema}} if schema else fields
 
 
 class UnusableStepAgentError(Exception):
@@ -130,7 +161,24 @@ def prepare_agent_step_v1(
         load_step_agent(ctx.db_session, step.agent_id)
     except UnusableStepAgentError as e:
         raise StepSaveError(f'"{step.step_name}" {e}') from e
-    return step.model_copy(update={"config": None})
+    schema = (step.config or {}).get(OUTPUT_SCHEMA_FIELD)
+    if not schema:
+        return step.model_copy(update={"config": None})
+    try:
+        check_schema(schema)
+    except ValueError as e:
+        raise StepSaveError(f'"{step.step_name}": {e}') from e
+    if step.can_request_input:
+        raise StepSaveError(
+            f'"{step.step_name}" can\'t both ask the user questions and have an '
+            "expected output: a question isn't JSON"
+        )
+    if ctx.orchestration_mode != SEQUENTIAL_MODE:
+        raise StepSaveError(
+            f'"{step.step_name}" has an expected output, which only Sequential '
+            "workflows support"
+        )
+    return step.model_copy(update={"config": {OUTPUT_SCHEMA_FIELD: schema}})
 
 
 @dataclass(frozen=True)
@@ -198,6 +246,11 @@ class AgentRunnerV1:
 
         trace_node_id = self._trace_start(node, ctx, config, task_input)
 
+        # A model that can't enforce the schema is told it in the task.
+        agent_input = task_input
+        if config.output_schema and not agent_tool.enforces_response_format:
+            agent_input = f"{task_input}\n\n{format_instruction(config.output_schema)}"
+
         streaming = StreamingAgentResult(start_turn_index=state.turn.value)
         # HITL (can_request_input) steps: don't stream sub-agent prose/reasoning
         # live. Their output is a clarification (may carry the [NEEDS_INPUT]
@@ -213,7 +266,7 @@ class AgentRunnerV1:
             is_connected=ctx.is_connected,
             stream_answer_as_step=stream_step,
             stream_reasoning_as_step=stream_step,
-            task=task_input,
+            task=agent_input,
         )
 
         if streaming.cancelled:
@@ -250,6 +303,15 @@ class AgentRunnerV1:
             )
             return StepOutcome(status=StepStatus.PAUSED, output=output)
 
+        if config.output_schema:
+            checked = yield from self._expected_output(
+                node, ctx, placement, agent_tool, config.output_schema, agent_input,
+                output, trace_node_id, step_start,
+            )
+            if isinstance(checked, StepOutcome):
+                return checked
+            output = checked
+
         yield from self._complete(
             node, ctx, placement, config, agent_name, task_input, output,
             trace_node_id, step_start,
@@ -258,6 +320,72 @@ class AgentRunnerV1:
         return StepOutcome(status=status, output=output)
 
     # ── Steps of the run ──────────────────────────────────────────────────
+
+    def _expected_output(
+        self,
+        node: WorkflowNode,
+        ctx: RunContext,
+        placement: Placement,
+        agent_tool: AgentTool,
+        schema: dict[str, Any],
+        task: str,
+        reply: str,
+        trace_node_id: str | None,
+        step_start: float,
+    ) -> Generator[Packet, None, str | StepOutcome]:
+        """The reply as the declared JSON, asking the agent once more if it isn't."""
+        try:
+            return read_output(reply, schema)
+        except OutputContractError as e:
+            problem = str(e)
+        logger.warning(
+            "[Sequential] Step '%s': output doesn't match its schema (%s); retrying",
+            node.name,
+            problem,
+        )
+
+        state = ctx.state
+        retry = StreamingAgentResult(start_turn_index=state.turn.value)
+        yield from stream_agent_packets(
+            agent_tool=agent_tool,
+            placement=placement,
+            emitter=ctx.emitter,
+            result=retry,
+            is_connected=ctx.is_connected,
+            stream_answer_as_step=True,
+            stream_reasoning_as_step=True,
+            task=retry_task(task, reply, problem, schema),
+        )
+        if retry.cancelled:
+            yield from _close_step(node, placement)
+            state.turn.observe(retry.max_turn_index)
+            state.turn.advance()
+            return StepOutcome(status=StepStatus.CANCELLED)
+
+        state.turn.observe(retry.max_turn_index)
+        second = _parse_agent_response(retry.response).output
+        try:
+            return read_output(second, schema)
+        except OutputContractError as e:
+            message = (
+                f'"{node.name}" (agent {agent_tool._agent.name}) didn\'t return its '
+                f"expected output, even after a retry: {e}. It replied: "
+                f"{second[:MAX_REPLY_IN_ERROR]}"
+            )
+        yield Packet(placement=placement, obj=WorkflowStepDelta(content=message, replace=True))
+        yield from _close_step(node, placement)
+        state.turn.advance()
+        try:
+            ctx.trace.finish_agent(
+                trace_node_id,
+                message,
+                status="failed",
+                duration_ms=int((time.monotonic() - step_start) * 1000),
+            )
+            ctx.persist_trace()
+        except Exception:
+            logger.debug("[Trace] finish_agent failed", exc_info=True)
+        return StepOutcome(status=StepStatus.FAILED, error=message)
 
     @staticmethod
     def _task_input(node: WorkflowNode, ctx: RunContext) -> str:

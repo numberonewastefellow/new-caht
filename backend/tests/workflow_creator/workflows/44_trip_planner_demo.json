@@ -8,6 +8,7 @@
   "steps": [
     {
       "node_key": "intake",
+      "config": {"output_schema": {"type": "object", "properties": {"destination": {"type": "string"}, "origin": {"type": "string"}, "days": {"type": "integer"}, "days_stated": {"type": "boolean"}, "travellers": {"type": "string"}, "wishes": {"type": "string"}}, "required": ["destination", "origin", "days", "days_stated", "travellers", "wishes"]}},
       "step_name": "Read the request",
       "step_order": 0,
       "output_key": "intake",
@@ -29,7 +30,7 @@
       "output_key": "plan",
       "step_description": "Turns the request into a brief and the number of days",
       "config": {
-        "code": "import json\n\nMAX_DAYS = 14\n\n\ndef main(inputs):\n    text = inputs[\"intake\"].strip()\n    if text.startswith(\"```\"):\n        text = text.strip(\"`\").removeprefix(\"json\").strip()\n    facts = json.loads(text)\n    asked = int(facts[\"days\"])\n    days = max(1, min(asked, MAX_DAYS))\n    brief = (\n        f\"Destination: {facts['destination']}. From: {facts['origin']}. \"\n        f\"Travellers: {facts['travellers']}. Wishes: {facts['wishes']}. \"\n        f\"Length: {days} days.\"\n    )\n    notes = []\n    if not facts.get(\"days_stated\", True):\n        notes.append(f\"You didn't give a length, so this plans {days} days.\")\n    if asked > MAX_DAYS:\n        notes.append(f\"This plans the first {MAX_DAYS} of the {asked} days you asked for.\")\n    return {\"brief\": brief, \"days\": days, \"note\": \" \".join(notes)}\n",
+        "code": "import json\n\nMAX_DAYS = 14\n\n\ndef main(inputs):\n    facts = json.loads(inputs[\"intake\"])\n    asked = int(facts[\"days\"])\n    days = max(1, min(asked, MAX_DAYS))\n    brief = (\n        f\"Destination: {facts['destination']}. From: {facts['origin']}. \"\n        f\"Travellers: {facts['travellers']}. Wishes: {facts['wishes']}. \"\n        f\"Length: {days} days.\"\n    )\n    notes = []\n    if not facts.get(\"days_stated\", True):\n        notes.append(f\"You didn't give a length, so this plans {days} days.\")\n    if asked > MAX_DAYS:\n        notes.append(f\"This plans the first {MAX_DAYS} of the {asked} days you asked for.\")\n    return {\"brief\": brief, \"days\": days, \"note\": \" \".join(notes)}\n",
         "inputs": { "intake": "$intake.output" },
         "outputs": [
           { "name": "brief", "type": "string" },
@@ -116,6 +117,7 @@
     },
     {
       "node_key": "outline",
+      "config": {"output_schema": {"type": "object", "properties": {"days": {"type": "array", "items": {"type": "string"}, "minItems": 1}}, "required": ["days"]}},
       "step_name": "Outline the days",
       "step_order": 6,
       "output_key": "outline",
@@ -130,7 +132,7 @@
       "agent_def": {
         "name": "Demo: Itinerary outliner",
         "description": "Gives each day of a trip its own theme.",
-        "system_prompt": "You outline a trip. Reply with one JSON array of strings and nothing else, one string per day, with exactly the number of days you're asked for. Each string is a one-line theme naming that day's main place and activity. Every day must be different: don't repeat a place's main activity on another day. The first day includes arriving and the last includes leaving. Keep travel realistic: don't move between far-apart places more than necessary. No commentary or code fences.",
+        "system_prompt": "You outline a trip. Reply with one JSON object and nothing else, with one key, \"days\": an array of strings, one per day, with exactly the number of days you're asked for. Each string is a one-line theme naming that day's main place and activity. Every day must be different: don't repeat a place's main activity on another day. The first day includes arriving and the last includes leaving. Keep travel realistic: don't move between far-apart places more than necessary. No commentary or code fences.",
         "tool_ids": [],
         "labels": ["Demo"]
       }
@@ -143,7 +145,7 @@
       "output_key": "day_list",
       "step_description": "One item per day for the loop",
       "config": {
-        "code": "import json\n\n\ndef main(inputs):\n    text = inputs[\"outline\"].strip()\n    if text.startswith(\"```\"):\n        text = text.strip(\"`\").removeprefix(\"json\").strip()\n    themes = json.loads(text)\n    expected = int(inputs[\"days\"])\n    if len(themes) != expected:\n        raise ValueError(f\"The outline has {len(themes)} days, expected {expected}\")\n    return {\n        \"days\": [\n            {\"label\": f\"Day {i + 1} of {expected}\", \"theme\": theme}\n            for i, theme in enumerate(themes)\n        ]\n    }\n",
+        "code": "import json\n\n\ndef main(inputs):\n    themes = json.loads(inputs[\"outline\"])[\"days\"]\n    expected = int(inputs[\"days\"])\n    if len(themes) != expected:\n        raise ValueError(f\"The outline has {len(themes)} days, expected {expected}\")\n    return {\n        \"days\": [\n            {\"label\": f\"Day {i + 1} of {expected}\", \"theme\": theme}\n            for i, theme in enumerate(themes)\n        ]\n    }\n",
         "inputs": { "outline": "$outline.output", "days": "$plan.output.days" },
         "outputs": [{ "name": "days", "type": "array" }],
         "timeout_seconds": 5

@@ -1026,6 +1026,23 @@
   border-color: var(--virtualai-accent, #6366f1);
 }
 
+.wfb-config-hint {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-03, #6b7280);
+}
+
+.wfb-config-error {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--status-error-05, #dc2626);
+}
+
+.wfb-config-code {
+  font-family: monospace;
+  font-size: 11px;
+}
+
 .wfb-config-textarea {
   width: 100%;
   padding: 8px 10px;

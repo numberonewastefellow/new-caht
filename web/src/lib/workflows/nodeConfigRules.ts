@@ -7,6 +7,7 @@
 import { ancestorsOf } from "./containerRules";
 import type { EditorStep } from "./editorModel";
 
+const AGENT_NODE_TYPE = "agent";
 const PARALLEL_NODE_TYPE = "parallel";
 const LOOP_NODE_TYPE = "loop";
 const CODE_NODE_TYPE = "code";
@@ -15,6 +16,7 @@ const MIN_BRANCHES = 2;
 const MAX_BRANCHES = 8;
 const MAX_ITERATIONS = 50;
 const MAX_CODE_TIMEOUT_SECONDS = 30;
+export const OUTPUT_SCHEMA_FIELD = "output_schema";
 const DEFAULT_BRANCH_COUNT = 2;
 
 const IDENTIFIER = /^[A-Za-z_]\w*$/;
@@ -155,7 +157,31 @@ const codeRules: ConfigRule = ({ step, name }) => {
   return errors;
 };
 
+/** An agent step's declared output shape; null when it returns free text. */
+export function stepOutputSchema(step: Pick<EditorStep, "config">): unknown {
+  return asRecord(step.config)[OUTPUT_SCHEMA_FIELD] ?? null;
+}
+
+const agentRules: ConfigRule = ({ step, name }) => {
+  const schema = stepOutputSchema(step);
+  if (schema === null) return [];
+  const errors: string[] = [];
+  const shape = asRecord(schema);
+  if (shape.type !== "object" || Object.keys(asRecord(shape.properties)).length === 0) {
+    errors.push(
+      `"${name}": the output schema must be an object with properties`
+    );
+  }
+  if (step.can_request_input) {
+    errors.push(
+      `"${name}" can't both ask the user questions and have an expected output`
+    );
+  }
+  return errors;
+};
+
 const CONFIG_RULES: Readonly<Record<string, ConfigRule>> = {
+  [AGENT_NODE_TYPE]: agentRules,
   [PARALLEL_NODE_TYPE]: parallelRules,
   [LOOP_NODE_TYPE]: loopRules,
   [CODE_NODE_TYPE]: codeRules,

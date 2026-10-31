@@ -105,6 +105,15 @@ def is_reference(value: str) -> bool:
     return _REFERENCE.match(value) is not None
 
 
+def reference_field(reference: str) -> str | None:
+    """``$research.output.items[0]`` -> ``items``; None without a named field."""
+    match = _REFERENCE.match(reference)
+    if match is None:
+        return None
+    first = _PATH_SEGMENT.match(match.group("path"))
+    return first.group(1) if first else None
+
+
 def find_references(text: str) -> list[str]:
     """The references in a piece of text, in order."""
     return [t for t in _TEMPLATE_TOKEN.findall(text) if t != _ESCAPED_DOLLAR]

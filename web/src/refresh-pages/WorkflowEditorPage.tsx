@@ -27,6 +27,7 @@ import {
   withoutBranch,
 } from "@/lib/workflows/stepTree";
 import { moveEditorStep } from "@/lib/workflows/containerLanes";
+import { OutputFormatFields } from "@/components/workflows/OutputFormatFields";
 import {
   MAX_CALLS_PER_AGENT,
   MAX_ORCHESTRATOR_STEPS,
@@ -205,6 +206,15 @@ function stepTypeOptions(
 }
 
 const CONTAINER_INDENT_PX = 28;
+
+const OUTPUT_FORMAT_CLASSES = {
+  section: "flex flex-col gap-1.5",
+  label: "flex flex-col gap-1 text-xs text-text-03",
+  select: "h-9 px-2 rounded-8 border border-border bg-background text-sm text-text-05 self-start",
+  textarea: "w-full p-2 rounded-8 border border-border bg-background text-xs font-mono text-text-05",
+  hint: "text-xs text-text-03",
+  error: "text-xs text-status-error-05",
+};
 
 const PLACEMENT_CLASSES = {
   section: "min-w-[12rem]",
@@ -416,6 +426,15 @@ function WorkflowStepRow({
                 </Text>
               )}
             </div>
+          )}
+
+          {kind === "agent" && values.orchestration_mode === "sequential" && (
+            <OutputFormatFields
+              key={step.node_key}
+              step={step}
+              classes={OUTPUT_FORMAT_CLASSES}
+              onChange={(config) => setFieldValue(`steps.${index}.config`, config)}
+            />
           )}
 
           {/* Conditional Router config (branches as node keys) */}

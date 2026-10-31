@@ -14,6 +14,8 @@ from om.llm.override_models import LLMOverride
 from om.tools.tool_implementations.agent_tool import AgentTool
 from om.workflows.nodes.agent import AgentStepConfigV1
 from om.workflows.nodes.agent import load_step_agent
+from om.workflows.output_contract import response_format
+from om.workflows.output_contract import supports_response_format
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
@@ -62,6 +64,8 @@ class AgentToolCache:
             if config.tool_ids_override is not None
             else bool(agent.tools)
         )
+        llm = self._llm_for(agent, config)
+        schema = config.output_schema
         return AgentTool(
             agent=agent,
             emitter=self._emitter,
@@ -71,7 +75,7 @@ class AgentToolCache:
             step_id=node.step_id,
             output_key=node.output_key,
             user=self._user,
-            llm=self._llm_for(agent, config),
+            llm=llm,
             has_tools=has_tools,
             promote_output=node.promote_output,
             chat_files=self._chat_files,
@@ -83,6 +87,11 @@ class AgentToolCache:
             tool_ids_override=config.tool_ids_override,
             document_set_ids_override=config.document_set_ids_override,
             replace_base_system_prompt_override=config.replace_base_system_prompt_override,
+            response_format=(
+                response_format(schema)
+                if schema and supports_response_format(llm)
+                else None
+            ),
         )
 
     def _llm_for(self, agent: Agent, config: AgentStepConfigV1) -> LLM:

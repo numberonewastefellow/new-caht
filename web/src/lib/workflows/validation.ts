@@ -7,7 +7,7 @@ import type { OrchestrationMode } from "./interfaces";
 import type { EditorStep } from "./editorModel";
 import { missingRequiredFields, parseConfigSchema } from "./configSchema";
 import { validateContainerStructure } from "./containerRules";
-import { configProblems } from "./nodeConfigRules";
+import { configProblems, stepOutputSchema } from "./nodeConfigRules";
 import {
   type NodeCatalog,
   editorKindFor,
@@ -143,6 +143,13 @@ export function validateSteps(
           catalog,
           step.step_type
         )} step, which can't be used in ${MODE_LABEL[mode]} mode`,
+      });
+    }
+
+    if (checkModes && mode !== "sequential" && stepOutputSchema(step) !== null) {
+      errors.push({
+        nodeKey,
+        message: `"${name}" has an expected output, which only Sequential workflows support`,
       });
     }
 

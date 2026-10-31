@@ -2,6 +2,7 @@
 
 import React, { memo, useCallback, useState } from "react";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
+import { stepOutputSchema } from "@/lib/workflows/nodeConfigRules";
 import { StepNodeBadges } from "./NodeBadges";
 import type { AgentNodeData } from "./types";
 
@@ -166,7 +167,8 @@ function AgentNodeComponent({
             {data.promote_output && (
               <span className="wfb-badge wfb-badge-visible">Visible</span>
             )}
-            {!data.can_request_input && !data.is_terminal && !data.promote_output && (
+            {stepOutputSchema(data) !== null && <span className="wfb-badge wfb-badge-visible">JSON</span>}
+            {!data.can_request_input && !data.is_terminal && !data.promote_output && stepOutputSchema(data) === null && (
               <span className="wfb-agent-info-value">None</span>
             )}
           </div>
