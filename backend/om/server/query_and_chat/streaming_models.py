@@ -384,6 +384,10 @@ class WorkflowStepStart(BaseObj):
     step_order: int
     step_type: str = "agent"
     promote_output: bool = False
+    # Inside a container: where this step runs, e.g. "Research · Flights" or
+    # "Plan each day · 2", and how many containers deep.
+    scope: str | None = None
+    depth: int | None = None
 
 
 class WorkflowStepDelta(BaseObj):

@@ -1,6 +1,7 @@
 import { createEditorStep, type EditorStep } from "@/lib/workflows/editorModel";
 import {
   laneLabels,
+  moveEditorStep,
   placementChoices,
 } from "@/lib/workflows/containerLanes";
 import { CATALOG } from "@/lib/workflows/testFixtures";
@@ -117,5 +118,50 @@ describe("placementChoices", () => {
       "l1",
       "l2",
     ]);
+  });
+});
+
+describe("moveEditorStep", () => {
+  const options = (steps: EditorStep[], key: string) => {
+    const step = steps.find((s) => s.node_key === key);
+    return [step?.is_terminal, step?.promote_output, step?.can_request_input];
+  };
+  const steps = [
+    loop("box"),
+    agent("a", {
+      is_terminal: true,
+      promote_output: true,
+      can_request_input: true,
+    }),
+  ];
+
+  it("turns off the options a step can't have inside a container", () => {
+    const moved = moveEditorStep(steps, "a", { parent_key: "box", branch_index: 0 });
+    expect(moved.find((s) => s.node_key === "a")?.parent_key).toBe("box");
+    expect(options(moved, "a")).toEqual([false, false, false]);
+  });
+
+  it("keeps them when the step stays at the top level", () => {
+    const moved = moveEditorStep(steps, "a", { parent_key: null, branch_index: null });
+    expect(options(moved, "a")).toEqual([true, true, true]);
+  });
+
+  it("places the step at the given position", () => {
+    const moved = moveEditorStep(
+      [agent("x"), agent("y"), agent("z")],
+      "z",
+      { parent_key: null, branch_index: null },
+      1
+    );
+    expect(moved.map((s) => s.node_key)).toEqual(["x", "z", "y"]);
+  });
+
+  it("keeps them when the move is refused", () => {
+    const inside = loop("b", { parent_key: "a", branch_index: 0 });
+    const moved = moveEditorStep([...steps, inside], "a", {
+      parent_key: "b",
+      branch_index: 0,
+    });
+    expect(options(moved, "a")).toEqual([true, true, true]);
   });
 });

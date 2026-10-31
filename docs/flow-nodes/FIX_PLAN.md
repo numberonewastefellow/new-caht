@@ -1,5 +1,7 @@
 # Flow nodes: design-vs-code analysis, then the proper fix plan (2026-10-31)
 
+> **The analysis below still holds; its build order doesn't.** Current status and what's left: [TODO.md](TODO.md).
+
 ## Context
 The user rejected the previous plan with: "before you fix analyze the design we have implemented, from where it taken and based on that understand what is required and what is missing … come to me again with proper fix."
 

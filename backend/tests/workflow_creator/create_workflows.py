@@ -91,6 +91,10 @@ def _update_agent_starter_messages(agent_id: int, starter_messages: list[dict]) 
         print(f"  [WARN] Failed to set starter messages for {p['name']}: {resp.status_code} {err}")
 
 
+# Step fields passed through as they are, when a template sets them.
+NODE_FIELDS = ("node_key", "step_type", "type_version", "config", "parent_key", "branch_index")
+
+
 def _resolve_steps(raw_steps: list[dict]) -> list[dict]:
     """Resolve agent references in step definitions.
 
@@ -101,10 +105,19 @@ def _resolve_steps(raw_steps: list[dict]) -> list[dict]:
     """
     resolved = []
     for step in raw_steps:
-        agent_id = resolve_or_create_agent(step)
-        if agent_id is None:
-            print(f"  [SKIP] Step '{step.get('step_name', '?')}': no agent resolved")
-            continue
+        node_fields = {
+            field: step[field]
+            for field in NODE_FIELDS
+            if step.get(field) is not None
+        }
+        # Agent steps need an agent; other node types carry their own config.
+        agent_id = None
+        if step.get("step_type", "agent") == "agent":
+            agent_id = resolve_or_create_agent(step)
+            if agent_id is None:
+                raise ValueError(
+                    f"Step '{step.get('step_name', '?')}': no agent resolved"
+                )
 
         # Update starter_messages on the sub-agent agent if defined
         agent_def = step.get("agent_def", {})
@@ -113,6 +126,7 @@ def _resolve_steps(raw_steps: list[dict]) -> list[dict]:
             _update_agent_starter_messages(agent_id, sub_starter)
 
         resolved.append({
+            **node_fields,
             "agent_id": agent_id,
             "step_order": step.get("step_order", len(resolved)),
             "step_name": step["step_name"],

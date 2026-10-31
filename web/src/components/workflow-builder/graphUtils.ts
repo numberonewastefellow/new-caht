@@ -40,10 +40,11 @@ import {
   depthFirst,
   groupByBlock,
   isTopLevel,
+  blockKey,
   type BlockPlace,
 } from "@/lib/workflows/stepTree";
 import { laneLabels } from "@/lib/workflows/containerLanes";
-import { layoutWorkflow, type Size } from "./containerLayout";
+import { type LaneBox, layoutWorkflow, type Size } from "./containerLayout";
 import { validateSteps } from "@/lib/workflows/validation";
 import type {
   WorkflowNode,
@@ -343,8 +344,8 @@ export function graphToUpdatePayload(
 // ── Step Order Computation ─────────────────────────────────────────────
 
 const AGENT_NODE_WIDTH = 300;
-const AGENT_NODE_HEIGHT = 170;
-const STEP_NODE_WIDTH = 260;
+const AGENT_NODE_HEIGHT = 225;
+const STEP_NODE_WIDTH = 280;
 const STEP_NODE_HEIGHT = 100;
 const START_NODE_GAP = 260;
 
@@ -577,11 +578,21 @@ export function autoLayout(
   return updated;
 }
 
-/** The size a node is drawn at (the CSS widths; heights are typical). */
+/** The size a node is drawn at: measured, or the largest usual size before that. */
 function drawnSize(node: StepFlowNode): Size {
-  return node.type === "agent"
-    ? { width: AGENT_NODE_WIDTH, height: AGENT_NODE_HEIGHT }
-    : { width: STEP_NODE_WIDTH, height: STEP_NODE_HEIGHT };
+  const usual =
+    node.type === "agent"
+      ? { width: AGENT_NODE_WIDTH, height: AGENT_NODE_HEIGHT }
+      : { width: STEP_NODE_WIDTH, height: STEP_NODE_HEIGHT };
+  return {
+    width: node.measured?.width ?? usual.width,
+    height: node.measured?.height ?? usual.height,
+  };
+}
+
+/** A step that's a box or inside one: deleting it has to keep the tree consistent. */
+export function isInContainerTree(node: WorkflowNode): boolean {
+  return isStepNode(node) && (isContainerNode(node) || !!node.data.parent_key);
 }
 
 /** Sequential workflows with containers: a row of steps and boxes. */
@@ -611,7 +622,10 @@ function layoutWithContainers(
   const startX = 50 + START_NODE_GAP;
   const centerY = size.height / 2;
   const laidOut = sorted.map((node): WorkflowNode => {
-    const placement = placements.get(node.id)!;
+    const placement = placements.get(node.id);
+    // Its container isn't drawn as a box (say, its type left the catalog): there's no
+    // lane to put it in, so it stays where it is and validation reports it.
+    if (!placement) return node;
     const { parentId } = placement;
     return {
       ...node,
@@ -691,7 +705,37 @@ export function nodeCenter(
   };
 }
 
-/** The innermost container lane at a canvas point; null is the top level. */
+/** Where a dropped step goes in a block: after the steps whose center is left of it. */
+export function dropPosition(
+  nodes: readonly WorkflowNode[],
+  nodeId: string,
+  place: BlockPlace
+): number {
+  const dropped = nodes.find((n) => n.id === nodeId);
+  if (!dropped) return 0;
+  const { x } = nodeCenter(dropped, nodes);
+  const block = blockKey({ node_key: nodeId, ...place });
+  return nodes
+    .filter(isStepNode)
+    .filter((n) => n.id !== nodeId && blockKey(n.data) === block)
+    .filter((n) => nodeCenter(n, nodes).x < x).length;
+}
+
+/** The lane nearest to `y`, measured from the top of its box. */
+function nearestLane(lanes: readonly LaneBox[], y: number): number {
+  const distance = (lane: LaneBox) =>
+    y < lane.y ? lane.y - y : Math.max(0, y - lane.y - lane.height);
+  let nearest = 0;
+  lanes.forEach((lane, branch) => {
+    if (distance(lane) < distance(lanes[nearest]!)) nearest = branch;
+  });
+  return nearest;
+}
+
+/**
+ * The lane of the innermost box at a canvas point; null is the top level. Inside a box
+ * means one of its lanes, so a drop on the header or between lanes stays in the box.
+ */
 export function laneAt(
   nodes: readonly WorkflowNode[],
   point: { x: number; y: number },
@@ -703,17 +747,19 @@ export function laneAt(
   for (const node of nodes) {
     if (!isStepNode(node) || !isContainerNode(node) || exclude.has(node.id)) continue;
     const { x, y } = absolutePosition(node, byId);
+    const lanes = node.data.lanes ?? [];
     const width = Number(node.style?.width ?? 0);
-    if (point.x < x || point.x > x + width) continue;
-    (node.data.lanes ?? []).forEach((lane, branch) => {
-      if (point.y < y + lane.y || point.y > y + lane.y + lane.height) return;
-      let depth = 0;
-      for (let p = node.parentId; p; p = byId.get(p)?.parentId) depth++;
-      if (depth > foundDepth) {
-        found = { parent_key: node.id, branch_index: branch };
-        foundDepth = depth;
-      }
-    });
+    const height = Number(node.style?.height ?? 0);
+    if (lanes.length === 0) continue;
+    if (point.x < x || point.x > x + width || point.y < y || point.y > y + height) {
+      continue;
+    }
+    let depth = 0;
+    for (let p = node.parentId; p; p = byId.get(p)?.parentId) depth++;
+    if (depth > foundDepth) {
+      found = { parent_key: node.id, branch_index: nearestLane(lanes, point.y - y) };
+      foundDepth = depth;
+    }
   }
   return found;
 }

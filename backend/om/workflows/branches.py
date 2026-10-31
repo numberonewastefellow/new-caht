@@ -37,6 +37,7 @@ from om.workflows.blocks import run_block
 from om.workflows.graph import WorkflowNode
 from om.workflows.nodes.agent_tools import AgentToolCache
 from om.workflows.nodes.base import StepStatus
+from om.workflows.trace_models import now_iso
 from om.workflows.state import RunContext
 from om.workflows.state import RunState
 from om.workflows.state import TurnCursor
@@ -61,13 +62,17 @@ class BufferedTrace:
     def __init__(self, prefix: str) -> None:
         self._prefix = prefix
         self._count = 0
-        self._calls: list[tuple[str, str | None, tuple[Any, ...], dict[str, Any]]] = []
+        # (method, node ref, args, kwargs, when it happened)
+        self._calls: list[tuple[str, str | None, tuple[Any, ...], dict[str, Any], str]] = []
 
     def _record(self, method: str, args: tuple[Any, ...], kwargs: dict[str, Any]) -> str:
         self._count += 1
         ref = f"{self._prefix}{self._count}"
-        self._calls.append((method, ref, args, kwargs))
+        self._calls.append((method, ref, args, kwargs, now_iso()))
         return ref
+
+    def set_scope(self, scope: str | None, depth: int | None) -> None:
+        self._calls.append(("set_scope", None, (scope, depth), {}, now_iso()))
 
     def start_agent(self, *args: Any, **kwargs: Any) -> str:
         return self._record("start_agent", args, kwargs)
@@ -79,16 +84,22 @@ class BufferedTrace:
         return self._record("add_router", args, kwargs)
 
     def finish_agent(self, node_ref: str | None, *args: Any, **kwargs: Any) -> None:
-        self._calls.append(("finish_agent", node_ref, args, kwargs))
+        self._calls.append(("finish_agent", node_ref, args, kwargs, now_iso()))
 
     def replay(self, builder: Any) -> None:
         """Apply the recorded calls to a real ``WorkflowTraceBuilder``."""
         real_ids: dict[str, str | None] = {}
-        for method, ref, args, kwargs in self._calls:
+        for method, ref, args, kwargs, at in self._calls:
             if method == "finish_agent":
-                builder.finish_agent(real_ids.get(ref or ""), *args, **kwargs)
+                real = real_ids.get(ref or "")
+                builder.finish_agent(real, *args, **kwargs)
+                builder.set_times(real, ended_at=at)
+            elif method == "set_scope":
+                builder.set_scope(*args)
             else:
-                real_ids[ref or ""] = getattr(builder, method)(*args, **kwargs)
+                real = getattr(builder, method)(*args, **kwargs)
+                real_ids[ref or ""] = real
+                builder.set_times(real, started_at=at)
 
 
 @dataclass

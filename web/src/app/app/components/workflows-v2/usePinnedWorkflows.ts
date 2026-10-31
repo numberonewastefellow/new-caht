@@ -1,18 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { useUser } from "@/providers/UserProvider";
 
 /**
- * Client-only pinned-workflow state (no backend support for pinning).
- * Persisted to localStorage so it survives reloads and stays in sync across tabs.
- * Mirrors usePinnedWorkspaces but with a separate storage key.
+ * Pinned workflows, saved on the user's account (`preferences.pinned_workflows`)
+ * so they follow the user across browsers and devices.
+ *
+ * Pins used to live only in localStorage; the first time this hook sees an
+ * empty server list and leftover local pins, it uploads them once and clears
+ * the local key.
  */
-const STORAGE_KEY = "workflow-pinned-ids";
+const LEGACY_STORAGE_KEY = "workflow-pinned-ids";
+const EMPTY: number[] = [];
 
-function readStored(): number[] {
+function readLegacy(): number[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(LEGACY_STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed)
@@ -23,26 +28,23 @@ function readStored(): number[] {
   }
 }
 
-function writeStored(next: number[]): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-}
-
 export function usePinnedWorkflows() {
-  // Start empty so SSR/first client render match; hydrate in an effect.
-  const [pinnedIds, setPinnedIds] = useState<number[]>([]);
+  const { user, updateUserPinnedWorkflows } = useUser();
+  const pinnedIds = user?.preferences?.pinned_workflows ?? EMPTY;
+  const loaded = !!user?.id;
+  const importedRef = useRef(false);
 
   useEffect(() => {
-    setPinnedIds(readStored());
-  }, []);
-
-  useEffect(() => {
-    function onStorage(e: StorageEvent) {
-      if (e.key === STORAGE_KEY) setPinnedIds(readStored());
+    if (!loaded || importedRef.current) return;
+    importedRef.current = true;
+    const legacy = readLegacy();
+    if (legacy.length === 0) return;
+    if (pinnedIds.length === 0) {
+      void updateUserPinnedWorkflows(legacy);
     }
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
+    window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded]);
 
   const isPinned = useCallback(
     (id: number) => pinnedIds.includes(id),
@@ -54,23 +56,22 @@ export function usePinnedWorkflows() {
       const next = pinnedIds.includes(id)
         ? pinnedIds.filter((x) => x !== id)
         : [...pinnedIds, id];
-      setPinnedIds(next);
-      writeStored(next);
+      void updateUserPinnedWorkflows(next);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [pinnedIds]
   );
 
-  // Drop pins for workflows that no longer exist so localStorage can't grow
-  // unbounded. No-op (and no re-render) when nothing is stale.
+  // Drop pins for workflows that no longer exist. No-op when nothing is stale.
   const prune = useCallback(
     (validIds: number[]) => {
       const valid = new Set(validIds);
       const next = pinnedIds.filter((id) => valid.has(id));
       if (next.length !== pinnedIds.length) {
-        setPinnedIds(next);
-        writeStored(next);
+        void updateUserPinnedWorkflows(next);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [pinnedIds]
   );
 

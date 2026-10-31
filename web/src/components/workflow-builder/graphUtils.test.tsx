@@ -7,6 +7,7 @@ import {
   graphToPayload,
   graphToSteps,
   graphToUpdatePayload,
+  dropPosition,
   laneAt,
   snapshotToGraph,
   validateGraph,
@@ -416,6 +417,30 @@ describe("the demo: code + parallel + loop", () => {
     });
   });
 
+  describe("dropPosition", () => {
+    const top = { parent_key: null, branch_index: null };
+    const topLevel = () =>
+      graph().nodes.filter(isStepNode).filter((n) => !n.data.parent_key);
+    const atX = (id: string, x: number) =>
+      graph().nodes.map((n) =>
+        n.id === id ? { ...n, parentId: undefined, position: { x, y: 0 } } : n
+      );
+    const leftOf = (id: string) =>
+      graph().nodes.find((n) => n.id === id)!.position.x - 1;
+
+    it("counts the steps left of the drop", () => {
+      const blockOfTop = topLevel();
+      const third = blockOfTop[2]!;
+      expect(dropPosition(atX("stay", leftOf(third.id)), "stay", top)).toBe(2);
+    });
+
+    it("is the start before everything and the end after everything", () => {
+      const count = topLevel().length;
+      expect(dropPosition(atX("stay", -100000), "stay", top)).toBe(0);
+      expect(dropPosition(atX("stay", 100000), "stay", top)).toBe(count);
+    });
+  });
+
   describe("laneAt", () => {
     const boxOf = (id: string) => {
       const { nodes } = graph();
@@ -433,10 +458,18 @@ describe("the demo: code + parallel + loop", () => {
       expect(laneAt(nodes, point(1))).toEqual({ parent_key: "research", branch_index: 1 });
     });
 
-    it("is null outside every box and on a box's header", () => {
-      const { nodes, box } = boxOf("research");
+    it("is null outside every box", () => {
+      const { nodes } = boxOf("research");
       expect(laneAt(nodes, { x: -5000, y: -5000 })).toBeNull();
-      expect(laneAt(nodes, { x: box.position.x + 40, y: box.position.y + 5 })).toBeNull();
+    });
+
+    it("stays in the box on its header and between its lanes", () => {
+      const { nodes, box, lanes } = boxOf("research");
+      const at = (y: number) => laneAt(nodes, { x: box.position.x + 40, y: box.position.y + y });
+      expect(at(5)).toEqual({ parent_key: "research", branch_index: 0 });
+      const belowFirst = lanes[0]!.y + lanes[0]!.height + 1;
+      expect(at(belowFirst)).toEqual({ parent_key: "research", branch_index: 0 });
+      expect(at(lanes[1]!.y - 1)).toEqual({ parent_key: "research", branch_index: 1 });
     });
 
     it("ignores excluded boxes", () => {

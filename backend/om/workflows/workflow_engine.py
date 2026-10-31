@@ -33,6 +33,7 @@ from om.workflows.trace_models import load_workflow_trace
 from om.workflows.trace_models import persist_workflow_trace
 from om.workflows.trace_models import WorkflowTraceBuilder
 from om.db.workflow import get_paused_execution
+from om.db.workflow import get_workflow_for_update
 from om.db.workflow import load_checkpoint
 from om.db.workflow import save_checkpoint
 from om.db.workflow import update_workflow_execution
@@ -1083,6 +1084,8 @@ def _pinned_version_id(
     db_session: Session, workflow: AgentWorkflow, user: User
 ) -> int:
     """The version an ``llm_decision`` run starts on, recorded in its history."""
+    # A save may have landed since this object was read; it can't while this holds.
+    workflow = get_workflow_for_update(db_session, workflow.id) or workflow
     graph = graph_from_workflow(workflow, get_node_registry())
     return pin_workflow_version(db_session, workflow, graph, user.id).id
 
@@ -1175,12 +1178,12 @@ def run_workflow_llm_decision(
             agent_call_counts = dict(checkpoint.agent_call_counts)
             # Decrement the paused agent's call count so it can be
             # re-called within max_calls_per_agent.
-            if paused_step_id:
-                paused_tool = tools_by_step_id.get(paused_step_id)
-                if paused_tool and paused_tool.name in agent_call_counts:
-                    agent_call_counts[paused_tool.name] = max(
-                        0, agent_call_counts[paused_tool.name] - 1
-                    )
+            paused_tool = tools_by_step_id.get(paused_step_id) if paused_step_id else None
+            paused_step = steps_by_id.get(paused_step_id) if paused_step_id else None
+            if paused_tool and paused_tool.name in agent_call_counts:
+                agent_call_counts[paused_tool.name] = max(
+                    0, agent_call_counts[paused_tool.name] - 1
+                )
             cycle_start = checkpoint.cycle_count
             turn_index = checkpoint.turn_index
             execution = paused_execution
@@ -1194,7 +1197,8 @@ def run_workflow_llm_decision(
             if (
                 checkpoint.clarification_conversation
                 and checkpoint.paused_agent_original_task
-                and paused_step_id
+                and paused_tool
+                and paused_step
             ):
                 conversation = list(checkpoint.clarification_conversation)
                 conversation.append({"role": "user", "content": user_message})
@@ -1204,8 +1208,8 @@ def run_workflow_llm_decision(
                     conversation,
                 )
                 _direct_resume_conversation = conversation
-                _direct_resume_tool = tools_by_step_id.get(paused_step_id)
-                _direct_resume_step = steps_by_id.get(paused_step_id)
+                _direct_resume_tool = paused_tool
+                _direct_resume_step = paused_step
 
                 logger.info(
                     "[LLM-Decision] DIRECT RESUME execution_id=%d "
@@ -1221,8 +1225,13 @@ def run_workflow_llm_decision(
                 user_clarification = (
                     f"The agent requested more information from the user. "
                     f"The user responded:\n\n{user_message}\n\n"
-                    f"Please call the same agent again with this additional "
-                    f"information included in the task."
+                    + (
+                        f"Please call {paused_tool.name} again with this additional "
+                        f"information included in the task."
+                        if paused_tool
+                        else "That agent is no longer part of this workflow. "
+                        "Decide how to continue with this information."
+                    )
                 )
                 msg_history.append(ChatMessageSimple(
                     message=user_clarification,
@@ -1477,7 +1486,12 @@ def run_workflow_llm_decision(
                             msg_history
                         ),
                         cycle_count=cycle_start,
-                        agent_call_counts=dict(agent_call_counts),
+                        agent_call_counts={
+                            **agent_call_counts,
+                            _direct_resume_tool.name: (
+                                agent_call_counts.get(_direct_resume_tool.name, 0) + 1
+                            ),
+                        },
                         turn_index=turn_index,
                         paused_agent_original_task=(
                             checkpoint.paused_agent_original_task
@@ -1679,7 +1693,9 @@ def run_workflow_llm_decision(
                     _direct_resume_tool.output_key,
                 )
 
-            # Clear direct resume state
+            # Clear direct resume state. The checkpoint goes too: a later pause by
+            # another agent starts its own task and conversation.
+            checkpoint = None
             _direct_resume_task = None
             _direct_resume_tool = None
             _direct_resume_step = None

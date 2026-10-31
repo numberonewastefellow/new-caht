@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 
 from om.db.models import AgentWorkflow
 from om.db.models import new_workflow_node_key
+from om.db.workflow import create_or_update_workflow_agent
 from om.db.workflow import create_workflow
 from om.db.workflow import get_workflow_for_update
 from om.db.workflow import update_workflow
@@ -37,6 +38,7 @@ from om.workflows.nodes.base import StepSummary
 from om.workflows.nodes.builtin import get_node_registry
 from om.workflows.nodes.registry import NodeTypeRegistry
 from om.workflows.nodes.registry import UnknownNodeTypeError
+from om.workflows.reference_check import reference_problem
 from om.workflows.versioning import pin_workflow_version
 
 
@@ -45,6 +47,9 @@ MAX_CONTAINER_DEPTH = 3
 # ``$user_input`` and ``$loop.*`` resolve before step outputs, so a step using one
 # of these output keys could never be read.
 RESERVED_OUTPUT_KEYS = frozenset({"loop", "user_input"})
+# New workflows run with safe references; existing ones keep their version until
+# upgraded. See docs/flow-nodes/DESIGN.md.
+CURRENT_SCHEMA_VERSION = 2
 
 
 class WorkflowSaveError(ValueError):
@@ -208,14 +213,23 @@ def save_new_workflow(
     steps = prepare_steps(
         db_session, workflow_create.steps, workflow_create.orchestration_mode
     )
-    workflow = create_workflow(
-        db_session=db_session,
-        workflow_create=workflow_create.model_copy(update={"steps": steps}),
-        user_id=user_id,
-    )
-    _record_version(db_session, workflow, user_id)
-    db_session.commit()
-    return workflow
+    _check_references(steps, CURRENT_SCHEMA_VERSION, workflow_create.orchestration_mode)
+    try:
+        workflow = create_workflow(
+            db_session=db_session,
+            workflow_create=workflow_create.model_copy(update={"steps": steps}),
+            user_id=user_id,
+            schema_version=CURRENT_SCHEMA_VERSION,
+            commit=False,
+        )
+        _record_version(db_session, workflow, user_id)
+        # The wrapper agent is what lists the workflow: all of this lands, or none of it.
+        create_or_update_workflow_agent(db_session, workflow, commit=False)
+        db_session.commit()
+        return workflow
+    except Exception:
+        db_session.rollback()
+        raise
 
 
 def save_workflow_update(
@@ -262,14 +276,26 @@ def _apply_update(
             f"you loaded version {workflow_update.expected_version})"
         )
 
+    schema_version = workflow_update.schema_version or workflow.schema_version
+    if schema_version not in (1, CURRENT_SCHEMA_VERSION):
+        raise WorkflowSaveError(f"Unknown schema version {schema_version}")
+
+    current = _load_graph(workflow, registry)
     mode = workflow_update.orchestration_mode or workflow.orchestration_mode
     if workflow_update.steps is not None:
         steps = prepare_steps(db_session, workflow_update.steps, mode, registry)
         workflow_update = workflow_update.model_copy(update={"steps": steps})
-    elif mode != workflow.orchestration_mode:
-        _check_modes(graph_from_workflow(workflow, registry), mode, registry)
+        _check_references(steps, schema_version, mode)
+    else:
+        if mode != workflow.orchestration_mode:
+            _check_modes(current, mode, registry)
+        # The steps themselves are unchanged, so only a new rule set needs a new check.
+        if schema_version != workflow.schema_version or mode != workflow.orchestration_mode:
+            _check_references(_steps_of(current, registry), schema_version, mode)
 
-    _snapshot_current_definition(db_session, workflow, registry)
+    # A workflow from before version history has no rows until its first run, so
+    # without this its first save would lose the definition it replaces.
+    _pin(db_session, workflow, current, user_id=None)
     updated = update_workflow(db_session, workflow_id, workflow_update, commit=False)
     if updated is None:
         return None
@@ -277,21 +303,34 @@ def _apply_update(
     return updated
 
 
-def _snapshot_current_definition(
-    db_session: Session, workflow: AgentWorkflow, registry: NodeTypeRegistry
-) -> None:
-    """Make sure the definition about to be replaced can be restored.
-
-    A workflow from before version history has no rows until its first run, so
-    without this its first save would lose the definition it replaces.
-    """
+def _load_graph(workflow: AgentWorkflow, registry: NodeTypeRegistry) -> WorkflowGraph:
     try:
-        graph = graph_from_workflow(workflow, registry)
+        return graph_from_workflow(workflow, registry)
     except (UnknownNodeTypeError, ValidationError) as e:
         raise WorkflowSaveError(
             f"Workflow {workflow.id} can't be loaded, so it needs upgrading: {e}"
         ) from e
-    _pin(db_session, workflow, graph, user_id=None)
+
+
+def _steps_of(graph: WorkflowGraph, registry: NodeTypeRegistry) -> list[WorkflowStepCreate]:
+    try:
+        return [_node_to_step_create(node, registry) for node in graph.nodes]
+    except ValidationError as e:
+        raise WorkflowSaveError(
+            f"This workflow's steps don't meet the current rules, so it can't move to "
+            f"the new schema yet: {e}"
+        ) from e
+
+
+def _check_references(
+    steps: list[WorkflowStepCreate], schema_version: int, mode: str
+) -> None:
+    # In LLM-decision mode the orchestrator writes each task; there's no fixed order.
+    if schema_version < CURRENT_SCHEMA_VERSION or mode == "llm_decision":
+        return
+    problem = reference_problem(steps)
+    if problem:
+        raise WorkflowSaveError(problem)
 
 
 def restore_workflow_version(
@@ -309,6 +348,7 @@ def restore_workflow_version(
             "name": graph.name,
             "orchestration_mode": graph.orchestration_mode,
             "timeout_seconds": graph.timeout_seconds,
+            "schema_version": graph.schema_version,
             "steps": [_node_to_step_create(node, registry) for node in graph.nodes],
             **_settings_fields(graph),
         }

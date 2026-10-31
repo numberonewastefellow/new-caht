@@ -282,6 +282,16 @@ class TestPrepare:
         assert prepared.config is not None
         assert prepared.config["join"] == "wait_all"
 
+    def test_duplicate_branch_names_rejected(self) -> None:
+        ctx = self._ctx({
+            "par": _summary("parallel", 0),
+            "a": _summary("agent", 1, "par", 0),
+            "b": _summary("agent", 2, "par", 1),
+        })
+        step = self._step(branches=[{"label": "Same"}, {"label": "Same"}])
+        with pytest.raises(StepSaveError, match="must be unique"):
+            prepare_parallel_step_v1(step, ctx)
+
     def test_empty_branch_rejected(self) -> None:
         ctx = self._ctx({"par": _summary("parallel", 0), "a": _summary("agent", 1, "par", 0)})
         with pytest.raises(StepSaveError, match="branches without steps: Branch 2"):
@@ -311,3 +321,24 @@ class TestPrepare:
         ctx = self._ctx({"par": _summary("parallel", 0), "a": _summary("agent", 1, "par", 0)})
         with pytest.raises(StepSaveError, match="branches"):
             prepare_parallel_step_v1(self._step(branches=[{"label": "only"}]), ctx)
+
+
+class TestFirstSuccessWithFailFast:
+    def test_a_winner_counts_whichever_branch_finished_first(self) -> None:
+        ctx, container = _setup(
+            [_sleep("bad", 1, 0, 0.0, "", fail=True), _sleep("good", 2, 1, 0.1, "done")],
+            join="first_success",
+            on_branch_error="fail",
+        )
+        _, outcome, _ = _drive(ctx, container)
+        assert outcome.status == StepStatus.COMPLETED
+        assert json.loads(outcome.output or "")["B1"] == "done"
+
+    def test_it_fails_when_no_branch_succeeds(self) -> None:
+        ctx, container = _setup(
+            [_sleep("a", 1, 0, 0.0, "", fail=True), _sleep("b", 2, 1, 0.0, "", fail=True)],
+            join="first_success",
+            on_branch_error="fail",
+        )
+        _, outcome, _ = _drive(ctx, container)
+        assert outcome.status == StepStatus.FAILED

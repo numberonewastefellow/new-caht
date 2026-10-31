@@ -45,6 +45,8 @@ interface UserContextType {
   ) => Promise<void>;
   updateUserChatBackground: (chatBackground: string | null) => Promise<void>;
   updateUserFontPreference: (font: string) => Promise<void>;
+  updateUserAccentTheme: (accent: string) => Promise<void>;
+  updateUserPinnedWorkflows: (workflowIds: number[]) => Promise<void>;
   updateUserDefaultModel: (defaultModel: string | null) => Promise<void>;
   updateUserDefaultAppMode: (mode: "CHAT" | "SEARCH") => Promise<void>;
 }
@@ -440,6 +442,67 @@ export function UserProvider({
     }
   };
 
+  const updateUserAccentTheme = async (accent: string) => {
+    try {
+      // "none" (default accent) is stored as null on the server.
+      const stored = accent === "none" ? null : accent;
+      setUpToDateUser((prevUser) => {
+        if (prevUser) {
+          return {
+            ...prevUser,
+            preferences: { ...prevUser.preferences, accent_theme: stored },
+          };
+        }
+        return prevUser;
+      });
+
+      const response = await fetch(`/api/user/accent-theme`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accent_theme: stored }),
+      });
+
+      if (!response.ok) {
+        await refreshUser();
+        throw new Error("Failed to update accent theme");
+      }
+    } catch (error) {
+      console.error("Error updating accent theme:", error);
+      throw error;
+    }
+  };
+
+  const updateUserPinnedWorkflows = async (workflowIds: number[]) => {
+    try {
+      setUpToDateUser((prevUser) => {
+        if (prevUser) {
+          return {
+            ...prevUser,
+            preferences: {
+              ...prevUser.preferences,
+              pinned_workflows: workflowIds,
+            },
+          };
+        }
+        return prevUser;
+      });
+
+      const response = await fetch(`/api/user/pinned-workflows`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workflow_ids: workflowIds }),
+      });
+
+      if (!response.ok) {
+        await refreshUser();
+        throw new Error("Failed to update pinned workflows");
+      }
+    } catch (error) {
+      console.error("Error updating pinned workflows:", error);
+      throw error;
+    }
+  };
+
   const updateUserDefaultModel = async (defaultModel: string | null) => {
     try {
       setUpToDateUser((prevUser) => {
@@ -523,6 +586,8 @@ export function UserProvider({
         updateUserThemePreference,
         updateUserChatBackground,
         updateUserFontPreference,
+        updateUserAccentTheme,
+        updateUserPinnedWorkflows,
         updateUserDefaultModel,
         updateUserDefaultAppMode,
         toggleAssistantPinnedStatus,

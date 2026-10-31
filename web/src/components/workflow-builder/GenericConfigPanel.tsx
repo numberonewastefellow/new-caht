@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { SchemaConfigForm } from "@/components/workflows/SchemaConfigForm";
+import { NodeConfigForm } from "@/components/workflows/NodeConfigForm";
 import { humanizeNodeType, resolveVersion } from "@/lib/workflows/nodeRegistry";
 import { ConfigPanelHeader } from "./ConfigPanelHeader";
 import { StepOptionsSection, StepPlacementSection } from "./StepOptionsSection";
@@ -79,6 +79,7 @@ export function GenericConfigPanel({
   catalog,
   steps,
   onMove,
+  onContainerConfig,
   onUpdate,
   onDelete,
   onDeleteKeepingSteps,
@@ -124,10 +125,15 @@ export function GenericConfigPanel({
         <div className="wfb-config-section">
           <div className="wfb-config-label">Settings</div>
           {info ? (
-            <SchemaConfigForm
+            <NodeConfigForm
+              step={data}
+              steps={steps}
               schema={info.config_schema}
-              value={data.config}
-              onChange={(config) => onUpdate(nodeId, { config })}
+              onChange={(config, removedBranch) =>
+                info.is_container
+                  ? onContainerConfig(nodeId, config, removedBranch)
+                  : onUpdate(nodeId, { config })
+              }
             />
           ) : (
             <JsonBlock value={data.config} />

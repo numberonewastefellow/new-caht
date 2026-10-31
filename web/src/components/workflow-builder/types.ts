@@ -108,6 +108,12 @@ export interface StepConfigPanelProps {
   /** The workflow's steps, in execution order. */
   steps: EditorStep[];
   onMove: (nodeId: string, place: BlockPlace) => void;
+  /** A container's settings changed; its lanes may need redrawing. */
+  onContainerConfig: (
+    nodeId: string,
+    config: Record<string, unknown>,
+    removedBranch?: number
+  ) => void;
 }
 
 export type StepConfigPanel = ComponentType<StepConfigPanelProps>;

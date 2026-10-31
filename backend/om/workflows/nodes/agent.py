@@ -37,6 +37,9 @@ from om.workflows.agent_streaming import StreamingAgentResult
 from om.workflows.hitl import agent_requests_input
 from om.workflows.hitl import strip_needs_input_prefix
 from om.workflows.inputs import apply_input_mapping
+from om.workflows.inputs import apply_safe_input_mapping
+from om.workflows.inputs import SAFE_REFERENCES_SCHEMA_VERSION
+from om.workflows.inputs import UnresolvedReferenceError
 from om.workflows.nodes.base import SaveContext
 from om.workflows.nodes.base import StepOutcome
 from om.workflows.nodes.base import StepSaveError
@@ -164,6 +167,11 @@ class AgentRunnerV1:
         except UnusableStepAgentError as e:
             return StepOutcome(status=StepStatus.FAILED, error=f'"{node.name}" {e}')
 
+        try:
+            task_input = self._task_input(node, ctx)
+        except UnresolvedReferenceError as e:
+            return StepOutcome(status=StepStatus.FAILED, error=f'"{node.name}" {e}')
+
         state = ctx.state
         agent_name = agent_tool._agent.name
         step_start = time.monotonic()
@@ -188,7 +196,6 @@ class AgentRunnerV1:
             ),
         )
 
-        task_input = self._task_input(node, ctx)
         trace_node_id = self._trace_start(node, ctx, config, task_input)
 
         streaming = StreamingAgentResult(start_turn_index=state.turn.value)
@@ -258,7 +265,11 @@ class AgentRunnerV1:
         resume = ctx.state.resume
         if resume and resume.task_override and resume.node_key == node.node_key:
             return resume.task_override
-        return apply_input_mapping(node.input_mapping, ctx.state.context)
+        if ctx.graph.schema_version < SAFE_REFERENCES_SCHEMA_VERSION:
+            return apply_input_mapping(node.input_mapping, ctx.state.context)
+        return apply_safe_input_mapping(
+            node.input_mapping, ctx.state.context, ctx.reference_variables()
+        )
 
     @staticmethod
     def _trace_start(

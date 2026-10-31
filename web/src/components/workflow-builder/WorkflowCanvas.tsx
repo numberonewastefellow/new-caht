@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useRef, useState, type DragEvent } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import {
   ReactFlow,
   Background,
@@ -8,6 +8,7 @@ import {
   MiniMap,
   Panel,
   BackgroundVariant,
+  useNodesInitialized,
   useReactFlow,
   type NodeTypes,
   type EdgeTypes,
@@ -16,8 +17,10 @@ import {
   type OnConnect,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import "./reactFlowControls.css";
 import "./WorkflowCanvas.css";
 
+import { isInContainerTree } from "./graphUtils";
 import { FLOW_NODE_TYPES } from "./nodeUi";
 import { StepEdge } from "./StepEdge";
 import type { WorkflowNode, WorkflowEdge, DragAgentData, OrchestratorNodeData } from "./types";
@@ -34,6 +37,8 @@ const edgeTypes: EdgeTypes = {
   step: StepEdge as any,
 };
 
+const FIT_VIEW_OPTIONS = { padding: 0.3 };
+
 interface WorkflowCanvasProps {
   nodes: WorkflowNode[];
   edges: WorkflowEdge[];
@@ -41,7 +46,9 @@ interface WorkflowCanvasProps {
   onEdgesChange: OnEdgesChange<WorkflowEdge>;
   onConnect: OnConnect;
   onNodeClick: (nodeId: string) => void;
-  onNodeDragStop?: (nodeId: string) => void;
+  onNodesDragStop?: (nodeIds: string[]) => void;
+  /** Steps deleted from the keyboard that are in or around a box. */
+  onRemoveNodes?: (nodeIds: string[]) => void;
   onDrop: (agent: DragAgentData, position: { x: number; y: number }) => void;
   /** A node type dragged from the Utils palette. */
   onNodeTypeDrop?: (stepType: string, position: { x: number; y: number }) => void;
@@ -132,13 +139,23 @@ export function WorkflowCanvas({
   onEdgesChange,
   onConnect,
   onNodeClick,
-  onNodeDragStop,
+  onNodesDragStop,
+  onRemoveNodes,
   onDrop,
   onNodeTypeDrop,
   warnings = [],
 }: WorkflowCanvasProps) {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const { screenToFlowPosition } = useReactFlow();
+  const { screenToFlowPosition, fitView } = useReactFlow();
+
+  // The `fitView` prop runs once, before a saved workflow has loaded.
+  const measured = useNodesInitialized();
+  const fitted = useRef(false);
+  useEffect(() => {
+    if (!measured || fitted.current || nodes.length < 2) return;
+    fitted.current = true;
+    void fitView(FIT_VIEW_OPTIONS);
+  }, [measured, nodes.length, fitView]);
 
   const handleDragOver = useCallback((event: DragEvent) => {
     event.preventDefault();
@@ -198,7 +215,16 @@ export function WorkflowCanvas({
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeClick={handleNodeClick}
-        onNodeDragStop={(_, node) => onNodeDragStop?.(node.id)}
+        onNodeDragStop={(_, __, dragged) =>
+          onNodesDragStop?.(dragged.map((n) => n.id))
+        }
+        onBeforeDelete={async ({ nodes: gone, edges: goneEdges }) => {
+          if (!onRemoveNodes || !gone.some(isInContainerTree)) {
+            return { nodes: gone, edges: goneEdges };
+          }
+          onRemoveNodes(gone.map((n) => n.id));
+          return false;
+        }}
         onPaneClick={handlePaneClick}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
@@ -206,7 +232,7 @@ export function WorkflowCanvas({
         edgeTypes={edgeTypes}
         defaultEdgeOptions={{ type: "step" }}
         fitView
-        fitViewOptions={{ padding: 0.3 }}
+        fitViewOptions={FIT_VIEW_OPTIONS}
         deleteKeyCode="Delete"
         multiSelectionKeyCode="Shift"
         snapToGrid

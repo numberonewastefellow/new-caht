@@ -28,8 +28,21 @@ const STEP_TYPE_LABELS: Record<string, string> = {
   conditional_router: "Condition",
 };
 
-/** Agent steps show their agent's name; other steps show "<Type>: <step name>". */
+const SCOPE_MARKER = "↳ ";
+
+/**
+ * The timeline label of a step, with where it runs when it's inside a Parallel or
+ * Loop, so a run's structure shows: "↳ Stay researcher (Research · Where to stay)".
+ */
 export function workflowStepLabel(stepStart: WorkflowStepStart | undefined): string {
+  const label = baseStepLabel(stepStart);
+  return stepStart?.scope
+    ? `${SCOPE_MARKER}${label} (${stepStart.scope})`
+    : label;
+}
+
+/** Agent steps show their agent's name; other steps show "<Type>: <step name>". */
+function baseStepLabel(stepStart: WorkflowStepStart | undefined): string {
   if (stepStart?.agent_name) {
     return stepStart.agent_name;
   }

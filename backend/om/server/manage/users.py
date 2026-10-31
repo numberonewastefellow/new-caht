@@ -59,7 +59,9 @@ from om.db.user_preferences import update_user_auto_scroll
 from om.db.user_preferences import update_user_chat_background
 from om.db.user_preferences import update_user_default_app_mode
 from om.db.user_preferences import update_user_default_model
+from om.db.user_preferences import update_user_accent_theme
 from om.db.user_preferences import update_user_font_preference
+from om.db.user_preferences import update_user_pinned_workflows
 from om.db.user_preferences import update_user_personalization
 from om.db.user_preferences import update_user_pinned_assistants
 from om.db.user_preferences import update_user_role
@@ -80,7 +82,9 @@ from om.server.manage.models import AllUsersResponse
 from om.server.manage.models import AutoScrollRequest
 from om.server.manage.models import ChatBackgroundRequest
 from om.server.manage.models import DefaultAppModeRequest
+from om.server.manage.models import AccentThemeRequest
 from om.server.manage.models import FontPreferenceRequest
+from om.server.manage.models import PinnedWorkflowsRequest
 from om.server.manage.models import MemoryItem
 from om.server.manage.models import PersonalizationUpdateRequest
 from om.server.manage.models import TenantInfo
@@ -760,6 +764,24 @@ def update_user_font_preference_api(
     db_session: Session = Depends(get_session),
 ) -> None:
     update_user_font_preference(user.id, request.font_preference, db_session)
+
+
+@router.patch("/user/accent-theme")
+def update_user_accent_theme_api(
+    request: AccentThemeRequest,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> None:
+    update_user_accent_theme(user.id, request.accent_theme, db_session)
+
+
+@router.patch("/user/pinned-workflows")
+def update_user_pinned_workflows_api(
+    request: PinnedWorkflowsRequest,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> None:
+    update_user_pinned_workflows(user.id, request.workflow_ids, db_session)
 
 
 @router.patch("/user/default-app-mode")

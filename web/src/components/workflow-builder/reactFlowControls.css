@@ -1,0 +1,45 @@
+/* The zoom buttons and minimap of every React Flow canvas: they follow the theme. */
+
+.react-flow__controls {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  border: 1px solid var(--border-01, #e5e7eb);
+  overflow: hidden;
+}
+
+.react-flow__controls button {
+  background: var(--background-tint-00, #fff);
+  color: var(--text-05, #374151);
+  border-bottom: 1px solid var(--border-01, #e5e7eb);
+  width: 32px;
+  height: 32px;
+}
+
+.react-flow__controls button:hover {
+  background: var(--background-tint-02, #f3f4f6);
+}
+
+.react-flow__controls button svg {
+  fill: var(--text-05, #374151);
+}
+
+/* ── Minimap ────────────────────────────────────────────────────────── */
+
+.react-flow__minimap {
+  background: var(--background-tint-00, #fff) !important;
+  border: 1px solid var(--border-01, #e5e7eb);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dark .react-flow__controls {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark .react-flow__minimap {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --xy-minimap-background-color: var(--background-tint-00);
+  --xy-minimap-mask-background-color: rgba(0, 0, 0, 0.55);
+  --xy-minimap-node-background-color: var(--text-03);
+  --xy-minimap-node-stroke-color: transparent;
+}

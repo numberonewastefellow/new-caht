@@ -253,6 +253,10 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     )
     chat_background: Mapped[str | None] = mapped_column(String, nullable=True)
     font_preference: Mapped[str | None] = mapped_column(String, nullable=True)
+    accent_theme: Mapped[str | None] = mapped_column(String, nullable=True)
+    pinned_workflows: Mapped[list[int]] = mapped_column(
+        postgresql.JSONB(), nullable=False, default=[], server_default="[]"
+    )
     default_app_mode: Mapped[DefaultAppMode] = mapped_column(
         Enum(DefaultAppMode, native_enum=False),
         nullable=False,

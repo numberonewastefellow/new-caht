@@ -31,6 +31,8 @@ interface UserPreferences {
   theme_preference: ThemePreference | null;
   chat_background: string | null;
   font_preference: string | null;
+  accent_theme: string | null;
+  pinned_workflows: number[];
   default_app_mode: "AUTO" | "CHAT" | "SEARCH";
 }
 

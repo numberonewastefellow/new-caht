@@ -22,10 +22,11 @@ import { ancestorsOf } from "@/lib/workflows/containerRules";
 import {
   canReorder,
   descendantKeys,
-  moveStep,
   removeStep,
   reorderInBlock,
+  withoutBranch,
 } from "@/lib/workflows/stepTree";
+import { moveEditorStep } from "@/lib/workflows/containerLanes";
 import {
   MAX_CALLS_PER_AGENT,
   MAX_ORCHESTRATOR_STEPS,
@@ -76,7 +77,7 @@ import {
   validateSteps,
 } from "@/lib/workflows/validation";
 import { useNodeTypes } from "@/lib/workflows/useNodeTypes";
-import { SchemaConfigForm } from "@/components/workflows/SchemaConfigForm";
+import { NodeConfigForm } from "@/components/workflows/NodeConfigForm";
 import {
   NodeUpgradeDialog,
   type NodeUpgradeTarget,
@@ -324,7 +325,10 @@ function WorkflowStepRow({
               </div>
               <select
                 value={step.step_type}
-                disabled={kind === "unsupported"}
+                disabled={
+                  kind === "unsupported" ||
+                  values.steps.some((s) => s.parent_key === step.node_key)
+                }
                 className="w-full h-10 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm"
                 onChange={(e) => changeType(e.target.value)}
               >
@@ -358,7 +362,7 @@ function WorkflowStepRow({
                 onMove={(place) =>
                   setFieldValue(
                     "steps",
-                    moveStep(values.steps, step.node_key, place)
+                    moveEditorStep(values.steps, step.node_key, place)
                   )
                 }
               />
@@ -432,10 +436,21 @@ function WorkflowStepRow({
               <Text secondaryBody text04 className="text-xs font-medium">
                 {typeInfo.label} Settings
               </Text>
-              <SchemaConfigForm
+              <NodeConfigForm
+                step={step}
+                steps={values.steps}
                 schema={typeInfo.config_schema}
-                value={step.config}
-                onChange={(config) => setFieldValue(`steps.${index}.config`, config)}
+                onChange={(config, removedBranch) => {
+                  const updated = values.steps.map((s) =>
+                    s.node_key === step.node_key ? { ...s, config } : s
+                  );
+                  setFieldValue(
+                    "steps",
+                    removedBranch === undefined
+                      ? updated
+                      : withoutBranch(updated, step.node_key, removedBranch)
+                  );
+                }}
               />
             </div>
           )}
@@ -666,8 +681,14 @@ export default function WorkflowEditorPage({
     description: Yup.string().optional(),
     orchestration_mode: Yup.string().oneOf(["sequential", "llm_decision"]).required(),
     orchestrator_prompt: Yup.string().optional(),
-    max_steps: Yup.number().min(1, "Must be at least 1").max(MAX_ORCHESTRATOR_STEPS, `Maximum ${MAX_ORCHESTRATOR_STEPS} steps`).required("Required"),
-    max_calls_per_agent: Yup.number().min(1, "Must be at least 1").max(MAX_CALLS_PER_AGENT, `Maximum ${MAX_CALLS_PER_AGENT}`).required("Required"),
+    max_steps: Yup.number().when("orchestration_mode", {
+      is: "llm_decision",
+      then: (schema) => schema.min(1, "Must be at least 1").max(MAX_ORCHESTRATOR_STEPS, `Maximum ${MAX_ORCHESTRATOR_STEPS} steps`).required("Required"),
+    }),
+    max_calls_per_agent: Yup.number().when("orchestration_mode", {
+      is: "llm_decision",
+      then: (schema) => schema.min(1, "Must be at least 1").max(MAX_CALLS_PER_AGENT, `Maximum ${MAX_CALLS_PER_AGENT}`).required("Required"),
+    }),
     timeout_seconds: Yup.number().min(MIN_TIMEOUT_SECONDS, `Minimum ${MIN_TIMEOUT_SECONDS} seconds`).max(MAX_TIMEOUT_SECONDS, "Maximum 2 hours").required("Required"),
     steps: Yup.array()
       .of(
@@ -833,6 +854,7 @@ export default function WorkflowEditorPage({
                         )}
                         {currentStep < TOTAL_STEPS - 1 ? (
                           <Button
+                            key="next"
                             type="button"
                             rightIcon={SvgArrowRight}
                             onClick={() => {
@@ -848,6 +870,7 @@ export default function WorkflowEditorPage({
                           </Button>
                         ) : (
                           <Button
+                            key="save"
                             type="submit"
                             leftIcon={existingWorkflow ? undefined : SvgSparkle}
                             disabled={isSubmitting || !isValid || !dirty}

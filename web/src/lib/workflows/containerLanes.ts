@@ -6,7 +6,7 @@
 import type { EditorStep } from "./editorModel";
 import { MAX_CONTAINER_DEPTH, ancestorsOf } from "./containerRules";
 import { type NodeCatalog, isContainer } from "./nodeRegistry";
-import { descendantKeys } from "./stepTree";
+import { type BlockPlace, descendantKeys, moveStep } from "./stepTree";
 
 const PARALLEL_NODE_TYPE = "parallel";
 const LOOP_LANE_LABEL = "Each iteration";
@@ -34,6 +34,23 @@ export function laneLabels(
   return Array.from(
     { length: count },
     (_, branch) => labels[branch] ?? `Branch ${branch + 1}`
+  );
+}
+
+/**
+ * Move a step in the editor. A step inside a container can't end the workflow, promote
+ * its output or pause for input, so moving it in turns those options off.
+ */
+export function moveEditorStep(
+  steps: readonly EditorStep[],
+  key: string,
+  to: BlockPlace,
+  position?: number
+): EditorStep[] {
+  return moveStep(steps, key, to, position).map((s) =>
+    s.node_key === key && to.parent_key && s.parent_key === to.parent_key
+      ? { ...s, is_terminal: false, promote_output: false, can_request_input: false }
+      : s
   );
 }
 

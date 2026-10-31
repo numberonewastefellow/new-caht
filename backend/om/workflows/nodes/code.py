@@ -45,7 +45,6 @@ from om.tools.tool_implementations.python.code_interpreter_client import (
     RunFunctionUnsupportedError,
 )
 from om.utils.logger import setup_logger
-from om.workflows.inputs import resolve_reference
 from om.workflows.inputs import UnresolvedReferenceError
 from om.workflows.nodes.base import SaveContext
 from om.workflows.nodes.base import StepOutcome
@@ -95,12 +94,12 @@ class CodeNodeConfigV1(BaseModel):
         json_schema_extra={"x-ui": "code", "x-language": "python"},
     )
     inputs: dict[str, str] = Field(
-        default_factory=lambda: {"text": "$user_input"},
+        default={"text": "$user_input"},
         description="Input name -> literal value or $reference "
         "(e.g. $user_input, $research.output.items[0])",
     )
     outputs: list[CodeOutputSpec] = Field(
-        default_factory=lambda: [CodeOutputSpec(name="result")],
+        default=[CodeOutputSpec(name="result")],
         min_length=1,
         description="The keys main() returns, with their types",
     )
@@ -181,10 +180,7 @@ class CodeRunnerV1:
         trace_id = self._trace_start(node, ctx, config)
 
         try:
-            inputs = {
-                name: resolve_reference(value, state.context, state.variables)
-                for name, value in config.inputs.items()
-            }
+            inputs = {name: ctx.read_reference(value) for name, value in config.inputs.items()}
             result = execute_code(config, inputs)
         except (CodeNodeError, UnresolvedReferenceError) as e:
             message = f"Code step '{node.name}' failed: {e}"

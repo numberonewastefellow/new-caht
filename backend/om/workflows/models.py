@@ -152,6 +152,8 @@ class WorkflowUpdate(BaseModel):
     is_public: bool | None = None
     icon_name: str | None = None
     steps: list[WorkflowStepCreate] | None = None
+    # Run semantics: 2 = safe references. Raising it upgrades an existing workflow.
+    schema_version: int | None = None
     # Optimistic concurrency: when set, the update is rejected if the workflow
     # was saved by someone else since this version was loaded.
     expected_version: int | None = None

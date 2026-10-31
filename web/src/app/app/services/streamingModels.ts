@@ -303,6 +303,9 @@ export interface WorkflowStepStart extends BaseObj {
   // "loop_iteration", "conditional_router"
   step_type?: string;
   promote_output?: boolean;
+  // Inside a Parallel or Loop: where it runs, e.g. "Research · Flights".
+  scope?: string | null;
+  depth?: number | null;
 }
 
 export interface WorkflowStepDelta extends BaseObj {

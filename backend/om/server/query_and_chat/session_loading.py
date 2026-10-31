@@ -100,6 +100,9 @@ def _create_workflow_step_packets(tool_call: ToolCall) -> list[Packet]:
                 step_name=step_name,
                 agent_name=agent_name,
                 step_order=step_order,
+                step_type=args.get("step_type", "agent"),
+                scope=args.get("scope"),
+                depth=args.get("depth"),
             ),
         )
     )

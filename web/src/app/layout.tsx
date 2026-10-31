@@ -154,7 +154,7 @@ export default async function RootLayout({
             the account preference reconcile this on hydration. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var f=localStorage.getItem('virtualai-font-preference');if(f&&f!=='inter'){document.documentElement.classList.add('font-pref-'+f);}}catch(e){}})();`,
+            __html: `(function(){try{var f=localStorage.getItem('virtualai-font-preference');if(f&&f!=='inter'){document.documentElement.classList.add('font-pref-'+f);}var a=localStorage.getItem('virtualai-accent-theme');if(a&&a!=='none'){document.documentElement.classList.add('virtualai-'+a);}}catch(e){}})();`,
           }}
         />
         {CUSTOM_ANALYTICS_ENABLED &&

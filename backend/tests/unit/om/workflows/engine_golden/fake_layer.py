@@ -621,6 +621,8 @@ def install(monkeypatch: Any, state: HarnessState) -> None:
 
     # DB
     _patch_identity(monkeypatch, db_workflow, "get_paused_execution", fake_get_paused_execution)
+    # Nothing saves during a fake run, so the workflow in hand is always current.
+    _patch_identity(monkeypatch, db_workflow, "get_workflow_for_update", lambda *a, **k: None)
     real_save_checkpoint = db_workflow.save_checkpoint
 
     def recording_save_checkpoint(db_session: Any, execution_id: int, checkpoint: Any,

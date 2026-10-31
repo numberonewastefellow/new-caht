@@ -30,6 +30,8 @@ from om.workflows.branches import last_output
 from om.workflows.branches import merge_branch
 from om.workflows.branches import run_branches
 from om.workflows.nodes.base import SaveContext
+from om.workflows.nodes.container_trace import trace_container_finish
+from om.workflows.nodes.container_trace import trace_container_start
 from om.workflows.nodes.base import StepOutcome
 from om.workflows.nodes.base import StepSaveError
 from om.workflows.nodes.base import StepStatus
@@ -53,7 +55,7 @@ class ParallelConfigV1(BaseModel):
     """Settings of a ``parallel`` v1 step."""
 
     branches: list[BranchSpec] = Field(
-        default_factory=lambda: [BranchSpec(label="Branch 1"), BranchSpec(label="Branch 2")],
+        default=[BranchSpec(label="Branch 1"), BranchSpec(label="Branch 2")],
         min_length=2,
         max_length=MAX_BRANCHES,
     )
@@ -84,6 +86,13 @@ def prepare_parallel_step_v1(
         raise StepSaveError(
             f"Parallel step '{step.step_name}': {location}: {error['msg']}"
         ) from e
+
+    labels = [b.label for b in config.branches]
+    if len(labels) != len(set(labels)):
+        # The join's output is keyed by label, so one branch would overwrite another.
+        raise StepSaveError(
+            f"Parallel step '{step.step_name}': branch names must be unique"
+        )
 
     key = step.node_key or ""
     if any(ctx.steps[a].node_type == PARALLEL_NODE_TYPE for a in ctx.ancestors(key)):
@@ -143,7 +152,7 @@ class ParallelRunnerV1:
         )
         yield from _close(node, placement)
         state.turn.advance()
-        trace_id = self._trace_start(node, ctx, labels)
+        trace_id = trace_container_start(node, ctx, ", ".join(labels))
 
         results = yield from run_branches(
             node,
@@ -155,20 +164,30 @@ class ParallelRunnerV1:
 
         for nodes, result in zip(branches, results):
             if result is not None:
+                ctx.trace.begin_branch(trace_id)
                 merge_branch(ctx, nodes, result)
+                ctx.trace.end_branch()
+        ctx.trace.join_branches()
         state.turn.advance()
 
         if ctx.stop_requested():
+            trace_container_finish(
+                ctx, trace_id, "Stopped before it finished", "failed", started
+            )
             return StepOutcome(status=StepStatus.CANCELLED)
 
         failures = [r for r in results if r is not None and not r.succeeded]
-        if failures and config.on_branch_error == "fail":
+        # Once a branch won a first_success, a branch that failed earlier doesn't matter.
+        won = config.join == "first_success" and any(
+            r is not None and r.succeeded for r in results
+        )
+        if failures and config.on_branch_error == "fail" and not won:
             first = failures[0]
             message = (
                 f"Parallel step '{node.name}': branch '{labels[first.index]}' failed: "
                 f"{first.error or first.status.value}"
             )
-            self._trace_finish(ctx, trace_id, message, "failed", started)
+            trace_container_finish(ctx, trace_id, message, "failed", started)
             return StepOutcome(status=StepStatus.FAILED, error=message)
 
         combined: dict[str, object] = {}
@@ -191,38 +210,8 @@ class ParallelRunnerV1:
             "duration_ms": int((time.monotonic() - started) * 1000),
             "tokens_used": 0,
         })
-        self._trace_finish(ctx, trace_id, output, "completed", started)
+        trace_container_finish(ctx, trace_id, output, "completed", started)
         return StepOutcome(status=StepStatus.COMPLETED, output=output)
-
-    @staticmethod
-    def _trace_start(node: WorkflowNode, ctx: RunContext, labels: list[str]) -> str | None:
-        try:
-            trace_id = ctx.trace.start_step(
-                step_id=node.step_id,
-                name=node.name,
-                node_type=PARALLEL_NODE_TYPE,
-                input_text=", ".join(labels),
-            )
-            ctx.persist_trace()
-            return trace_id
-        except Exception:
-            logger.debug("[Trace] parallel start failed", exc_info=True)
-            return None
-
-    @staticmethod
-    def _trace_finish(
-        ctx: RunContext, trace_id: str | None, output: str, status: str, started: float
-    ) -> None:
-        try:
-            ctx.trace.finish_agent(
-                trace_id,
-                output,
-                status=status,  # type: ignore[arg-type]
-                duration_ms=int((time.monotonic() - started) * 1000),
-            )
-            ctx.persist_trace()
-        except Exception:
-            logger.debug("[Trace] parallel finish failed", exc_info=True)
 
 
 def _close(node: WorkflowNode, placement: Placement) -> Generator[Packet, None, None]:

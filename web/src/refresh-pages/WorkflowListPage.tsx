@@ -46,7 +46,7 @@ const MAX_CHAIN = 4;
 
 function AgentChain({ workflow }: { workflow: WorkflowSnapshot }) {
   const names = workflow.steps.map(
-    (s) => s.agent_name || `Agent #${s.agent_id}`
+    (s) => s.agent_name || s.step_name || s.step_type
   );
   const shown = names.slice(0, MAX_CHAIN);
   const extra = names.length - shown.length;
@@ -54,7 +54,7 @@ function AgentChain({ workflow }: { workflow: WorkflowSnapshot }) {
   return (
     <div className="flex items-center gap-1.5 flex-wrap mt-2 min-w-0">
       <Text secondaryBody text02 className="text-xs flex-shrink-0">
-        {names.length} agent{names.length !== 1 ? "s" : ""}
+        {names.length} step{names.length !== 1 ? "s" : ""}
       </Text>
       {shown.map((name, i) => (
         <React.Fragment key={i}>

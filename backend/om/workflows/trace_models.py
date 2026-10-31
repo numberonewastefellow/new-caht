@@ -25,9 +25,11 @@ import json
 from datetime import datetime
 from datetime import timezone
 from io import BytesIO
+from typing import Any
 from typing import Literal
 
 from pydantic import BaseModel
+from pydantic import model_serializer
 from pydantic import Field
 
 from om.configs.constants import FileOrigin
@@ -43,7 +45,7 @@ EdgeType = Literal["delegation", "return", "sequence"]
 NodeStatus = Literal["running", "completed", "paused", "failed"]
 
 
-def _now_iso() -> str:
+def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
@@ -90,6 +92,18 @@ class TraceNode(BaseModel):
     ended_at: str | None = None
     # Workflow node type of a "step" node (e.g. "code").
     node_type: str | None = None
+    # Inside a container: where it ran (e.g. "Plan each day · 2") and how deep.
+    scope: str | None = None
+    depth: int | None = None
+
+    @model_serializer(mode="wrap")
+    def _omit_empty_scope(self, handler: Any) -> dict[str, Any]:
+        """Most nodes run at the top level; saved traces don't carry the empty fields."""
+        data = handler(self)
+        for name in ("scope", "depth"):
+            if data.get(name) is None:
+                data.pop(name, None)
+        return data
 
 
 class TraceEdge(BaseModel):
@@ -138,8 +152,12 @@ class WorkflowTraceBuilder:
             chat_session_id=chat_session_id,
             message_id=message_id,
             mode=mode,
-            started_at=_now_iso(),
+            started_at=now_iso(),
         )
+        self._scope: str | None = None          # the container nodes are running in
+        self._depth: int | None = None
+        self._branch_tails: list[str] = []      # last node of each finished branch
+        self._join_sources: list[str] = []      # what the next node follows after a join
         self._prev_id: str | None = None       # last node in the main flow
         self._last_orch_id: str | None = None   # most recent orchestrator node
         self._pending_reason: str | None = None  # orchestrator rationale for next delegation
@@ -172,7 +190,7 @@ class WorkflowTraceBuilder:
                 name="Claim submitted" if file_names else "User request",
                 input=user_message or "",
                 file_names=file_names or [],
-                started_at=_now_iso(),
+                started_at=now_iso(),
             )
             self.trace.nodes.append(node)
             self._prev_id = "start"
@@ -189,7 +207,7 @@ class WorkflowTraceBuilder:
                 name="Orchestrator",
                 output=reason or "",
                 reason=reason,
-                started_at=_now_iso(),
+                started_at=now_iso(),
             )
             self.trace.nodes.append(node)
             if self._prev_id:
@@ -201,6 +219,52 @@ class WorkflowTraceBuilder:
             self._pending_reason = reason
         except Exception:
             logger.debug("[Trace] add_orchestrator failed", exc_info=True)
+
+    # ── Containers ───────────────────────────────────────────────────────
+
+    def set_scope(self, scope: str | None, depth: int | None) -> None:
+        """Nodes added from now on ran in this scope (None: the top level)."""
+        self._scope = scope
+        self._depth = depth
+
+    def begin_branch(self, container_id: str | None) -> None:
+        """The next node starts a branch of ``container_id``."""
+        if container_id:
+            self._prev_id = container_id
+
+    def end_branch(self) -> None:
+        if self._prev_id:
+            self._branch_tails.append(self._prev_id)
+
+    def join_branches(self) -> None:
+        """The next node runs after every branch that ended."""
+        self._join_sources = self._branch_tails
+        self._branch_tails = []
+
+    def set_times(
+        self,
+        node_id: str | None,
+        started_at: str | None = None,
+        ended_at: str | None = None,
+    ) -> None:
+        """Real times for a node recorded later than it ran (parallel branches)."""
+        for node in self.trace.nodes:
+            if node.id == node_id:
+                node.started_at = started_at or node.started_at
+                node.ended_at = ended_at or node.ended_at
+                return
+
+    def _append_node(self, node: TraceNode) -> None:
+        node.scope = self._scope
+        node.depth = self._depth
+        self.trace.nodes.append(node)
+
+    def _edge_sources(self, previous: str | None) -> list[str]:
+        """What the next node follows: every branch after a join, otherwise ``previous``."""
+        if self._join_sources:
+            sources, self._join_sources = self._join_sources, []
+            return sources
+        return [previous] if previous else []
 
     def add_agent(
         self,
@@ -234,15 +298,15 @@ class WorkflowTraceBuilder:
                 tokens=tokens,
                 file_ids=file_ids or [],
                 file_names=file_names or [],
-                started_at=_now_iso(),
-                ended_at=_now_iso(),
+                started_at=now_iso(),
+                ended_at=now_iso(),
             )
-            self.trace.nodes.append(node)
+            self._append_node(node)
             src = self._last_orch_id or self._prev_id
-            if src:
+            for source in self._edge_sources(src):
                 self.trace.edges.append(
                     TraceEdge(
-                        from_id=src,
+                        from_id=source,
                         to_id=node_id,
                         type="delegation",
                         label=_edge_label(self._pending_reason),
@@ -283,14 +347,14 @@ class WorkflowTraceBuilder:
                 agent_id=agent_id,
                 call_index=call_index,
                 file_names=file_names or [],
-                started_at=_now_iso(),
+                started_at=now_iso(),
             )
-            self.trace.nodes.append(node)
+            self._append_node(node)
             src = self._last_orch_id or self._prev_id
-            if src:
+            for source in self._edge_sources(src):
                 self.trace.edges.append(
                     TraceEdge(
-                        from_id=src,
+                        from_id=source,
                         to_id=node_id,
                         type="delegation",
                         label=_edge_label(self._pending_reason),
@@ -315,7 +379,7 @@ class WorkflowTraceBuilder:
         """
         try:
             node_id = f"step_{len(self.trace.nodes)}"
-            self.trace.nodes.append(
+            self._append_node(
                 TraceNode(
                     id=node_id,
                     type="step",
@@ -324,12 +388,12 @@ class WorkflowTraceBuilder:
                     status="running",
                     input=input_text or "",
                     step_id=step_id,
-                    started_at=_now_iso(),
+                    started_at=now_iso(),
                 )
             )
-            if self._prev_id:
+            for source in self._edge_sources(self._prev_id):
                 self.trace.edges.append(
-                    TraceEdge(from_id=self._prev_id, to_id=node_id, type="sequence")
+                    TraceEdge(from_id=source, to_id=node_id, type="sequence")
                 )
             self._prev_id = node_id
             return node_id
@@ -363,7 +427,7 @@ class WorkflowTraceBuilder:
                         node.file_ids = file_ids
                     if file_names:
                         node.file_names = file_names
-                    node.ended_at = _now_iso()
+                    node.ended_at = now_iso()
                     return
             # Node not found — create it fresh so nothing is lost.
             self.add_agent(
@@ -394,15 +458,13 @@ class WorkflowTraceBuilder:
                 status="completed",
                 output=f"branch: {branch_taken}",
                 reason=explanation,
-                started_at=_now_iso(),
-                ended_at=_now_iso(),
+                started_at=now_iso(),
+                ended_at=now_iso(),
             )
-            self.trace.nodes.append(node)
-            if self._prev_id:
+            self._append_node(node)
+            for source in self._edge_sources(self._prev_id):
                 self.trace.edges.append(
-                    TraceEdge(
-                        from_id=self._prev_id, to_id=node_id, type="sequence"
-                    )
+                    TraceEdge(from_id=source, to_id=node_id, type="sequence")
                 )
             self._prev_id = node_id
             return node_id
@@ -428,19 +490,19 @@ class WorkflowTraceBuilder:
                 type="finish",
                 name="Final answer",
                 output=answer or "",
-                started_at=_now_iso(),
+                started_at=now_iso(),
             )
             self.trace.nodes.append(node)
-            if self._prev_id:
+            for source in self._edge_sources(self._prev_id):
                 self.trace.edges.append(
-                    TraceEdge(from_id=self._prev_id, to_id="finish", type="return")
+                    TraceEdge(from_id=source, to_id="finish", type="return")
                 )
         except Exception:
             logger.debug("[Trace] add_finish failed", exc_info=True)
 
     def finalize(self, status: str, total_tokens: int, total_duration_ms: int) -> None:
         self.trace.status = status
-        self.trace.completed_at = _now_iso()
+        self.trace.completed_at = now_iso()
         self.trace.total_tokens = total_tokens
         self.trace.total_duration_ms = total_duration_ms
 

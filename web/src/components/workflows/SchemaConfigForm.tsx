@@ -40,6 +40,9 @@ export function SchemaConfigForm({
 }: SchemaConfigFormProps) {
   const parsed = useMemo(() => parseConfigSchema(schema), [schema]);
   const fields = parsed.fields.filter((f) => !hiddenFields.includes(f.name));
+  const unsupported = parsed.unsupported.filter(
+    (f) => !hiddenFields.includes(f.name)
+  );
   const config = value ?? {};
 
   const setField = (name: string, next: unknown) => {
@@ -51,7 +54,7 @@ export function SchemaConfigForm({
 
   return (
     <div className="flex flex-col gap-3">
-      {fields.length === 0 && parsed.unsupported.length === 0 && (
+      {fields.length === 0 && unsupported.length === 0 && (
         <p className="text-xs text-text-03">This step has no settings.</p>
       )}
       {fields.map((field) => (
@@ -63,9 +66,9 @@ export function SchemaConfigForm({
           onChange={(next) => setField(field.name, next)}
         />
       ))}
-      {parsed.unsupported.length > 0 && (
+      {unsupported.length > 0 && (
         <p className="text-xs text-text-03" role="note">
-          Not editable here: {parsed.unsupported.map((f) => f.label).join(", ")}
+          Not editable here: {unsupported.map((f) => f.label).join(", ")}
           . These settings are kept unchanged when you save.
         </p>
       )}
@@ -179,7 +182,7 @@ function FieldInput({ id, field, value, readOnly, onChange }: FieldInputProps) {
           )}
           {field.options.map((option) => (
             <option key={String(option)} value={String(option)}>
-              {String(option)}
+              {optionLabel(option)}
             </option>
           ))}
         </select>
@@ -197,6 +200,12 @@ function FieldInput({ id, field, value, readOnly, onChange }: FieldInputProps) {
     case "boolean":
       return null; // rendered by FieldRow
   }
+}
+
+/** "greater_than" -> "Greater than"; the stored value doesn't change. */
+function optionLabel(option: string | number): string {
+  const words = String(option).replace(/_/g, " ");
+  return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
 function emptyValue(field: ConfigField): null | undefined {

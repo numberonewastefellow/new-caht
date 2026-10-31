@@ -18,6 +18,7 @@ import {
   type NodeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import "@/components/workflow-builder/reactFlowControls.css";
 
 import { errorHandlingFetcher } from "@/lib/fetcher";
 import {
@@ -27,9 +28,14 @@ import {
   isKnownTraceNodeType,
   isKnownTraceStatus,
   normalizeTrace,
+  traceGrid,
+  traceHasContainers,
   traceNodeLabel,
   traceNodeLaneY,
 } from "@/lib/workflows/trace";
+
+const TRACE_NODE_WIDTH = 230;
+const TRACE_NODE_HEIGHT = 80;
 
 // Trace data shape and the fallbacks for node types this view doesn't know
 // live in @/lib/workflows/trace.
@@ -73,7 +79,7 @@ function TraceFlowNode({ data, selected }: NodeProps) {
         generic ? "border-dashed" : ""
       } bg-background-tint-00 px-3 py-2 shadow-sm ${selected ? "ring-2" : ""}`}
       style={{
-        width: 230,
+        width: TRACE_NODE_WIDTH,
         ...(selected
           ? {
               boxShadow:
@@ -95,6 +101,11 @@ function TraceFlowNode({ data, selected }: NodeProps) {
       <div className="text-text-05 font-medium text-sm leading-tight">
         {node.name}
       </div>
+      {node.scope && (
+        <div className="text-[11px] text-text-03 leading-tight truncate">
+          {node.scope}
+        </div>
+      )}
       <div className="flex flex-wrap gap-1.5 mt-1 text-[11px] text-text-03">
         {node.duration_ms != null && (
           <span>⏱ {(node.duration_ms / 1000).toFixed(1)}s</span>
@@ -111,16 +122,26 @@ function TraceFlowNode({ data, selected }: NodeProps) {
 
 const nodeTypes = { trace: TraceFlowNode };
 
-// ── Layout: simple left-to-right chain in execution order ────────────────────
+// ── Layout: a chain in execution order; runs with containers get a grid ────────────────────
 
 function buildFlow(trace: WorkflowTrace): { nodes: Node[]; edges: Edge[] } {
   const X = 300;
-  const nodes: Node[] = trace.nodes.map((n, i) => ({
-    id: n.id,
-    type: "trace",
-    position: { x: i * X, y: traceNodeLaneY(n.type) },
-    data: { node: n } as FlowNodeData,
-  }));
+  const ROW_HEIGHT = 130;
+  const grid = traceHasContainers(trace) ? traceGrid(trace) : null;
+  const nodes: Node[] = trace.nodes.map((n, i) => {
+    const cell = grid?.get(n.id);
+    return {
+      id: n.id,
+      type: "trace",
+      // The minimap only draws nodes it knows the size of; these are never written back.
+      initialWidth: TRACE_NODE_WIDTH,
+      initialHeight: TRACE_NODE_HEIGHT,
+      position: cell
+        ? { x: cell.column * X, y: cell.row * ROW_HEIGHT }
+        : { x: i * X, y: traceNodeLaneY(n.type) },
+      data: { node: n } as FlowNodeData,
+    };
+  });
   const edges: Edge[] = trace.edges.map((e, i) => ({
     id: `e${i}`,
     source: e.from_id,

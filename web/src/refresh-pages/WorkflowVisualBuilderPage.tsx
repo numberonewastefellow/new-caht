@@ -156,8 +156,10 @@ function WorkflowVisualBuilderInner({
     addAgentNode,
     addTypedNode,
     removeNode,
+    removeNodes,
     moveNode,
-    onNodeDragStop,
+    updateContainerConfig,
+    onNodesDragStop,
     updateNodeData,
     applyNodeUpgrade,
     selectedNode,
@@ -357,6 +359,14 @@ function WorkflowVisualBuilderInner({
     document.body.style.userSelect = "none";
   }, [configWidth]);
 
+  const selectedStep =
+    selectedNode && isStepNode(selectedNode) ? selectedNode : null;
+  const showConfigPanel = !!selectedStep;
+  const selectedSteps = useMemo(
+    () => (selectedStep ? graphToSteps(nodes, edges) : []),
+    [selectedStep, nodes, edges]
+  );
+
   // Show loading state for edit mode
   if (workflowId && workflowLoading) {
     return (
@@ -377,13 +387,6 @@ function WorkflowVisualBuilderInner({
     );
   }
 
-  const selectedStep =
-    selectedNode && isStepNode(selectedNode) ? selectedNode : null;
-  const showConfigPanel = !!selectedStep;
-  const selectedSteps = useMemo(
-    () => (selectedStep ? graphToSteps(nodes, edges) : []),
-    [selectedStep, nodes, edges]
-  );
   const canvasWarnings =
     modeConflicts.length > 0
       ? [
@@ -453,7 +456,8 @@ function WorkflowVisualBuilderInner({
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodeClick={handleNodeClick}
-          onNodeDragStop={onNodeDragStop}
+          onNodesDragStop={onNodesDragStop}
+          onRemoveNodes={removeNodes}
           onDrop={handleDrop}
           onNodeTypeDrop={handleNodeTypeDrop}
           warnings={canvasWarnings}
@@ -492,6 +496,7 @@ function WorkflowVisualBuilderInner({
               }}
               steps={selectedSteps}
               onMove={moveNode}
+              onContainerConfig={updateContainerConfig}
               onClose={() => selectNode(null)}
               collapsed={configCollapsed}
               onToggleCollapse={() => setConfigCollapsed((v) => !v)}

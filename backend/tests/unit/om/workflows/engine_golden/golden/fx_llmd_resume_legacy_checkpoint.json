@@ -927,7 +927,7 @@
       ],
       [
        "user",
-       "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nPlease call the same agent again with this additional information included in the task."
+       "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, ...<len=244 sha1=2f4ae5a11647>"
       ]
      ]
     },
@@ -962,7 +962,7 @@
       ],
       [
        "user",
-       "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nPlease call the same agent again with this additional information included in the task."
+       "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, ...<len=244 sha1=2f4ae5a11647>"
       ],
       [
        "assistant",
@@ -1005,7 +1005,7 @@
       ],
       [
        "user",
-       "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nPlease call the same agent again with this additional information included in the task."
+       "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, ...<len=244 sha1=2f4ae5a11647>"
       ],
       [
        "assistant",
@@ -1060,8 +1060,8 @@
        ],
        [
         "user",
-        37,
-        "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nPlease call the same agent again with this additional information included in the task."
+        35,
+        "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, ...<len=244 sha1=2f4ae5a11647>"
        ],
        [
         "assistant",
@@ -1119,8 +1119,8 @@
        ],
        [
         "user",
-        37,
-        "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nPlease call the same agent again with this additional information included in the task."
+        35,
+        "The agent requested more information from the user. The user responded:\n\nHere are the missing details: budget 5000 USD, ...<len=244 sha1=2f4ae5a11647>"
        ],
        [
         "assistant",

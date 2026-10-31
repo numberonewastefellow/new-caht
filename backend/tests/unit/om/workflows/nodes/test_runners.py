@@ -154,6 +154,28 @@ class TestAgentRunner:
         )
         assert ctx.state.completed_keys == set()
 
+    def test_a_bad_reference_fails_the_step_before_it_starts(self) -> None:
+        node = _node("a", 0, input_mapping={"task": "$nope.output"})
+        ctx = _ctx([node])
+        ctx.graph = ctx.graph.model_copy(update={"schema_version": 2})
+        packets, outcome = _drive(AgentRunnerV1().run(node, ctx))
+        assert packets == []
+        assert outcome.status == StepStatus.FAILED
+        assert outcome.error is not None and "nope" in outcome.error
+
+    def test_a_skipped_step_reads_as_empty_on_schema_2(self) -> None:
+        skipped = _node("b", 0)
+        node = _node("a", 1, input_mapping={"task": "[$out_b]"})
+        ctx = _ctx([skipped, node])
+        ctx.graph = ctx.graph.model_copy(update={"schema_version": 2})
+        ctx.state.skipped_keys.add("b")
+        assert AgentRunnerV1._task_input(node, ctx) == "task: []"
+
+    def test_schema_1_keeps_legacy_substitution(self) -> None:
+        node = _node("a", 0, input_mapping={"task": "[$nope]"})
+        ctx = _ctx([node])
+        assert AgentRunnerV1._task_input(node, ctx) == "task: [$nope]"
+
     def test_cancel_closes_the_step(self) -> None:
         node = _node("a", 0)
         ctx = _ctx([node])
@@ -301,3 +323,47 @@ class TestBuiltinRegistry:
         assert registry.versions("conditional_router") == [1, 2]
         assert registry.get("conditional_router", 1).deprecated is True
         assert registry.latest("agent").capabilities.can_pause is True
+
+
+class TestRouterReferences:
+    """A safe-references workflow reads a condition like every other setting."""
+
+    def _route(self, field: str, outputs: dict[str, str], schema_version: int = 2) -> Any:
+        router = _router(
+            0,
+            1,
+            {
+                "condition_field": field,
+                "operator": "contains",
+                "match_value": "yes",
+                "true_steps": [1],
+                "false_steps": [2],
+            },
+        )
+        state = RunState(context=WorkflowContext(user_input="go", step_outputs=outputs))
+        ctx = _ctx([router, _node("a", 1), _node("b", 2)], state)
+        ctx.graph = ctx.graph.model_copy(update={"schema_version": schema_version})
+        _, outcome = _drive(RouterRunnerV1().run(router, ctx))
+        return outcome, ctx.state.skipped_keys
+
+    def test_it_follows_a_path(self) -> None:
+        outcome, skipped = self._route("$check.output.ok", {"check": '{"ok": "yes"}'})
+        assert outcome.status == StepStatus.COMPLETED
+        assert skipped == {"b"}
+
+    def test_a_step_that_did_not_run_reads_as_empty(self) -> None:
+        outcome, skipped = self._route("$out_a.output", {})
+        assert outcome.status == StepStatus.COMPLETED
+        assert skipped == {"a"}
+
+    def test_a_wrong_path_fails_clearly(self) -> None:
+        outcome, _ = self._route("$check.output.ok", {"check": "not json"})
+        assert outcome.status == StepStatus.FAILED
+        assert "not JSON" in (outcome.error or "")
+
+    def test_an_old_workflow_keeps_its_lookup(self) -> None:
+        outcome, skipped = self._route(
+            "$check.output.ok", {"check": '{"ok": "yes"}'}, schema_version=1
+        )
+        assert outcome.status == StepStatus.COMPLETED
+        assert skipped == {"a"}

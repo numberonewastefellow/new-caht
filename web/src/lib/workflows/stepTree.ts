@@ -190,3 +190,16 @@ export function canReorder(
   const block = steps.filter((s) => blockKey(s) === blockKey(step));
   return block[block.indexOf(step) + direction] !== undefined;
 }
+
+/** After a container's branch is removed, the branches above it shift down by one. */
+export function withoutBranch<T extends BlockStep>(
+  steps: readonly T[],
+  key: string,
+  branch: number
+): T[] {
+  return steps.map((s) =>
+    s.parent_key === key && s.branch_index != null && s.branch_index > branch
+      ? { ...s, branch_index: s.branch_index - 1 }
+      : s
+  );
+}

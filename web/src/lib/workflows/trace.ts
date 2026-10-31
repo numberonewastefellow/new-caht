@@ -48,6 +48,9 @@ export interface TraceNode {
   file_names: string[];
   started_at?: string | null;
   ended_at?: string | null;
+  /** Inside a Parallel or Loop: where it ran, e.g. "Plan each day · 2". */
+  scope?: string | null;
+  depth?: number | null;
 }
 
 export interface TraceEdge {
@@ -143,4 +146,47 @@ export function normalizeTrace(trace: WorkflowTrace): WorkflowTrace {
       (e) => typeof e?.from_id === "string" && typeof e?.to_id === "string"
     ),
   };
+}
+
+export interface TraceGridCell {
+  column: number;
+  row: number;
+}
+
+/**
+ * Where each node goes when a run has containers: a node sits one column after
+ * everything leading to it, so branches stack in the same column and whatever
+ * follows them comes after the longest. Runs without containers keep the chain.
+ */
+export function traceGrid(trace: WorkflowTrace): Map<string, TraceGridCell> {
+  const position = new Map(trace.nodes.map((n, i) => [n.id, i]));
+  const column = new Map(trace.nodes.map((n) => [n.id, 0]));
+  // Nodes are recorded in order, so this only ever looks forward.
+  const forward = trace.edges
+    .filter(
+      (e) =>
+        (position.get(e.from_id) ?? Infinity) < (position.get(e.to_id) ?? -1)
+    )
+    .sort(
+      (a, b) => (position.get(a.from_id) ?? 0) - (position.get(b.from_id) ?? 0)
+    );
+  for (const edge of forward) {
+    const next = (column.get(edge.from_id) ?? 0) + 1;
+    if (next > (column.get(edge.to_id) ?? 0)) column.set(edge.to_id, next);
+  }
+
+  const taken = new Map<number, number>();
+  const cells = new Map<string, TraceGridCell>();
+  for (const node of trace.nodes) {
+    const nodeColumn = column.get(node.id) ?? 0;
+    const row = taken.get(nodeColumn) ?? 0;
+    taken.set(nodeColumn, row + 1);
+    cells.set(node.id, { column: nodeColumn, row });
+  }
+  return cells;
+}
+
+/** Whether a run has anything a straight chain can't show. */
+export function traceHasContainers(trace: WorkflowTrace): boolean {
+  return trace.nodes.some((n) => n.depth != null);
 }

@@ -185,6 +185,20 @@ describe("parallel config", () => {
     );
   });
 
+  it("needs unique, non-empty branch names", () => {
+    const named = (labels: string[]) => [
+      parallel("p", { config: { branches: labels.map((label) => ({ label })) } }),
+      child("a", "p", 0),
+      child("b", "p", 1),
+    ];
+    expect(messages(named(["Same", "Same"]))).toContain(
+      'Parallel step "p": branch names must be unique'
+    );
+    expect(messages(named(["A", " "]))).toContain(
+      'Parallel step "p": every branch needs a name'
+    );
+  });
+
   it("limits concurrency", () => {
     const steps = [
       parallel("p", {

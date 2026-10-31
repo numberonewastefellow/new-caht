@@ -6,6 +6,7 @@ handles routing naturally.
 """
 
 import re
+from collections.abc import Callable
 from typing import Any
 
 from om.utils.logger import setup_logger
@@ -152,6 +153,7 @@ def _apply_operator(
 def evaluate_condition(
     condition_config: dict[str, Any],
     context: WorkflowContext,
+    resolve: Callable[[str], str] | None = None,
 ) -> tuple[bool, str]:
     """Evaluate a condition against the workflow context.
 
@@ -166,6 +168,8 @@ def evaluate_condition(
                 "false_steps": [5, 6]
             }
         context: Current workflow runtime context.
+        resolve: How to read the field; by default the original lookup, which only
+            knows ``$key`` and ``$key.output``.
 
     Returns:
         (result, explanation) — boolean result and a human-readable explanation.
@@ -180,7 +184,7 @@ def evaluate_condition(
         logger.warning(explanation)
         return False, explanation
 
-    actual_value = _resolve_reference(field_ref, context)
+    actual_value = resolve(field_ref) if resolve else _resolve_reference(field_ref, context)
     result = _apply_operator(actual_value, operator, match_value, case_sensitive)
 
     # Truncate displayed values for readability

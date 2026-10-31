@@ -188,6 +188,7 @@ function GeneralSettings() {
     updateUserThemePreference,
     updateUserChatBackground,
     updateUserFontPreference,
+    updateUserAccentTheme,
   } = useUser();
   const { theme, setTheme, systemTheme } = useTheme();
   const { accent, setAccent, font, setFont } = useVirtualAITheme();
@@ -416,7 +417,10 @@ function GeneralSettings() {
                   return (
                     <button
                       key={accentOption.id}
-                      onClick={() => setAccent(accentOption.id)}
+                      onClick={() => {
+                        setAccent(accentOption.id);
+                        void updateUserAccentTheme(accentOption.id);
+                      }}
                       className="relative overflow-hidden rounded-lg transition-all w-[90px] h-[68px] cursor-pointer border-none p-0 bg-transparent group"
                       title={accentOption.label}
                       aria-label={`${accentOption.label} accent theme${
@@ -628,6 +632,7 @@ function GeneralSettings() {
                   setTheme("system");
                   updateUserThemePreference("system" as ThemePreference);
                   setAccent("none");
+                  void updateUserAccentTheme("none");
                   setFont("inter");
                   void updateUserFontPreference("inter");
                   updateUserChatBackground(null);

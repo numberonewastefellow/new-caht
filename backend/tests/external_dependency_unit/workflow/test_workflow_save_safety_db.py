@@ -23,6 +23,7 @@ from om.db.models import Agent
 from om.db.models import AgentWorkflow
 from om.db.models import AgentWorkflowVersion
 from om.db.workflow import get_workflow_by_id
+from om.db.workflow_version import get_latest_workflow_version
 from om.db.workflow_version import list_workflow_versions
 from om.workflows import saving
 from om.workflows.graph import graph_from_workflow
@@ -33,6 +34,7 @@ from om.workflows.nodes.builtin import get_node_registry
 from om.workflows.saving import restore_workflow_version
 from om.workflows.saving import save_new_workflow
 from om.workflows.saving import save_workflow_update
+from om.workflows.saving import WorkflowSaveError
 from om.workflows.saving import WorkflowVersionConflictError
 from om.workflows.workflow_engine import _pinned_version_id
 
@@ -394,3 +396,143 @@ class TestVersionsIncludeWorkflowSettings:
         workflow = db_session.get(AgentWorkflow, workflow_id)
         assert workflow is not None
         assert workflow.orchestrator_prompt == "Current prompt"
+
+
+class TestReviewFindings:
+    def test_saving_a_new_workflow_is_all_or_nothing(
+        self, db_session: Session, agent_id: int, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        name = "flow-nodes atomic create"
+
+        def fail(*_: object, **__: object) -> None:
+            raise RuntimeError("no wrapper agent")
+
+        monkeypatch.setattr(
+            "om.workflows.saving.create_or_update_workflow_agent", fail
+        )
+        with pytest.raises(RuntimeError):
+            save_new_workflow(
+                db_session,
+                WorkflowCreate(
+                    name=name,
+                    orchestration_mode="sequential",
+                    steps=[_step(0, agent_id, "A")],
+                ),
+                user_id=None,
+            )
+        assert (
+            db_session.execute(
+                select(AgentWorkflow).where(AgentWorkflow.name == name)
+            ).first()
+            is None
+        )
+
+    def test_a_new_workflow_gets_its_wrapper_agent(
+        self, db_session: Session, workflow_id: int
+    ) -> None:
+        wrappers = db_session.execute(
+            select(Agent).where(Agent.workflow_id == workflow_id)
+        ).scalars().all()
+        assert len(wrappers) == 1
+        # The fixture removes the workflow; its wrapper goes first.
+        db_session.delete(wrappers[0])
+        db_session.commit()
+
+    def test_a_run_pins_what_is_saved_not_what_it_read_earlier(
+        self, db_session: Session, workflow_id: int, agent_id: int
+    ) -> None:
+        stale = get_workflow_by_id(db_session, workflow_id)
+        assert stale is not None
+        before = stale.version
+        with get_session_with_current_tenant() as other:
+            save_workflow_update(
+                other,
+                workflow_id,
+                WorkflowUpdate(description="saved meanwhile", expected_version=before),
+                user_id=None,
+            )
+        # `stale` still holds the old description until the pin re-reads it.
+        version_id = _pinned_version_id(db_session, stale, MagicMock(id=None))
+        db_session.commit()
+        row = get_latest_workflow_version(db_session, workflow_id)
+        assert row is not None
+        assert row.id == version_id
+        assert row.version == before + 1
+        assert row.definition["settings"]["description"] == "saved meanwhile"
+
+    def test_a_metadata_save_doesnt_recheck_unchanged_steps(
+        self, db_session: Session, workflow_id: int
+    ) -> None:
+        workflow = get_workflow_by_id(db_session, workflow_id)
+        assert workflow is not None
+        workflow.schema_version = 1
+        # Old rows could be written with a reference the new rules refuse.
+        workflow.steps[0].input_mapping = {"task": "$not_a_step.output"}
+        db_session.commit()
+        saved = save_workflow_update(
+            db_session, workflow_id, WorkflowUpdate(description="renamed"), user_id=None
+        )
+        assert saved is not None and saved.description == "renamed"
+        with pytest.raises(WorkflowSaveError):
+            save_workflow_update(
+                db_session, workflow_id, WorkflowUpdate(schema_version=2), user_id=None
+            )
+
+
+class TestSchemaVersions:
+    def test_new_workflows_use_safe_references(
+        self, db_session: Session, workflow_id: int
+    ) -> None:
+        assert db_session.get(AgentWorkflow, workflow_id).schema_version == 2  # type: ignore[union-attr]
+
+    def test_a_bad_reference_is_refused_on_save(
+        self, db_session: Session, workflow_id: int, agent_id: int
+    ) -> None:
+        step = _step(0, agent_id, "A").model_copy(
+            update={"input_mapping": {"task": "Use $later.output"}}
+        )
+        with pytest.raises(WorkflowSaveError, match=r"reads \$later.output"):
+            save_workflow_update(
+                db_session, workflow_id, WorkflowUpdate(steps=[step]), user_id=None
+            )
+
+    def test_an_old_workflow_keeps_its_behaviour_until_upgraded(
+        self, db_session: Session, workflow_id: int, agent_id: int
+    ) -> None:
+        workflow = db_session.get(AgentWorkflow, workflow_id)
+        assert workflow is not None
+        workflow.schema_version = 1
+        db_session.commit()
+        step = _step(0, agent_id, "A").model_copy(
+            update={"input_mapping": {"task": "Use $later.output"}}
+        )
+        save_workflow_update(
+            db_session, workflow_id, WorkflowUpdate(steps=[step]), user_id=None
+        )
+        with pytest.raises(WorkflowSaveError, match=r"reads \$later.output"):
+            save_workflow_update(
+                db_session, workflow_id, WorkflowUpdate(schema_version=2), user_id=None
+            )
+
+    def test_upgrading_records_a_version_that_restores(
+        self, db_session: Session, workflow_id: int
+    ) -> None:
+        workflow = db_session.get(AgentWorkflow, workflow_id)
+        assert workflow is not None
+        workflow.schema_version = 1
+        db_session.commit()
+        save_workflow_update(db_session, workflow_id, WorkflowUpdate(name="v1 name"), user_id=None)
+        old_version = db_session.get(AgentWorkflow, workflow_id).version  # type: ignore[union-attr]
+        save_workflow_update(db_session, workflow_id, WorkflowUpdate(schema_version=2), user_id=None)
+        assert db_session.get(AgentWorkflow, workflow_id).schema_version == 2  # type: ignore[union-attr]
+        restore_workflow_version(db_session, workflow_id, old_version, user_id=None)
+        db_session.expire_all()
+        assert db_session.get(AgentWorkflow, workflow_id).schema_version == 1  # type: ignore[union-attr]
+
+    def test_an_unknown_schema_version_is_refused(
+        self, db_session: Session, workflow_id: int
+    ) -> None:
+        with pytest.raises(WorkflowSaveError, match="Unknown schema version"):
+            save_workflow_update(
+                db_session, workflow_id, WorkflowUpdate(schema_version=9), user_id=None
+            )

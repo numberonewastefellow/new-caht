@@ -20,6 +20,7 @@ from typing import Any
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
+from pydantic import Field
 from pydantic import ValidationError
 
 from om.server.query_and_chat.placement import Placement
@@ -29,6 +30,10 @@ from om.server.query_and_chat.streaming_models import WorkflowStepDelta
 from om.server.query_and_chat.streaming_models import WorkflowStepEnd
 from om.server.query_and_chat.streaming_models import WorkflowStepStart
 from om.utils.logger import setup_logger
+from om.workflows.inputs import as_text
+from om.workflows.inputs import SAFE_REFERENCES_SCHEMA_VERSION
+from om.workflows.inputs import UnresolvedReferenceError
+from om.workflows.models import CONDITION_OPERATORS
 from om.workflows.models import ConditionConfig
 from om.workflows.nodes.base import SaveContext
 from om.workflows.nodes.base import StepOutcome
@@ -58,7 +63,10 @@ class ConditionFields(BaseModel):
     """
 
     condition_field: str = ""
-    operator: str = "contains"
+    # The enum hint lets the editors offer a choice; the type stays a plain string.
+    operator: str = Field(
+        default="contains", json_schema_extra={"enum": list(CONDITION_OPERATORS)}
+    )
     match_value: str = ""
     case_sensitive: bool = False
 
@@ -195,7 +203,17 @@ class _RouterRunner:
     ) -> Generator[Packet, None, StepOutcome]:
         condition, true_keys, false_keys = self._resolve(node, ctx)
         state = ctx.state
-        matched, explanation = evaluate_condition(condition, state.context)
+        safe = ctx.graph.schema_version >= SAFE_REFERENCES_SCHEMA_VERSION
+        try:
+            matched, explanation = evaluate_condition(
+                condition,
+                state.context,
+                resolve=(lambda ref: as_text(ctx.read_reference(ref))) if safe else None,
+            )
+        except UnresolvedReferenceError as e:
+            return StepOutcome(
+                status=StepStatus.FAILED, error=f"Condition step '{node.name}': {e}"
+            )
         result = "true" if matched else "false"
         losing_branch = set(false_keys if matched else true_keys)
 

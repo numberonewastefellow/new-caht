@@ -34,8 +34,11 @@ def create_workflow(
     db_session: Session,
     workflow_create: WorkflowCreate,
     user_id: UUID | None = None,
+    schema_version: int = 1,
+    commit: bool = True,
 ) -> AgentWorkflow:
     workflow = AgentWorkflow(
+        schema_version=schema_version,
         name=workflow_create.name,
         description=workflow_create.description,
         user_id=user_id,
@@ -56,7 +59,10 @@ def create_workflow(
         _add_step(db_session, workflow.id, step_create)
     _link_parents(db_session, workflow.id, workflow_create.steps)
 
-    db_session.commit()
+    if commit:
+        db_session.commit()
+    else:
+        db_session.flush()
     return workflow
 
 
@@ -151,6 +157,8 @@ def update_workflow(
         workflow.is_public = workflow_update.is_public
     if workflow_update.icon_name is not None:
         workflow.icon_name = workflow_update.icon_name
+    if workflow_update.schema_version is not None:
+        workflow.schema_version = workflow_update.schema_version
 
     if workflow_update.steps is not None:
         _replace_steps(db_session, workflow, workflow_update.steps)
@@ -234,6 +242,7 @@ def _get_or_create_label(db_session: Session, name: str) -> AgentLabel:
 def create_or_update_workflow_agent(
     db_session: Session,
     workflow: AgentWorkflow,
+    commit: bool = True,
 ) -> Agent:
     """Create or update the wrapper Agent for a workflow.
 
@@ -262,7 +271,10 @@ def create_or_update_workflow_agent(
         # Ensure the Workflow label is attached
         if workflow_label not in existing.labels:
             existing.labels.append(workflow_label)
-        db_session.commit()
+        if commit:
+            db_session.commit()
+        else:
+            db_session.flush()
         logger.info(
             f"Updated wrapper agent id={existing.id} for workflow id={workflow.id}"
         )
@@ -294,7 +306,10 @@ def create_or_update_workflow_agent(
     )
     agent.labels = [workflow_label]
     db_session.add(agent)
-    db_session.commit()
+    if commit:
+        db_session.commit()
+    else:
+        db_session.flush()
     logger.info(
         f"Created wrapper agent id={agent.id} for workflow id={workflow.id}"
     )

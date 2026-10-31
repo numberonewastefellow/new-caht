@@ -453,6 +453,17 @@ def _get_workspace_search_availability(
 WORKFLOW_STEP_TOOL_ID = 0
 
 
+def open_step_at(open_steps: dict[int, dict], turn_index: int) -> dict | None:
+    """The running step a workflow packet belongs to.
+
+    A step's packets use its start turn or later ones (its sub-agent's tools), and a
+    parallel branch's turns stay below the next branch's. So packets of branches running
+    at the same time go to the right step.
+    """
+    started = [turn for turn in open_steps if turn <= turn_index]
+    return open_steps[max(started)] if started else None
+
+
 def _run_workflow_and_save(
     workflow: "AgentWorkflow",  # noqa: F821
     user_message: str,
@@ -479,7 +490,7 @@ def _run_workflow_and_save(
 
     # Per-step accumulators: list of dicts with step metadata + output
     step_records: list[dict] = []
-    _cur_step: dict | None = None
+    open_steps: dict[int, dict] = {}
 
     # Pause tracking
     pause_data: dict | None = None
@@ -515,14 +526,18 @@ def _run_workflow_and_save(
 
         # --- Workflow step tracking ---
         elif ptype == StreamingType.WORKFLOW_STEP_START.value:
-            _cur_step = {
+            open_steps[packet.placement.turn_index] = {
                 "step_name": getattr(packet.obj, "step_name", ""),
                 "agent_name": getattr(packet.obj, "agent_name", ""),
                 "step_order": getattr(packet.obj, "step_order", 0),
+                "step_type": getattr(packet.obj, "step_type", "agent"),
+                "scope": getattr(packet.obj, "scope", None),
+                "depth": getattr(packet.obj, "depth", None),
                 "turn_index": packet.placement.turn_index,
                 "content_parts": [],
             }
         elif ptype == StreamingType.WORKFLOW_STEP_DELTA.value:
+            _cur_step = open_step_at(open_steps, packet.placement.turn_index)
             if _cur_step is not None:
                 # Honor replace semantics (mirror the frontend fold): a
                 # replace=True delta is the authoritative agent_output and
@@ -539,15 +554,17 @@ def _run_workflow_and_save(
         elif ptype == StreamingType.CUSTOM_TOOL_DELTA.value:
             # Track file_ids emitted by post-step file capture
             fids = getattr(packet.obj, "file_ids", None)
+            _cur_step = open_step_at(open_steps, packet.placement.turn_index)
             if fids and _cur_step is not None:
                 _cur_step.setdefault("file_ids", []).extend(fids)
 
         elif ptype == StreamingType.WORKFLOW_STEP_END.value:
+            _cur_step = open_step_at(open_steps, packet.placement.turn_index)
             if _cur_step is not None:
                 _cur_step["output"] = "".join(_cur_step.pop("content_parts", []))
                 _cur_step["output_key"] = getattr(packet.obj, "output_key", "")
                 step_records.append(_cur_step)
-                _cur_step = None
+                del open_steps[_cur_step["turn_index"]]
 
         # --- Pause tracking ---
         elif ptype == StreamingType.WORKFLOW_PAUSE_FOR_INPUT.value:
@@ -558,11 +575,10 @@ def _run_workflow_and_save(
             }
 
     # Flush any unfinished step (e.g., step started but workflow paused before end)
-    if _cur_step is not None:
+    for _cur_step in open_steps.values():
         _cur_step["output"] = "".join(_cur_step.pop("content_parts", []))
         _cur_step["output_key"] = ""
         step_records.append(_cur_step)
-        _cur_step = None
 
     # === Persist to DB ===
     from om.tools.models import ToolCallInfo
@@ -588,6 +604,12 @@ def _run_workflow_and_save(
                     "agent_name": rec["agent_name"],
                     "step_order": rec["step_order"],
                     **({"_file_ids": rec["file_ids"]} if rec.get("file_ids") else {}),
+                    **(
+                        {"step_type": rec["step_type"]}
+                        if rec.get("step_type", "agent") != "agent"
+                        else {}
+                    ),
+                    **({"scope": rec["scope"], "depth": rec["depth"]} if rec.get("scope") else {}),
                 },
                 tool_call_response=rec.get("output", ""),
             )

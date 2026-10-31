@@ -7,6 +7,7 @@ import {
   moveStep,
   removeStep,
   reorderInBlock,
+  withoutBranch,
   type BlockStep,
 } from "@/lib/workflows/stepTree";
 
@@ -254,5 +255,21 @@ describe("editing the tree", () => {
       expect(keys(reorderInBlock(steps, "b", 1))).toEqual(["p", "a", "b", "c"]);
       expect(keys(reorderInBlock(steps, "b", -1))).toEqual(["p", "b", "a", "c"]);
     });
+  });
+});
+
+describe("withoutBranch", () => {
+  it("shifts later branches down and leaves the rest alone", () => {
+    const steps = [
+      step("p"),
+      step("a", "p", 0),
+      step("c", "p", 2),
+      step("q"),
+      step("x", "q", 2),
+    ];
+    const places = withoutBranch(steps, "p", 1).map(
+      (s) => `${s.node_key}:${s.branch_index}`
+    );
+    expect(places).toEqual(["p:null", "a:0", "c:1", "q:null", "x:2"]);
   });
 });

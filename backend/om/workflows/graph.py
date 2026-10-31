@@ -135,6 +135,9 @@ class WorkflowGraph(BaseModel):
     def node(self, node_key: str) -> WorkflowNode:
         return self._by_key[node_key]
 
+    def node_for_key(self, node_key: str) -> WorkflowNode | None:
+        return self._by_key.get(node_key)
+
     def has_node(self, node_key: str) -> bool:
         return node_key in self._by_key
 

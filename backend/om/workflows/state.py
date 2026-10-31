@@ -23,6 +23,7 @@ from om.db.workflow import update_workflow_execution
 from om.workflows.graph import WorkflowGraph
 from om.workflows.graph import WorkflowNode
 from om.workflows.hitl import build_clarification_task
+from om.workflows.inputs import resolve_reference
 from om.workflows.models import WorkflowCheckpoint
 from om.workflows.models import WorkflowContext
 from om.workflows.trace_models import persist_workflow_trace
@@ -271,6 +272,25 @@ class RunContext:
 
     def stop_requested(self) -> bool:
         return self.is_connected is not None and not self.is_connected()
+
+    def reference_variables(self) -> dict[str, Any]:
+        """What references can read besides step outputs.
+
+        Loop variables, and every step that has no output: a router skipped it, its
+        branch lost or failed, or its loop never ran. Reading such a step gives empty
+        text. The save check has already refused references to steps not yet run.
+        """
+        outputs = self.state.context.step_outputs
+        no_output = {
+            node.output_key: "" for node in self.graph.nodes if node.output_key not in outputs
+        }
+        return {**no_output, **self.state.variables}
+
+    def read_reference(self, value: str, extra: dict[str, Any] | None = None) -> Any:
+        """The value of a literal or ``$reference`` in this step's scope."""
+        return resolve_reference(
+            value, self.state.context, {**self.reference_variables(), **(extra or {})}
+        )
 
     def complete_node(
         self,

@@ -255,7 +255,6 @@ PATIENT_TESTS = [
             "Diagnosis Synthesizer",
         ],
         "reject_agents": [
-            "Endocrinologist",
             "Rheumatologist",
             "Gastroenterologist",
         ],
@@ -266,6 +265,8 @@ PATIENT_TESTS = [
             "DISCLAIMER",
         ],
         "min_answer_length": 300,
+        # Endocrinologist is allowed: this patient has Type 2 Diabetes with HbA1c 7.8 and
+        # glucose 142 (HIGH), and the routing table covers it now the orchestrator sees results.
         "purpose": "Validates cardiac routing: Triage → PCP → Cardiologist "
                    "(HITL for echo) → Nephrologist → Synthesizer.",
     },

@@ -43,7 +43,8 @@ function outOfRange(value: unknown, min: number, max: number): boolean {
   return typeof value === "number" && (value < min || value > max);
 }
 
-function branchLabels(config: Record<string, unknown>): string[] {
+/** The branch names as configured; an empty one stays empty, for editing. */
+export function branchLabels(config: Record<string, unknown>): string[] {
   if (!Array.isArray(config.branches)) {
     return Array.from(
       { length: DEFAULT_BRANCH_COUNT },
@@ -52,7 +53,7 @@ function branchLabels(config: Record<string, unknown>): string[] {
   }
   return config.branches.map((branch, i) => {
     const label = asRecord(branch).label;
-    return typeof label === "string" && label ? label : `Branch ${i + 1}`;
+    return typeof label === "string" ? label : `Branch ${i + 1}`;
   });
 }
 
@@ -64,6 +65,12 @@ const parallelRules: ConfigRule = ({ step, name, children, byKey }) => {
     errors.push(
       `Parallel step "${name}" needs ${MIN_BRANCHES} to ${MAX_BRANCHES} branches`
     );
+  }
+  if (new Set(labels).size !== labels.length) {
+    errors.push(`Parallel step "${name}": branch names must be unique`);
+  }
+  if (labels.some((label) => !label.trim())) {
+    errors.push(`Parallel step "${name}": every branch needs a name`);
   }
   if (outOfRange(config.max_concurrency, 1, MAX_BRANCHES)) {
     errors.push(
@@ -105,6 +112,9 @@ const loopRules: ConfigRule = ({ step, name, children }) => {
   }
   if (children.length === 0) {
     errors.push(`Loop step "${name}" has no steps to repeat`);
+  }
+  if (children.some((c) => c.branch_index != null && c.branch_index !== 0)) {
+    errors.push(`Loop step "${name}" has steps in a branch that doesn't exist`);
   }
   return errors;
 };

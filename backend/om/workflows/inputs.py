@@ -65,6 +65,15 @@ def apply_input_mapping(
     return "\n".join(result_parts)
 
 
+def as_text(value: Any) -> str:
+    """A resolved value as prompt text; structured values become JSON."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    return json.dumps(value, ensure_ascii=False)
+
+
 class UnresolvedReferenceError(LookupError):
     """A ``$reference`` names an output (or JSON path) that does not exist."""
 
@@ -77,6 +86,71 @@ _REFERENCE = re.compile(
     r"(?:\.output)?(?P<path>(?:\.[A-Za-z_][A-Za-z0-9_]*|\[\d+\])*)$"
 )
 _PATH_SEGMENT = re.compile(r"\.([A-Za-z_][A-Za-z0-9_]*)|\[(\d+)\]")
+
+
+# A reference inside text. ``$$`` escapes a literal dollar; a bare amount like $500
+# isn't a reference, and a sentence's full stop isn't part of one.
+_TEMPLATE_TOKEN = re.compile(
+    r"\$\$|\$[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*|\[\d+\])*"
+)
+_ESCAPED_DOLLAR = "$$"
+
+
+# From this ``schema_version`` on, references are read safely in every step type.
+SAFE_REFERENCES_SCHEMA_VERSION = 2
+
+
+def is_reference(value: str) -> bool:
+    """Whether ``value`` is exactly one reference, with nothing around it."""
+    return _REFERENCE.match(value) is not None
+
+
+def find_references(text: str) -> list[str]:
+    """The references in a piece of text, in order."""
+    return [t for t in _TEMPLATE_TOKEN.findall(text) if t != _ESCAPED_DOLLAR]
+
+
+def reference_name(reference: str) -> str:
+    """``$research.output.items[0]`` -> ``research``."""
+    match = _REFERENCE.match(reference)
+    return match.group("name") if match else reference.lstrip("$")
+
+
+def render_template(
+    template: str,
+    context: WorkflowContext,
+    variables: Mapping[str, Any] | None = None,
+) -> str:
+    """Replace each reference in ``template`` with its value (``schema_version`` 2).
+
+    The template is scanned once, so a substituted value is never expanded again:
+    an LLM output or a list item containing ``$other`` stays as text.
+
+    Raises:
+        UnresolvedReferenceError: A reference can't be resolved.
+    """
+
+    def replace(match: re.Match[str]) -> str:
+        token = match.group(0)
+        if token == _ESCAPED_DOLLAR:
+            return "$"
+        return as_text(resolve_reference(token, context, variables))
+
+    return _TEMPLATE_TOKEN.sub(replace, template)
+
+
+def apply_safe_input_mapping(
+    mapping: dict[str, Any] | None,
+    context: WorkflowContext,
+    variables: Mapping[str, Any] | None = None,
+) -> str:
+    """A step's task input for ``schema_version`` 2 workflows."""
+    if not mapping:
+        return apply_input_mapping(mapping, context)
+    return "\n".join(
+        f"{key}: {render_template(value, context, variables) if isinstance(value, str) else value}"
+        for key, value in mapping.items()
+    )
 
 
 def resolve_reference(
@@ -123,14 +197,18 @@ def resolve_reference(
 
 def _follow_json_path(reference: str, base: Any, path: str) -> Any:
     current = base
-    if isinstance(current, str):
-        try:
-            current = json.loads(current)
-        except json.JSONDecodeError as e:
-            raise UnresolvedReferenceError(
-                f"{reference}: the output is not JSON, so it has no fields"
-            ) from e
     for key, index in _PATH_SEGMENT.findall(path):
+        # Nothing there (a step that didn't run, no previous iteration yet): empty.
+        if current is None or current == "":
+            return ""
+        # An output is text, and so is each branch's result inside a parallel's output.
+        if isinstance(current, str):
+            try:
+                current = json.loads(current)
+            except json.JSONDecodeError as e:
+                raise UnresolvedReferenceError(
+                    f"{reference}: the output is not JSON, so it has no fields"
+                ) from e
         try:
             current = current[int(index)] if index else current[key]
         except (KeyError, IndexError, TypeError) as e:

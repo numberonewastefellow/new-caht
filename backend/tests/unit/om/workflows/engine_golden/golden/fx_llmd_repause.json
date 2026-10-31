@@ -867,7 +867,7 @@
       "cycle_count": 2,
       "agent_call_counts": {
        "delegate_to_fx_alpha": 1,
-       "delegate_to_fx_beta": 0
+       "delegate_to_fx_beta": 1
       },
       "turn_index": 6,
       "clarification_conversation": [

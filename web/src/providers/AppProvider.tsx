@@ -65,6 +65,7 @@ import { AppSidebarProvider } from "@/providers/AppSidebarProvider";
 import { AppModeProvider } from "@/providers/AppModeProvider";
 import { AppBackgroundProvider } from "@/providers/AppBackgroundProvider";
 import FontPreferenceSync from "@/providers/FontPreferenceSync";
+import AccentPreferenceSync from "@/providers/AccentPreferenceSync";
 import { QueryControllerProvider } from "@/providers/QueryControllerProvider";
 import ToastProvider from "@/providers/ToastProvider";
 
@@ -91,6 +92,7 @@ export default function AppProvider({
         authTypeMetadata={authTypeMetadata}
       >
         <FontPreferenceSync />
+        <AccentPreferenceSync />
         <AppBackgroundProvider>
           <ModalProvider user={user}>
             <AppSidebarProvider folded={!!folded}>

@@ -169,6 +169,34 @@ def update_user_font_preference(
     db_session.commit()
 
 
+def update_user_accent_theme(
+    user_id: UUID,
+    accent_theme: str | None,
+    db_session: Session,
+) -> None:
+    """Update user's accent theme setting (None = default accent)."""
+    db_session.execute(
+        update(User)
+        .where(User.id == user_id)  # type: ignore
+        .values(accent_theme=accent_theme)
+    )
+    db_session.commit()
+
+
+def update_user_pinned_workflows(
+    user_id: UUID,
+    workflow_ids: list[int],
+    db_session: Session,
+) -> None:
+    """Replace the user's pinned workflow ids."""
+    db_session.execute(
+        update(User)
+        .where(User.id == user_id)  # type: ignore
+        .values(pinned_workflows=workflow_ids)
+    )
+    db_session.commit()
+
+
 def update_user_default_app_mode(
     user_id: UUID,
     default_app_mode: DefaultAppMode,

@@ -19,6 +19,8 @@ from tests.unit.om.workflows.engine_golden.recorder import RunSpec
 from tests.unit.om.workflows.engine_golden.recorder import Scenario
 
 TEMPLATE_DIR = Path(__file__).resolve().parents[4] / "workflow_creator" / "workflows"
+FROZEN_TEMPLATE_DIR = Path(__file__).resolve().parent / "frozen_templates"
+LEGACY_STEP_TYPES = frozenset({"agent", "conditional_router"})
 
 TEMPLATE_INPUT = (
     "Prepare a complete assessment for case GOLD-001 covering all required sections."
@@ -37,8 +39,27 @@ NORMAL: dict[str, Any] = {}
 # ---------------------------------------------------------------------------
 
 
+def _runs_on_the_legacy_engine(path: Path) -> bool:
+    """The legacy engine has no containers or code steps."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    workflows = data if isinstance(data, list) else [data]
+    return all(
+        step.get("step_type", "agent") in LEGACY_STEP_TYPES
+        for workflow in workflows
+        for step in workflow.get("steps", [])
+    )
+
+
 def template_paths() -> list[Path]:
-    return sorted(TEMPLATE_DIR.glob("*.json"))
+    """Templates the goldens pin. A template upgraded to the new node types keeps its
+    old definition in ``frozen_templates``, so its golden still guards the old behaviour."""
+    frozen = {p.name: p for p in FROZEN_TEMPLATE_DIR.glob("*.json")}
+    current = [
+        p
+        for p in TEMPLATE_DIR.glob("*.json")
+        if p.name not in frozen and _runs_on_the_legacy_engine(p)
+    ]
+    return sorted([*current, *frozen.values()], key=lambda p: p.name)
 
 
 def _template_agent_script(defn: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:

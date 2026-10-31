@@ -32,6 +32,7 @@ from om.db.models import AgentWorkflow
 from om.db.models import User
 from om.db.models import WorkflowExecution
 from om.db.workflow import create_workflow_execution
+from om.db.workflow import get_workflow_for_update
 from om.db.workflow import load_checkpoint
 from om.server.query_and_chat.placement import Placement
 from om.server.query_and_chat.streaming_models import AgentResponseDelta
@@ -197,6 +198,8 @@ def _start_or_resume(
                 )
                 return paused_execution, state, graph
 
+    # A save may have landed since this object was read; it can't while this holds.
+    workflow = get_workflow_for_update(db_session, workflow.id) or workflow
     graph = graph_from_workflow(workflow, registry)
     version = pin_workflow_version(db_session, workflow, graph, user.id)
     execution = create_workflow_execution(

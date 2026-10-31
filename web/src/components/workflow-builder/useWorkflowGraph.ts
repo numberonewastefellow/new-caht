@@ -33,13 +33,17 @@ import {
   isAllowedInMode,
   labelFor,
 } from "@/lib/workflows/nodeRegistry";
-import { placementChoices } from "@/lib/workflows/containerLanes";
+import {
+  laneLabels,
+  moveEditorStep,
+  placementChoices,
+} from "@/lib/workflows/containerLanes";
 import { snapshotToMeta } from "@/lib/workflows/serializer";
 import {
   blockKey,
   descendantKeys,
-  moveStep,
   removeStep,
+  withoutBranch,
   type BlockPlace,
 } from "@/lib/workflows/stepTree";
 import { stepsNotAllowedInMode } from "@/lib/workflows/validation";
@@ -63,7 +67,9 @@ import {
   graphToSteps,
   graphToUpdatePayload,
   stepToFlowNode,
+  dropPosition,
   graphFromSteps,
+  isInContainerTree,
   laneAt,
   nodeCenter,
   validateGraph,
@@ -126,24 +132,69 @@ export function useWorkflowGraph(catalog: NodeCatalog) {
     [meta.orchestration_mode, setNodes, setEdges]
   );
 
-  /** Move a step; ignored if the server would refuse it there. */
-  const placeStep = useCallback(
-    (nodeId: string, place: BlockPlace, base: WorkflowNode[]) => {
-      const steps = graphToSteps(base, edges);
+  /** The steps after a move; unchanged if the server would refuse it there. */
+  const movedSteps = useCallback(
+    (steps: EditorStep[], nodeId: string, place: BlockPlace, position?: number) => {
       const step = steps.find((s) => s.node_key === nodeId);
       const allowed =
         !!step &&
         placementChoices(step, steps, catalog).some(
           (c) => c.parent_key === place.parent_key
         );
-      applySteps(allowed ? moveStep(steps, nodeId, place) : steps, base);
+      return allowed ? moveEditorStep(steps, nodeId, place, position) : steps;
     },
-    [edges, catalog, applySteps]
+    [catalog]
+  );
+
+  const placeStep = useCallback(
+    (nodeId: string, place: BlockPlace, base: WorkflowNode[]) =>
+      applySteps(movedSteps(graphToSteps(base, edges), nodeId, place), base),
+    [edges, movedSteps, applySteps]
   );
 
   const moveNode = useCallback(
     (nodeId: string, place: BlockPlace) => placeStep(nodeId, place, nodes),
     [placeStep, nodes]
+  );
+
+  const updateNodeData = useCallback(
+    (nodeId: string, partial: Partial<StepNodeData>) => {
+      setNodes((nds) =>
+        nds.map((n) => {
+          if (n.id !== nodeId || !isStepNode(n)) return n;
+          return { ...n, data: { ...n.data, ...partial } };
+        })
+      );
+    },
+    [setNodes]
+  );
+
+  const updateContainerConfig = useCallback(
+    (nodeId: string, config: Record<string, unknown>, removedBranch?: number) => {
+      const steps = graphToSteps(nodes, edges);
+      const container = steps.find((s) => s.node_key === nodeId);
+      const node = nodes.find((n) => n.id === nodeId);
+      const drawn = node && isStepNode(node) ? node.data.lanes : null;
+      const labels = container && laneLabels({ ...container, config }, steps);
+      // The same lanes: nothing moves, so the layout and the edges stay as they are.
+      if (labels && drawn && removedBranch === undefined && drawn.length === labels.length) {
+        updateNodeData(nodeId, {
+          config,
+          lanes: drawn.map((lane, i) => ({ ...lane, label: labels[i]! })),
+        });
+        return;
+      }
+      const updated = steps.map((s) =>
+        s.node_key === nodeId ? { ...s, config } : s
+      );
+      applySteps(
+        removedBranch === undefined
+          ? updated
+          : withoutBranch(updated, nodeId, removedBranch),
+        nodes
+      );
+    },
+    [nodes, edges, applySteps, updateNodeData]
   );
 
   /** A new node dropped on the canvas: into the lane under it, if there is one. */
@@ -166,40 +217,43 @@ export function useWorkflowGraph(catalog: NodeCatalog) {
     [nodes, edges, meta.orchestration_mode, placeStep, applySteps, setNodes]
   );
 
-  /** A node dropped after dragging: it joins the lane it's over, or leaves its box. */
-  const onNodeDragStop = useCallback(
-    (nodeId: string) => {
-      const node = nodes.find((n) => n.id === nodeId);
-      if (!node || !isStepNode(node) || meta.orchestration_mode !== "sequential") {
-        return;
+  /** Nodes dropped after dragging: each joins the lane it's over, or leaves its box. */
+  const onNodesDragStop = useCallback(
+    (nodeIds: string[]) => {
+      if (meta.orchestration_mode !== "sequential") return;
+      const dragged = new Set(nodeIds);
+      let steps = graphToSteps(nodes, edges);
+      let relayout = false;
+      for (const node of nodes.filter(isStepNode)) {
+        // A step inside a dragged box moves with the box.
+        if (!dragged.has(node.id) || (node.parentId && dragged.has(node.parentId))) {
+          continue;
+        }
+        const exclude = descendantKeys(steps, node.id);
+        exclude.add(node.id);
+        const place = laneAt(nodes, nodeCenter(node, nodes), exclude) ?? {
+          parent_key: null,
+          branch_index: null,
+        };
+        const unchanged =
+          place.parent_key === (node.data.parent_key ?? null) &&
+          place.branch_index === (node.data.branch_index ?? null);
+        if (!unchanged) {
+          steps = movedSteps(steps, node.id, place, dropPosition(nodes, node.id, place));
+        }
+        // A step in a box always snaps back into place; one at the top level stays
+        // where it was dropped unless it moved.
+        relayout = relayout || !unchanged || !!node.data.parent_key;
       }
-      const steps = graphToSteps(nodes, edges);
-      const exclude = descendantKeys(steps, nodeId);
-      exclude.add(nodeId);
-      const place = laneAt(nodes, nodeCenter(node, nodes), exclude) ?? {
-        parent_key: null,
-        branch_index: null,
-      };
-      const unchanged =
-        place.parent_key === (node.data.parent_key ?? null) &&
-        place.branch_index === (node.data.branch_index ?? null);
-      if (!unchanged) {
-        placeStep(nodeId, place, nodes);
-      } else if (node.data.parent_key) {
-        // Dropped back in its own lane: snap into place, order unchanged.
-        applySteps(steps, nodes);
-      }
+      if (relayout) applySteps(steps, nodes);
     },
-    [nodes, edges, meta.orchestration_mode, placeStep, applySteps]
+    [nodes, edges, meta.orchestration_mode, movedSteps, applySteps]
   );
 
   // ── Add agent node (from sidebar drag-drop) ──────────────────────
 
   const addAgentNode = useCallback(
     (agent: DragAgentData, position: { x: number; y: number }) => {
-      const agentCount = stepNodes.filter(
-        (n) => n.data.step_type === AGENT_NODE_TYPE
-      ).length;
       const step = createEditorStep(AGENT_NODE_TYPE, catalog, {
         node_key: newNodeKey(takenKeys()),
         agent_id: agent.agent_id,
@@ -218,7 +272,7 @@ export function useWorkflowGraph(catalog: NodeCatalog) {
           agent_tool_names: agent.agent_tool_names || [],
           agent_llm_model: agent.agent_llm_model || null,
           agent_llm_provider: agent.agent_llm_provider || null,
-          stepOrder: agentCount,
+          stepOrder: stepNodes.length,
           orchestration_mode: meta.orchestration_mode,
         },
         position
@@ -272,7 +326,7 @@ export function useWorkflowGraph(catalog: NodeCatalog) {
       if (nodeId === ORCHESTRATOR_NODE_ID || nodeId === FINISH_NODE_ID) return;
       if (selectedNodeId === nodeId) setSelectedNodeId(null);
       const node = nodes.find((n) => n.id === nodeId);
-      if (node && isStepNode(node) && (node.type === "container" || node.data.parent_key)) {
+      if (node && isInContainerTree(node)) {
         const steps = removeStep(graphToSteps(nodes, edges), nodeId, { keepChildren });
         applySteps(steps, nodes);
         return;
@@ -285,19 +339,22 @@ export function useWorkflowGraph(catalog: NodeCatalog) {
     [nodes, edges, applySteps, setNodes, setEdges, selectedNodeId]
   );
 
-  // ── Update node data ─────────────────────────────────────────────
-
-  const updateNodeData = useCallback(
-    (nodeId: string, partial: Partial<StepNodeData>) => {
-      setNodes((nds) =>
-        nds.map((n) => {
-          if (n.id !== nodeId || !isStepNode(n)) return n;
-          return { ...n, data: { ...n.data, ...partial } };
-        })
+  /** Steps deleted from the keyboard, when any of them is in or around a box. */
+  const removeNodes = useCallback(
+    (nodeIds: string[]) => {
+      if (selectedNodeId && nodeIds.includes(selectedNodeId)) {
+        setSelectedNodeId(null);
+      }
+      const steps = nodeIds.reduce<EditorStep[]>(
+        (remaining, id) => removeStep(remaining, id),
+        graphToSteps(nodes, edges)
       );
+      applySteps(steps, nodes);
     },
-    [setNodes]
+    [nodes, edges, applySteps, selectedNodeId]
   );
+
+  // ── Update node data ─────────────────────────────────────────────
 
   /** Apply a node type upgrade; it persists with the next save. */
   const applyNodeUpgrade = useCallback(
@@ -545,8 +602,10 @@ export function useWorkflowGraph(catalog: NodeCatalog) {
     addAgentNode,
     addTypedNode,
     removeNode,
+    removeNodes,
     moveNode,
-    onNodeDragStop,
+    updateContainerConfig,
+    onNodesDragStop,
     updateNodeData,
     applyNodeUpgrade,
 

@@ -69,6 +69,8 @@ class UserPreferences(BaseModel):
     theme_preference: ThemePreference | None = None
     chat_background: str | None = None
     font_preference: str | None = None
+    accent_theme: str | None = None
+    pinned_workflows: list[int] = []
     default_app_mode: DefaultAppMode = DefaultAppMode.CHAT
 
     # controls which tools are enabled for the user for a specific assistant
@@ -150,6 +152,8 @@ class UserInfo(BaseModel):
                     theme_preference=user.theme_preference,
                     chat_background=user.chat_background,
                     font_preference=user.font_preference,
+                    accent_theme=user.accent_theme,
+                    pinned_workflows=user.pinned_workflows or [],
                     default_app_mode=user.default_app_mode,
                     assistant_specific_configs=assistant_specific_configs,
                 )
@@ -229,6 +233,34 @@ class ChatBackgroundRequest(BaseModel):
 
 class FontPreferenceRequest(BaseModel):
     font_preference: str | None
+
+
+ACCENT_THEMES = ("ocean", "emerald", "violet", "neonai")
+MAX_PINNED_WORKFLOWS = 200
+
+
+class AccentThemeRequest(BaseModel):
+    # None (or "none") clears the accent back to the default theme.
+    accent_theme: str | None
+
+    @field_validator("accent_theme")
+    @classmethod
+    def _validate_accent(cls, value: str | None) -> str | None:
+        if value is None or value == "none":
+            return None
+        if value not in ACCENT_THEMES:
+            raise ValueError(f"accent_theme must be one of {ACCENT_THEMES} or null")
+        return value
+
+
+class PinnedWorkflowsRequest(BaseModel):
+    workflow_ids: list[int]
+
+    @field_validator("workflow_ids")
+    @classmethod
+    def _dedupe_and_cap(cls, value: list[int]) -> list[int]:
+        # dict.fromkeys keeps the user's pin order while dropping duplicates.
+        return list(dict.fromkeys(value))[:MAX_PINNED_WORKFLOWS]
 
 
 class PersonalizationUpdateRequest(BaseModel):

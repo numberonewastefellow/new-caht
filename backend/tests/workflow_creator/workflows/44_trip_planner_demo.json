@@ -1,0 +1,212 @@
+{
+  "name": "Demo: Trip planner (code + parallel + loop)",
+  "description": "Plans a trip for the days you ask for. Agents hand work to each other: one decides the destination, two research it at the same time, one outlines the days, and a loop plans each day. They use general knowledge, so prices and availability are estimates to verify.",
+  "orchestration_mode": "sequential",
+  "schema_version": 2,
+  "timeout_seconds": 600,
+  "is_public": true,
+  "steps": [
+    {
+      "node_key": "intake",
+      "step_name": "Read the request",
+      "step_order": 0,
+      "output_key": "intake",
+      "step_description": "Understands where, how long and who is travelling",
+      "agent_name": "Demo: Trip intake",
+      "agent_def": {
+        "name": "Demo: Trip intake",
+        "description": "Extracts the facts of a trip request as JSON.",
+        "system_prompt": "You extract the facts of a travel request. Reply with one JSON object and nothing else, with exactly these keys:\n- \"destination\": where they want to go. If they leave it open, describe what they want, for example \"a snowy, family-friendly place near the UAE\".\n- \"origin\": where they start from, or \"not stated\".\n- \"days\": the number of days as an integer. Convert phrases: a week is 7, a weekend is 2. If no length is given, use 3.\n- \"days_stated\": true if they gave a length, otherwise false.\n- \"travellers\": who is going, including children's ages if given, or \"not stated\".\n- \"wishes\": what they care about, such as budget, season or activities, or \"none stated\".\nDon't plan anything. Don't add commentary or code fences.",
+        "tool_ids": [],
+        "labels": ["Demo"]
+      }
+    },
+    {
+      "node_key": "plan",
+      "step_type": "code",
+      "step_name": "Work out the days",
+      "step_order": 1,
+      "output_key": "plan",
+      "step_description": "Turns the request into a brief and the number of days",
+      "config": {
+        "code": "import json\n\nMAX_DAYS = 14\n\n\ndef main(inputs):\n    text = inputs[\"intake\"].strip()\n    if text.startswith(\"```\"):\n        text = text.strip(\"`\").removeprefix(\"json\").strip()\n    facts = json.loads(text)\n    asked = int(facts[\"days\"])\n    days = max(1, min(asked, MAX_DAYS))\n    brief = (\n        f\"Destination: {facts['destination']}. From: {facts['origin']}. \"\n        f\"Travellers: {facts['travellers']}. Wishes: {facts['wishes']}. \"\n        f\"Length: {days} days.\"\n    )\n    notes = []\n    if not facts.get(\"days_stated\", True):\n        notes.append(f\"You didn't give a length, so this plans {days} days.\")\n    if asked > MAX_DAYS:\n        notes.append(f\"This plans the first {MAX_DAYS} of the {asked} days you asked for.\")\n    return {\"brief\": brief, \"days\": days, \"note\": \" \".join(notes)}\n",
+        "inputs": { "intake": "$intake.output" },
+        "outputs": [
+          { "name": "brief", "type": "string" },
+          { "name": "days", "type": "integer" },
+          { "name": "note", "type": "string" }
+        ],
+        "timeout_seconds": 5
+      }
+    },
+    {
+      "node_key": "where",
+      "step_name": "Choose the destination",
+      "step_order": 2,
+      "output_key": "where_to_go",
+      "step_description": "Decides first, so everyone after works on the same place",
+      "input_mapping": { "task": "Choose the destination and the best months for this trip. $plan.output.brief" },
+      "agent_name": "Demo: Destination researcher",
+      "agent_def": {
+        "name": "Demo: Destination researcher",
+        "description": "Decides where and when to go.",
+        "system_prompt": "You decide where a trip goes, so the rest of the team can plan it. Start your reply with exactly one line: \"Destination: <place, country>\". Then, in short bullet points: why it fits these travellers, the best months, the cheaper months, and one alternative to consider. Your knowledge can be out of date, so call prices rough estimates. Under 150 words.",
+        "tool_ids": [],
+        "labels": ["Demo"]
+      }
+    },
+    {
+      "node_key": "research",
+      "step_type": "parallel",
+      "step_name": "Research in parallel",
+      "step_order": 3,
+      "output_key": "research",
+      "step_description": "Two researchers work on the chosen destination at the same time",
+      "config": {
+        "branches": [
+          { "label": "Getting there" },
+          { "label": "Where to stay" }
+        ],
+        "join": "wait_all",
+        "on_branch_error": "fail",
+        "max_concurrency": 2
+      }
+    },
+    {
+      "node_key": "travel",
+      "step_name": "Getting there",
+      "step_order": 4,
+      "output_key": "getting_there",
+      "parent_key": "research",
+      "branch_index": 0,
+      "input_mapping": {
+        "task": "Explain how to travel to the chosen destination, with rough costs and visa points to check. Only cover this destination.",
+        "trip": "$plan.output.brief",
+        "chosen destination": "$where_to_go.output"
+      },
+      "agent_name": "Demo: Travel researcher",
+      "agent_def": {
+        "name": "Demo: Travel researcher",
+        "description": "Explains how to get there and rough costs.",
+        "system_prompt": "You research how to travel to a destination someone else has already chosen. Don't suggest other places. Name the destination in your first line. Cover routes, typical flight time, a rough cost per person, and any visa points worth checking. Your knowledge can be out of date, so call prices rough estimates and tell them to confirm visa rules. Use short bullet points, under 150 words.",
+        "tool_ids": [],
+        "labels": ["Demo"]
+      }
+    },
+    {
+      "node_key": "stay",
+      "step_name": "Where to stay",
+      "step_order": 5,
+      "output_key": "where_to_stay",
+      "parent_key": "research",
+      "branch_index": 1,
+      "input_mapping": {
+        "task": "Recommend where to stay at the chosen destination, with rough nightly prices. Only cover this destination.",
+        "trip": "$plan.output.brief",
+        "chosen destination": "$where_to_go.output"
+      },
+      "agent_name": "Demo: Stay researcher",
+      "agent_def": {
+        "name": "Demo: Stay researcher",
+        "description": "Recommends areas and types of stay.",
+        "system_prompt": "You recommend where to stay at a destination someone else has already chosen. Don't suggest other destinations. Name the destination in your first line. Suggest two or three areas or types of stay that fit the travellers and budget, with a rough nightly price. Your knowledge can be out of date, so call prices rough estimates. Use short bullet points, under 150 words.",
+        "tool_ids": [],
+        "labels": ["Demo"]
+      }
+    },
+    {
+      "node_key": "outline",
+      "step_name": "Outline the days",
+      "step_order": 6,
+      "output_key": "outline",
+      "step_description": "Gives each day its own theme, so the days don't repeat",
+      "input_mapping": {
+        "task": "Outline this trip, one distinct theme per day. Number of days: $plan.output.days",
+        "trip": "$plan.output.brief",
+        "chosen destination": "$where_to_go.output",
+        "where they stay": "$where_to_stay.output"
+      },
+      "agent_name": "Demo: Itinerary outliner",
+      "agent_def": {
+        "name": "Demo: Itinerary outliner",
+        "description": "Gives each day of a trip its own theme.",
+        "system_prompt": "You outline a trip. Reply with one JSON array of strings and nothing else, one string per day, with exactly the number of days you're asked for. Each string is a one-line theme naming that day's main place and activity. Every day must be different: don't repeat a place's main activity on another day. The first day includes arriving and the last includes leaving. Keep travel realistic: don't move between far-apart places more than necessary. No commentary or code fences.",
+        "tool_ids": [],
+        "labels": ["Demo"]
+      }
+    },
+    {
+      "node_key": "day_list",
+      "step_type": "code",
+      "step_name": "List the days",
+      "step_order": 7,
+      "output_key": "day_list",
+      "step_description": "One item per day for the loop",
+      "config": {
+        "code": "import json\n\n\ndef main(inputs):\n    text = inputs[\"outline\"].strip()\n    if text.startswith(\"```\"):\n        text = text.strip(\"`\").removeprefix(\"json\").strip()\n    themes = json.loads(text)\n    expected = int(inputs[\"days\"])\n    if len(themes) != expected:\n        raise ValueError(f\"The outline has {len(themes)} days, expected {expected}\")\n    return {\n        \"days\": [\n            {\"label\": f\"Day {i + 1} of {expected}\", \"theme\": theme}\n            for i, theme in enumerate(themes)\n        ]\n    }\n",
+        "inputs": { "outline": "$outline.output", "days": "$plan.output.days" },
+        "outputs": [{ "name": "days", "type": "array" }],
+        "timeout_seconds": 5
+      }
+    },
+    {
+      "node_key": "each_day",
+      "step_type": "loop",
+      "step_name": "Plan each day",
+      "step_order": 8,
+      "output_key": "day_plans",
+      "step_description": "One planner call per day",
+      "config": {
+        "mode": "for_each",
+        "items": "$day_list.output.days",
+        "max_iterations": 14,
+        "collect": "list"
+      }
+    },
+    {
+      "node_key": "day",
+      "step_name": "Day plan",
+      "step_order": 9,
+      "output_key": "day_plan",
+      "parent_key": "each_day",
+      "branch_index": 0,
+      "input_mapping": {
+        "task": "Plan $loop.item.label. Its theme: $loop.item.theme",
+        "trip": "$plan.output.brief",
+        "full outline": "$outline.output",
+        "the plan for the day before": "$loop.previous"
+      },
+      "agent_name": "Demo: Day planner",
+      "agent_def": {
+        "name": "Demo: Day planner",
+        "description": "Plans one day of a trip.",
+        "system_prompt": "You plan one day of a trip from its theme. Start with the day's title, then morning, afternoon and evening in one line each. Stick to this day's theme: the outline shows what other days already cover. Fit the travellers, including children's ages. Under 90 words.",
+        "tool_ids": [],
+        "labels": ["Demo"]
+      }
+    },
+    {
+      "node_key": "wrap",
+      "step_type": "code",
+      "step_name": "Put it together",
+      "step_order": 10,
+      "output_key": "wrap",
+      "step_description": "Assembles the final plan",
+      "config": {
+        "code": "import json\n\n\ndef main(inputs):\n    research = json.loads(inputs[\"research\"])\n    days = json.loads(inputs[\"days\"])\n    lines = [\"## Trip plan\", \"\"]\n    if inputs[\"note\"]:\n        lines += [inputs[\"note\"], \"\"]\n    lines += [\"### Where to go\", inputs[\"where\"], \"\"]\n    for title, text in research.items():\n        lines += [f\"### {title}\", text, \"\"]\n    lines.append(\"### Day by day\")\n    for day in days:\n        lines += [\"\", day]\n    lines += [\"\", \"*Prices and availability are estimates from general knowledge. Check them before booking.*\"]\n    return {\"plan\": \"\\n\".join(lines)}\n",
+        "inputs": {
+          "where": "$where_to_go.output",
+          "research": "$research.output",
+          "days": "$day_plans.output",
+          "note": "$plan.output.note"
+        },
+        "outputs": [{ "name": "plan", "type": "string" }],
+        "timeout_seconds": 5
+      }
+    }
+  ],
+  "starter_messages": [
+    { "name": "6-day family snow trip", "message": "I want to travel from the UAE to a snowy place with my family and 2 kids aged 9 and 10. Find the cheapest, best family staycation and the months with lower prices. Plan for 6 days." },
+    { "name": "A week in Japan", "message": "Plan a week in Japan for a couple who love food and temples." }
+  ]
+}

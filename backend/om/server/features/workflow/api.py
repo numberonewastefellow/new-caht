@@ -291,9 +291,6 @@ def create_workflow_endpoint(
     except WorkflowSaveError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    # Create a wrapper agent so the workflow appears in the agent listing
-    create_or_update_workflow_agent(db_session=db_session, workflow=workflow)
-
     return _workflow_to_response(workflow)
 
 

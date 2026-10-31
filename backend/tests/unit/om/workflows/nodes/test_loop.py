@@ -222,6 +222,11 @@ class TestPrepare:
             ({"items": "$x", "max_iterations": 99}, {"a": StepSummary("agent", 1, "lp", 0)}, "less than or equal"),
             ({"items": "$x"}, {}, "no steps to repeat"),
             ({"items": "$x"}, {"a": StepSummary("agent", 1, "lp", 1)}, "branch 0"),
+            (
+                {"mode": "while", "condition_field": "$a", "operator": "nonsense"},
+                {"a": StepSummary("agent", 1, "lp", 0)},
+                "unknown operator",
+            ),
         ],
     )
     def test_rejects(self, config: dict[str, Any], steps: dict[str, StepSummary], message: str) -> None:
