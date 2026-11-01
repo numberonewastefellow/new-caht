@@ -34,6 +34,7 @@ backend/om/evals/one_off/*.json
 jira_test_env
 settings.json
 backend/tests/workflow_creator/gpt_key
+/deployment/data/sslcerts/
 
 # others
 /deployment/data/nginx/app.conf

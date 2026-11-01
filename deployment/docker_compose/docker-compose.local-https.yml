@@ -1,0 +1,51 @@
+# Local HTTPS. dev.bat adds this file when ../data/sslcerts/ssl.crt exists
+# (create it with setup-local-https.bat). Keep it last in the -f list.
+#
+# Everything a person opens goes through nginx on HTTPS. Containers still talk to each other
+# in plain HTTP on the private Docker network, and the host ports below are for this machine
+# only. !override replaces the port lists from the other compose files instead of adding to
+# them.
+
+services:
+  nginx:
+    ports: !override
+      - "${HOST_PORT_80:-80}:80"
+      - "443:443"
+      - "${HOST_PORT:-3000}:80" # redirects, so old localhost:3000 links keep working
+      - "127.0.0.1:9443:9443" # MinIO console
+      - "127.0.0.1:6443:6443" # Phoenix
+      - "127.0.0.1:3443:3443" # SmartSearch
+    volumes:
+      - ../data/sslcerts:/etc/nginx/sslcerts:ro
+    command: >
+      /bin/sh -c "dos2unix /etc/nginx/conf.d/run-nginx.sh
+      && /etc/nginx/conf.d/run-nginx.sh app.conf.template.local-https"
+
+  api_server:
+    ports: !override
+      - "127.0.0.1:8080:8080"
+
+  relational_db:
+    ports: !override
+      - "127.0.0.1:5432:5432"
+
+  cache:
+    ports: !override
+      - "127.0.0.1:6379:6379"
+
+  opensearch:
+    ports: !override
+      - "127.0.0.1:9200:9200"
+
+  minio:
+    ports: !override
+      - "127.0.0.1:9004:9000"
+      - "127.0.0.1:9005:9001"
+
+  phoenix:
+    ports: !override
+      - "127.0.0.1:6006:6006"
+
+  smartsearch:
+    ports: !override
+      - "127.0.0.1:3001:3000"

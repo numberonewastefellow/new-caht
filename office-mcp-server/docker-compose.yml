@@ -3,7 +3,7 @@ services:
     build: .
     container_name: office-mcp-server
     ports:
-      - "8100:8100"
+      - "127.0.0.1:8100:8100"
     volumes:
       - office_output:/app/output
       - office_templates:/app/templates

@@ -13,7 +13,31 @@ copy env.template .env
 dev build
 ```
 
-The app will be available at http://localhost:3000
+The app will be available at http://localhost:3000, or https://localhost with [local HTTPS](#local-https).
+
+## Local HTTPS
+
+```bat
+setup-local-https.bat
+```
+
+This installs `mkcert` if needed, asks Windows to trust its local certificate authority (choose Yes), and creates `deployment\data\sslcerts\ssl.crt` and `ssl.key`. Those files stay on your machine and are gitignored. Let's Encrypt can't issue for `localhost`; `init-letsencrypt.sh` is the production path.
+
+`dev.bat` turns HTTPS on when `ssl.crt` exists. Add `WEB_DOMAIN=https://localhost` to `.env`, then run `dev up`.
+
+| Address | What it is |
+|---|---|
+| https://localhost | The app |
+| http://localhost, http://localhost:3000 | Redirect to https://localhost |
+| https://localhost:9443 | MinIO console |
+| https://localhost:6443 | Phoenix |
+| https://localhost:3443 | SmartSearch |
+
+- Postgres, Redis, OpenSearch, the API, MinIO, Phoenix, SmartSearch and Office MCP keep their host ports, but only this machine can reach them.
+- Containers still talk to each other in plain HTTP on the Docker network. Scripts running on that network use `http://nginx:8088`.
+- Any registered OAuth or OIDC redirect URLs need to change to `https://localhost/...`.
+
+To go back to HTTP: delete `ssl.crt`, remove `WEB_DOMAIN` from `.env`, and run `dev up`.
 
 ## dev.bat Commands
 

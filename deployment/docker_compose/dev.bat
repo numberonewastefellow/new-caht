@@ -2,6 +2,11 @@
 setlocal enabledelayedexpansion
 
 set COMPOSE_CMD=docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml
+:: Local HTTPS is on when setup-local-https.bat has created the certificate.
+if exist "%~dp0..\data\sslcerts\ssl.crt" (
+    set COMPOSE_CMD=%COMPOSE_CMD% -f docker-compose.local-https.yml
+    echo Local HTTPS is on: https://localhost
+)
 :: NOTE: OpenSearch (the document index) is not listed here; a full `dev up`
 :: starts it (it has no compose profile, so it always runs).
 set INFRA=relational_db cache cortex_embed_vllm minio code-interpreter smartsearch phoenix
@@ -443,6 +448,8 @@ echo   VertualAI Dev Helper
 echo   ===============
 echo.
 echo   Usage: dev.bat [command] [services...]
+echo.
+echo   HTTPS: run setup-local-https.bat once to serve the app on https://localhost.
 echo.
 echo   Commands:
 echo     up                    Start all services (detached), including MCP servers

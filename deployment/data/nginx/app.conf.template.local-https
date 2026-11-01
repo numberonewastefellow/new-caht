@@ -1,0 +1,211 @@
+# HTTPS for local development, with a certificate from setup-local-https.bat.
+# Based on app.conf.template: keep the locations of the two files in step.
+# Port 443 serves the locations itself. A hop through port 80 would make every caller look
+# like 127.0.0.1 to the webhook rate limit, and would log requests in a second place.
+
+# A webhook URL contains its token, so the access log must not record it.
+map $request $om_loggable_request {
+    default $request;
+    "~^(?<om_method>\S+) /api/hooks/\S+ (?<om_protocol>\S+)$" "$om_method /api/hooks/[redacted] $om_protocol";
+}
+
+# Log format to include request latency
+log_format custom_main '$remote_addr - $remote_user [$time_local] "$om_loggable_request" '
+                '$status $body_bytes_sent "$http_referer" '
+                '"$http_user_agent" "$http_x_forwarded_for" '
+                'rt=$request_time';
+
+map $http_upgrade $om_connection_upgrade {
+    default upgrade;
+    "" close;
+}
+
+ssl_certificate /etc/nginx/sslcerts/${SSL_CERT_FILE_NAME};
+ssl_certificate_key /etc/nginx/sslcerts/${SSL_CERT_KEY_FILE_NAME};
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_session_cache shared:SSL:10m;
+
+# The web app always sends HSTS. Browsers would then force HTTPS on every localhost port for
+# two years, breaking other local projects.
+proxy_hide_header Strict-Transport-Security;
+
+upstream api_server {
+    # fail_timeout=0 means we always retry an upstream even if it failed
+    # to return a good HTTP response
+    server ${OM_BACKEND_API_HOST}:8080 fail_timeout=0;
+}
+
+upstream web_server {
+    server ${OM_WEB_SERVER_HOST}:3000 fail_timeout=0;
+}
+
+# Conditionally include MCP upstream configuration
+include /etc/nginx/conf.d/mcp_upstream.conf.inc;
+# Conditionally include Phoenix upstream configuration
+include /etc/nginx/conf.d/phoenix_upstream.conf.inc;
+
+server {
+    listen 80 default_server;
+
+    access_log /var/log/nginx/access.log custom_main;
+    # These paths can contain a webhook's token, and nginx prints the full URL on warnings
+    # and errors.
+    error_log /var/log/nginx/error.log crit;
+
+    # 308 keeps the method and body, so a POST to an old http:// URL isn't turned into a GET.
+    return 308 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl default_server;
+    # Plain HTTP for callers on the Docker network, such as test scripts. Not published to
+    # the host.
+    listen 8088 default_server;
+    http2 on;
+
+    client_max_body_size 5G;    # Maximum upload size
+
+    access_log /var/log/nginx/access.log custom_main;
+
+    # Conditionally include MCP location configuration
+    include /etc/nginx/conf.d/mcp.conf.inc;
+    # Conditionally include Phoenix location configuration
+    include /etc/nginx/conf.d/phoenix.conf.inc;
+
+    # Match both /api/* and /openapi.json in a single rule
+    location ~ ^/(api|openapi.json)(/.*)?$ {
+        # Rewrite /api prefixed matched paths
+        rewrite ^/api(/.*)$ $1 break;
+
+        # misc headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Host $host;
+
+        # need to use 1.1 to support chunked transfers
+        proxy_http_version 1.1;
+        proxy_buffering off;
+
+        # Compress JSON API responses (e.g. /api/agent ~950 kB -> ~150 kB).
+        # text/event-stream is deliberately NOT listed, so SSE token streams are
+        # never held back by the gzip buffer.
+        gzip on;
+        gzip_types application/json;
+        gzip_min_length 1024;
+        gzip_comp_level 5;
+        gzip_proxied any;
+        gzip_vary on;
+
+        # timeout settings
+        proxy_connect_timeout ${NGINX_PROXY_CONNECT_TIMEOUT}s;
+        proxy_send_timeout ${NGINX_PROXY_SEND_TIMEOUT}s;
+        proxy_read_timeout ${NGINX_PROXY_READ_TIMEOUT}s;
+
+        # we don't want nginx trying to do something clever with
+        # redirects, we set the Host: header above already.
+        proxy_redirect off;
+        proxy_pass http://api_server;
+
+        # Public webhook URLs: reject oversized bodies here, before nginx buffers them.
+        # Keep in step with PULSE_WEBHOOK_MAX_BODY_BYTES. A nested location inherits the
+        # settings above except for the rewrite and proxy_pass.
+        location ~ ^/api/hooks/ {
+            client_max_body_size 1m;
+            # These paths contain the webhook's token, and nginx prints the full URL on
+            # warnings and errors. The access log above still records every call.
+            error_log /var/log/nginx/error.log crit;
+            rewrite ^/api(/.*)$ $1 break;
+            proxy_pass http://api_server;
+        }
+    }
+
+    location / {
+        # misc headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Host $host;
+
+        proxy_http_version 1.1;
+
+        # Next.js rendered pages send response headers larger than nginx's
+        # default 4k proxy buffer (session cookies, Cache-Control/Link/x-nextjs-*).
+        # Without this, nginx returns 502 "upstream sent too big header".
+        proxy_buffer_size      16k;
+        proxy_buffers          8 16k;
+        proxy_busy_buffers_size 16k;
+
+        # timeout settings
+        proxy_connect_timeout ${NGINX_PROXY_CONNECT_TIMEOUT}s;
+        proxy_send_timeout ${NGINX_PROXY_SEND_TIMEOUT}s;
+        proxy_read_timeout ${NGINX_PROXY_READ_TIMEOUT}s;
+
+        # we don't want nginx trying to do something clever with
+        # redirects, we set the Host: header above already.
+        proxy_redirect off;
+        proxy_pass http://web_server;
+    }
+}
+
+# Tools with their own web page. These services are optional, so their names are looked up
+# per request: a fixed upstream would stop nginx from starting when one of them is off.
+resolver 127.0.0.11 valid=10s;
+
+server {
+    listen 9443 ssl;
+    http2 on;
+    client_max_body_size 5G;
+
+    location / {
+        set $om_minio_console http://minio:9001;
+        proxy_pass $om_minio_console;
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $om_connection_upgrade;
+    }
+}
+
+server {
+    listen 6443 ssl;
+    http2 on;
+
+    location / {
+        set $om_phoenix http://phoenix:6006;
+        proxy_pass $om_phoenix;
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $om_connection_upgrade;
+    }
+}
+
+server {
+    listen 3443 ssl;
+    http2 on;
+
+    location / {
+        set $om_smartsearch http://smartsearch:3000;
+        proxy_pass $om_smartsearch;
+        proxy_http_version 1.1;
+        proxy_buffering off;
+        proxy_read_timeout ${NGINX_PROXY_READ_TIMEOUT}s;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $om_connection_upgrade;
+    }
+}

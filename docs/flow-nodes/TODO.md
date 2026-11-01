@@ -55,6 +55,23 @@ Work top to bottom, one item at a time: implement, test, check on screen, tick, 
 
 **Not scheduled; the user decides at the end:** durable runs and crash resume, idempotency for side-effecting tools, cost budgets per tenant, approvals inside containers, OpenTelemetry, audit and RBAC, draft/publish, PII retention. See `REVIEW_88eb334e5.md`.
 
+## Local HTTPS, 2026-11-01: live on https://localhost
+
+`dev.bat` turns it on when `deployment/data/sslcerts/ssl.crt` exists (`setup-local-https.bat` creates it); `.env` has `WEB_DOMAIN=https://localhost`. How to use it and go back: `deployment/docker_compose/README-windows-dev.md`. Files: `docker-compose.local-https.yml`, `deployment/data/nginx/app.conf.template.local-https`. Backup: `D:/llm/backups/virtualai_postgres_before_local_https_20261101_125229.dump`.
+
+**Always start through `dev.bat`, or add `-f docker-compose.local-https.yml`:** compose without it gives nginx the HTTP config and no port 443.
+
+**Tested on the live stack:** the certificate is trusted by Windows; `http://localhost:3000` redirects; no HSTS; plain `http://nginx:8088` works from the Docker network; webhook URLs are `https://localhost/api/hooks/...`; file upload and a demo chat work (919 events over 19 s, trace opens); `main_trace_check` 11/11, `main_nesting_e2e` 28/28, `main_saves_e2e` 11/11. From the LAN address only 80, 443 and 3000 are open; from this machine all ports still work.
+
+**Earlier, on a separate nginx:** tokens redacted in logs, oversized webhook body 413, spoofed `X-Forwarded-For` ignored, a real browser saw no plain HTTP or mixed content.
+
+**Open:**
+- `Secure` login cookie: needs the user's sign-in. The code sets it from `WEB_DOMAIN`.
+- Registered OAuth redirect URLs need changing to `https://localhost/...`.
+- IIS on this PC listens on IPv6 port 80, so `http://localhost/` shows its welcome page. Port 3000, `127.0.0.1` and HTTPS aren't affected.
+- Docker Desktop shows every published-port caller as `172.19.0.1`, so here all webhook callers still share one rate-limit bucket. The `.prod` templates still hop through port 80: that review finding stays open.
+- Not from HTTPS: knowledge file deletes are stuck, 35 files since 2026-10-24, plus `https-test.txt` from this test. The lightweight worker in `backend/supervisord.conf` (used here, `USE_LIGHTWEIGHT_BACKGROUND_WORKER=true`) has no `user_file_delete` in its queue list, so nothing processes these deletes. Not fixed.
+
 ## Final review, 2026-11-01: not fixed, the user decides
 
 Three independent reviewers. "Reproduced" means I ran it; "read" means traced in the code.
