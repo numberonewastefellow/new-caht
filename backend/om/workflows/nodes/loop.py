@@ -151,6 +151,7 @@ class LoopRunnerV1:
 
         results: list[Any] = []
         last_scope: RunState | None = None
+        files_by_step: dict[str, dict[str, list[Any]]] = {}
         # A while condition reads what the last iteration produced.
         condition_ctx = ctx
         limit = config.max_iterations if items is None else min(len(items), config.max_iterations)
@@ -183,6 +184,7 @@ class LoopRunnerV1:
             if scope.timed_out:
                 state.timed_out = True
             results.append(_iteration_result(body, scope))
+            _collect_iteration_files(ctx.graph.output_keys_under(body), scope, files_by_step)
             last_scope = scope
             condition_ctx = scope_ctx
             if state.timed_out:
@@ -190,6 +192,8 @@ class LoopRunnerV1:
 
         if last_scope is not None:
             _merge_last_iteration(ctx, body, last_scope)
+        if files_by_step:
+            ctx.state.context.shared_data.setdefault("step_files", {}).update(files_by_step)
         output = (
             json.dumps(results, ensure_ascii=False)
             if config.collect == "list"
@@ -295,11 +299,19 @@ def _merge_last_iteration(ctx: RunContext, body: list[WorkflowNode], scope: RunS
         if node.node_key in scope.completed_keys:
             ctx.state.record_output(node.output_key, scope.context.step_outputs[node.output_key])
             ctx.state.completed_keys.add(node.node_key)
-    files = scope.context.shared_data.get("step_files", {})
-    body_keys = {node.output_key for node in body}
-    for key, info in files.items():
-        if key in body_keys:
-            ctx.state.context.shared_data.setdefault("step_files", {})[key] = info
+
+
+def _collect_iteration_files(
+    body_keys: set[str], scope: RunState, files_by_step: dict[str, dict[str, list[Any]]]
+) -> None:
+    """Text keeps only the last iteration, but every iteration's files are real results."""
+    iteration_files = scope.context.shared_data.get("step_files", {})
+    for key in body_keys:
+        info = iteration_files.get(key)
+        if info:
+            collected = files_by_step.setdefault(key, {"file_ids": [], "files": []})
+            collected["file_ids"].extend(info.get("file_ids", []))
+            collected["files"].extend(info.get("files", []))
 
 
 def _iteration_marker(

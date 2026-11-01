@@ -18,7 +18,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/hooks/useToast";
-import { useWebhook, useWebhookConfig, useWebhookRuns } from "@/hooks/useWebhooks";
+import {
+  useWebhook,
+  useWebhookConfig,
+  useWebhookRuns,
+  useWebhookWorkflowTools,
+} from "@/hooks/useWebhooks";
 import { useUser } from "@/providers/UserProvider";
 import { SvgAlertTriangle, SvgArrowLeft, SvgEdit, SvgExternalLink, SvgLink, SvgRefreshCw, SvgSlash } from "@opal/icons";
 import { chatHref } from "@/lib/schedules/api";
@@ -112,6 +117,7 @@ export default function WebhookDetailPage({ webhookId }: { webhookId: number }) 
   const { webhook, error, isLoading } = useWebhook(webhookId);
   const { runs } = useWebhookRuns(webhookId);
   const { config } = useWebhookConfig();
+  const { tools } = useWebhookWorkflowTools(webhook?.workflow_id ?? null);
   const [editing, setEditing] = useState(false);
   const [credentials, setCredentials] = useState<WebhookCredentials | null>(null);
   const [grace, setGrace] = useState("24");
@@ -161,6 +167,10 @@ export default function WebhookDetailPage({ webhookId }: { webhookId: number }) 
   }
 
   const isOwner = !!user && webhook.user_id === user.id;
+  // An admin may not have access to the workflow, so its tools' names may not load
+  const toolNames = webhook.allowed_tool_ids.map(
+    (id) => tools.find((tool) => tool.id === id)?.name ?? `Tool #${id}`
+  );
   const dedupLabel = (
     dedupOptions(webhook.auth_mode).find((o) => o.value === webhook.dedup_source)?.label ??
     webhook.dedup_source
@@ -177,11 +187,6 @@ export default function WebhookDetailPage({ webhookId }: { webhookId: number }) 
         <WebhookModal
           webhook={webhook}
           onClose={() => setEditing(false)}
-          ownerNote={
-            isOwner
-              ? null
-              : `You are editing ${webhook.owner_email ?? "another user"}'s webhook as an admin. It stays theirs and keeps running as them; they will be notified.`
-          }
         />
       )}
       {credentials && (
@@ -275,9 +280,11 @@ export default function WebhookDetailPage({ webhookId }: { webhookId: number }) 
                 </div>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <Button secondary leftIcon={SvgEdit} onClick={() => setEditing(true)}>
-                  Edit
-                </Button>
+                {isOwner && (
+                  <Button secondary leftIcon={SvgEdit} onClick={() => setEditing(true)}>
+                    Edit
+                  </Button>
+                )}
                 {isOwner && (
                   <Button secondary leftIcon={SvgRefreshCw} onClick={() => rotateModal.toggle(true)}>
                     Rotate
@@ -330,6 +337,14 @@ export default function WebhookDetailPage({ webhookId }: { webhookId: number }) 
                   {formatRelative(webhook.previous_valid_until)}
                 </Fact>
               )}
+              <div className="col-span-2 md:col-span-4">
+                <Fact label="Tools its runs can use">
+                  {toolNames.length > 0 ? toolNames.join(", ") : "None"}
+                </Fact>
+              </div>
+              <Fact label="Notify when a run succeeds">
+                {webhook.notify_on_success ? "Yes" : "No"}
+              </Fact>
               <div className="col-span-2 md:col-span-4">
                 <Fact label="What the workflow receives">
                   <pre className="whitespace-pre-wrap font-mono text-[12.5px] text-text-04">

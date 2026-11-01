@@ -103,7 +103,7 @@ class TestRunHook:
 class TestExpectedOutputStorage:
     """The schema lives in the step's config column; the rest stays in its own columns."""
 
-    SCHEMA = {"type": "object", "properties": {"days": {"type": "array"}}}
+    SCHEMA = {"type": "object", "properties": {"days": {"type": "array", "items": {"type": "string"}}}}
 
     def test_no_schema_leaves_the_config_as_it_was(self) -> None:
         dumped = AgentStepConfigV1(agent_id=1).model_dump()

@@ -573,6 +573,7 @@ def finish_run(
     skip_reason: str | None = None,
     output_preview: str | None = None,
     workflow_execution_id: int | None = None,
+    clear_dedup_key: bool = False,
 ) -> bool:
     """Move a run to a terminal status (only from `from_statuses`, so a reaped run
     is never overwritten by a late worker and vice versa). Returns True if updated."""
@@ -595,6 +596,8 @@ def finish_run(
         values["output_preview"] = output_preview
     if workflow_execution_id is not None:
         values["workflow_execution_id"] = workflow_execution_id
+    if clear_dedup_key:
+        values["dedup_key"] = None
     result = db_session.execute(
         update(PulseRun)
         .where(PulseRun.id == run_id)
@@ -625,6 +628,7 @@ def record_trigger_outcome(
     run_status: str,
     scheduled_for: datetime.datetime,
     max_consecutive_failures: int,
+    counts_as_failure: bool = True,
 ) -> tuple[int, bool]:
     """Update the trigger's last-run fields + failure streak.
 
@@ -649,7 +653,7 @@ def record_trigger_outcome(
     if run_status == RUN_SUCCEEDED:
         trigger.consecutive_failures = 0
         _advance_last_success(db_session, trigger_id, scheduled_for)
-    elif run_status in FAILURE_RUN_STATUSES:
+    elif run_status in FAILURE_RUN_STATUSES and counts_as_failure:
         trigger.consecutive_failures = (trigger.consecutive_failures or 0) + 1
         if (
             max_consecutive_failures > 0

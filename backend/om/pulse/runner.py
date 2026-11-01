@@ -58,6 +58,8 @@ from om.db.workflow import get_latest_execution_by_chat_session
 from om.pulse.access import PulseAccessError
 from om.pulse.access import resolve_run_context
 from om.pulse.outcome import finalize_run
+from om.pulse.outcome import WEBHOOK_RUN_EXPIRED
+from om.pulse.outcome import webhook_run_expired
 from om.pulse.spec import spec_from_schedule
 from om.pulse.timing import ensure_utc
 from om.pulse.timing import get_zone
@@ -275,6 +277,14 @@ def _execute_pulse_run(run_id: int, tenant_id: str, hostname: str) -> str | None
                 return finalize_run(
                     db_session, trigger, run_id, status=RUN_SKIPPED, skip_reason=closed
                 )
+            if webhook_run_expired(run, db_now(db_session)):
+                return finalize_run(
+                    db_session,
+                    trigger,
+                    run_id,
+                    status=RUN_MISSED,
+                    skip_reason=WEBHOOK_RUN_EXPIRED,
+                )
 
         # 3. access re-check
         try:
@@ -305,6 +315,7 @@ def _execute_pulse_run(run_id: int, tenant_id: str, hostname: str) -> str | None
                         run_id,
                         status=RUN_FAILED,
                         error=f"Not run, the owner's rate limit was reached: {e}"[:250],
+                        never_started=True,
                     )
                 return finalize_run(
                     db_session,
@@ -323,6 +334,8 @@ def _execute_pulse_run(run_id: int, tenant_id: str, hostname: str) -> str | None
             ombot_flow=False,
         )
         chat_session.pulse_trigger_id = trigger.id
+        if isinstance(trigger, PulseWebhook):
+            chat_session.tool_allowlist = trigger.allowed_tool_ids
         db_session.commit()
         chat_session_id = chat_session.id
         trigger_id = trigger.id

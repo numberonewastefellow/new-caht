@@ -120,6 +120,7 @@ def construct_tools(
     allowed_tool_ids: list[int] | None = None,
     chat_session_id: str | None = None,
     search_usage_forcing_setting: SearchToolUsage = SearchToolUsage.AUTO,
+    strict_allowlist: bool = False,
 ) -> dict[int, list[Tool]]:
     """Constructs tools based on agent configuration and available APIs.
 
@@ -429,7 +430,8 @@ def construct_tools(
                 )
 
     if (
-        not added_search_tool
+        not strict_allowlist
+        and not added_search_tool
         and search_usage_forcing_setting == SearchToolUsage.ENABLED
         and not DISABLE_VECTOR_DB
     ):
@@ -458,8 +460,9 @@ def construct_tools(
         tool_dict[search_tool_db_model.id] = [search_tool]
 
     # Always inject MemoryTool when the user has the memory tool enabled,
-    # bypassing agent tool associations and allowed_tool_ids filtering
-    if user.enable_memory_tool:
+    # bypassing agent tool associations and allowed_tool_ids filtering, unless the caller
+    # needs the list to be exact (strict_allowlist)
+    if user.enable_memory_tool and not strict_allowlist:
         try:
             memory_tool_db_model = get_builtin_tool(db_session, MemoryTool)
             memory_tool = MemoryTool(

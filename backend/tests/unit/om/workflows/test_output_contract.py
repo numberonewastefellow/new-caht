@@ -54,8 +54,8 @@ class TestReadOutput:
         with pytest.raises(OutputContractError, match="'days' is a required property"):
             read_output('{"other": 1}', DAYS)
 
-    def test_a_cut_off_reply_is_stopped_by_the_schema_where_it_can_be(self) -> None:
-        with pytest.raises(OutputContractError, match="too short|non-empty"):
+    def test_a_cut_off_reply_is_refused_rather_than_closed_and_checked(self) -> None:
+        with pytest.raises(OutputContractError, match="stops before"):
             read_output('{"days": [', DAYS)
 
     def test_unicode_stays_readable(self) -> None:

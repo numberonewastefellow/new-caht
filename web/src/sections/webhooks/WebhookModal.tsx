@@ -9,7 +9,7 @@ import InputTextArea from "@/refresh-components/inputs/InputTextArea";
 import InputSelect from "@/refresh-components/inputs/InputSelect";
 import { toast } from "@/hooks/useToast";
 import { useWorkflows } from "@/hooks/useWorkflows";
-import { useWebhookConfig } from "@/hooks/useWebhooks";
+import { useWebhookConfig, useWebhookWorkflowTools } from "@/hooks/useWebhooks";
 import { SvgAlertTriangle, SvgLink } from "@opal/icons";
 import {
   AUTH_MODE_LABELS,
@@ -35,8 +35,6 @@ export interface WebhookModalProps {
   onClose: () => void;
   /** After creating: the URL and secret, which are shown only once. */
   onCreated?: (credentials: WebhookCredentials) => void;
-  /** Shown when an admin edits someone else's webhook. */
-  ownerNote?: string | null;
 }
 
 function Note({ children, testId }: { children: React.ReactNode; testId?: string }) {
@@ -54,7 +52,7 @@ function Note({ children, testId }: { children: React.ReactNode; testId?: string
   );
 }
 
-export default function WebhookModal({ webhook, onClose, onCreated, ownerNote }: WebhookModalProps) {
+export default function WebhookModal({ webhook, onClose, onCreated }: WebhookModalProps) {
   const isEdit = !!webhook;
   const { workflows, isLoading: workflowsLoading } = useWorkflows();
   const { config } = useWebhookConfig();
@@ -68,6 +66,15 @@ export default function WebhookModal({ webhook, onClose, onCreated, ownerNote }:
     webhook?.dedup_source ?? "webhook_id"
   );
   const [dedupPath, setDedupPath] = useState(webhook?.dedup_path ?? "");
+  const [allowedTools, setAllowedTools] = useState<number[]>(webhook?.allowed_tool_ids ?? []);
+  const { tools, isLoading: toolsLoading, error: toolsError } = useWebhookWorkflowTools(workflowId);
+  // A tool taken off the workflow has no checkbox, so it can't stay in what's saved. If the
+  // list didn't load, leave what's saved alone.
+  const toolsReady = workflowId != null && !toolsLoading && !toolsError;
+  const chosenTools = toolsReady
+    ? allowedTools.filter((id) => tools.some((tool) => tool.id === id))
+    : undefined;
+  const [notifyOnSuccess, setNotifyOnSuccess] = useState(webhook?.notify_on_success ?? false);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -105,6 +112,8 @@ export default function WebhookModal({ webhook, onClose, onCreated, ownerNote }:
           input_message: message,
           dedup_source: dedupSource,
           dedup_path: path,
+          allowed_tool_ids: chosenTools,
+          notify_on_success: notifyOnSuccess,
         });
         toast.success("Webhook saved");
         onClose();
@@ -118,6 +127,8 @@ export default function WebhookModal({ webhook, onClose, onCreated, ownerNote }:
           header_name: authMode === "header_token" ? headerName.trim() : null,
           dedup_source: dedupSource,
           dedup_path: path,
+          allowed_tool_ids: chosenTools,
+          notify_on_success: notifyOnSuccess,
         });
         onCreated?.(credentials);
       }
@@ -141,7 +152,6 @@ export default function WebhookModal({ webhook, onClose, onCreated, ownerNote }:
         />
         <Modal.Body twoTone={false}>
           <div className="flex flex-col gap-5 w-full">
-            {ownerNote && <Note>{ownerNote}</Note>}
             {!isEdit && (
               <Note testId="webhook-runs-as-you">
                 Runs use your access: your documents, files and connected accounts. Anyone holding
@@ -163,7 +173,10 @@ export default function WebhookModal({ webhook, onClose, onCreated, ownerNote }:
                 <FieldLabel>Workflow</FieldLabel>
                 <InputSelect
                   value={workflowId != null ? String(workflowId) : ""}
-                  onValueChange={(v) => setWorkflowId(Number(v))}
+                  onValueChange={(v) => {
+                    setWorkflowId(Number(v));
+                    setAllowedTools([]);
+                  }}
                   disabled={isEdit}
                 >
                   <InputSelect.Trigger
@@ -281,6 +294,68 @@ export default function WebhookModal({ webhook, onClose, onCreated, ownerNote }:
                 </div>
               )}
             </div>
+
+            {workflowId != null && (
+              <div className="flex flex-col gap-1.5" data-testid="webhook-tools">
+                <FieldLabel>Tools its runs can use</FieldLabel>
+                <Text as="p" secondaryBody text03>
+                  Text sent by the other system is in these runs, and could try to direct the
+                  AI. So they can only use the tools you tick. Be careful with tools that send
+                  or change things.
+                </Text>
+                {!toolsReady ? (
+                  <Text as="p" secondaryBody text03>
+                    {toolsError ? "Couldn't load this workflow's tools." : "Loading tools…"}
+                  </Text>
+                ) : tools.length === 0 ? (
+                  <Text as="p" secondaryBody text03>
+                    This workflow&apos;s steps don&apos;t use any tools.
+                  </Text>
+                ) : (
+                  tools.map((tool) => (
+                    <label key={tool.id} className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mt-1"
+                        checked={allowedTools.includes(tool.id)}
+                        onChange={(e) =>
+                          setAllowedTools((current) =>
+                            e.target.checked
+                              ? [...current, tool.id]
+                              : current.filter((id) => id !== tool.id)
+                          )
+                        }
+                      />
+                      <span className="flex flex-col min-w-0">
+                        <Text as="span" mainUiBody text04>
+                          {tool.name}
+                        </Text>
+                        <Text as="span" secondaryBody text03>
+                          Used by: {tool.steps.join(", ")}
+                        </Text>
+                      </span>
+                    </label>
+                  ))
+                )}
+              </div>
+            )}
+
+            <label className="flex items-start gap-2 cursor-pointer" data-testid="webhook-notify-on-success">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={notifyOnSuccess}
+                onChange={(e) => setNotifyOnSuccess(e.target.checked)}
+              />
+              <span className="flex flex-col min-w-0">
+                <Text as="span" mainUiBody text04>
+                  Notify me when a run succeeds
+                </Text>
+                <Text as="span" secondaryBody text03>
+                  Shows the result in your notifications. Failures notify you either way.
+                </Text>
+              </span>
+            </label>
 
             {formError && (
               <Text as="p" mainUiBody className="text-status-text-error-05" data-testid="webhook-form-error">

@@ -157,6 +157,7 @@ export interface WorkflowCreate {
 }
 
 export interface WorkflowUpdate {
+  schema_version?: number;
   name?: string | null;
   description?: string | null;
   orchestration_mode?: string | null;

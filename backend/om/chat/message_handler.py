@@ -464,6 +464,23 @@ def open_step_at(open_steps: dict[int, dict], turn_index: int) -> dict | None:
     return open_steps[max(started)] if started else None
 
 
+def _stopped_message(engine_errors: list[Exception]) -> str:
+    """What a reloaded chat shows for a workflow that stopped before it answered."""
+    from om.workflows.blocks import WorkflowNodeError
+
+    if not engine_errors:
+        return ""
+    if isinstance(engine_errors[0], WorkflowNodeError):
+        return f"This workflow stopped: {engine_errors[0]}"
+    return "This workflow stopped because of an internal error."
+
+
+def _redact_api_key(text: str, llm: "LLM | None") -> str:
+    if llm and llm.config.api_key and len(llm.config.api_key) > 2:
+        return text.replace(llm.config.api_key, "[REDACTED_API_KEY]")
+    return text
+
+
 def _run_workflow_and_save(
     workflow: "AgentWorkflow",  # noqa: F821
     user_message: str,
@@ -475,6 +492,7 @@ def _run_workflow_and_save(
     assistant_message: ChatMessage,
     sandbox_session_id: str | None = None,
     chat_files: list[ChatFile] | None = None,
+    tool_allowlist: list[int] | None = None,
 ) -> AnswerStream:
     """Run a workflow and persist the assistant message + tool calls to DB.
 
@@ -500,7 +518,18 @@ def _run_workflow_and_save(
         len(chat_files or []),
         [f.filename for f in (chat_files or [])],
     )
-    for packet in run_workflow(
+    # The engine raising mustn't lose the steps that already ran: they're saved below, then
+    # the error carries on up to the caller.
+    engine_errors: list[Exception] = []
+
+    def _until_error(run: AnswerStream) -> AnswerStream:
+        try:
+            yield from run
+        except Exception as e:
+            db_session.rollback()
+            engine_errors.append(e)
+
+    for packet in _until_error(run_workflow(
         workflow=workflow,
         user_message=user_message,
         emitter=emitter,
@@ -511,7 +540,8 @@ def _run_workflow_and_save(
         chat_files=chat_files,
         sandbox_session_id=sandbox_session_id,
         assistant_message_id=assistant_message.id,
-    ):
+        tool_allowlist=tool_allowlist,
+    )):
         yield packet
 
         ptype = getattr(packet.obj, "type", None)
@@ -583,7 +613,7 @@ def _run_workflow_and_save(
     # === Persist to DB ===
     from om.tools.models import ToolCallInfo
 
-    final_answer = "".join(answer_parts)
+    final_answer = "".join(answer_parts) or _stopped_message(engine_errors)
     reasoning = "".join(thinking_parts) if thinking_parts else None
 
     # Build ToolCallInfo entries for each completed workflow step
@@ -639,15 +669,23 @@ def _run_workflow_and_save(
             )
         )
 
-    save_chat_turn(
-        message_text=final_answer,
-        reasoning_tokens=reasoning,
-        tool_calls=tool_calls,
-        citation_to_doc={},
-        all_search_docs={},
-        db_session=db_session,
-        assistant_message=assistant_message,
-    )
+    try:
+        save_chat_turn(
+            message_text=final_answer,
+            reasoning_tokens=reasoning,
+            tool_calls=tool_calls,
+            citation_to_doc={},
+            all_search_docs={},
+            db_session=db_session,
+            assistant_message=assistant_message,
+        )
+    except Exception:
+        if not engine_errors:
+            raise
+        # Why the workflow stopped matters more to the user than this
+        logger.exception("Could not save the steps of a workflow that had already failed")
+    if engine_errors:
+        raise engine_errors[0]
 
 
 def stream_chat_message(
@@ -1114,6 +1152,9 @@ def stream_chat_message(
                 assistant_message=assistant_response,
                 sandbox_session_id=chat_session.sandbox_session_id,
                 chat_files=chat_files_for_tools,
+                # From the session, not the request: a webhook run that pauses and is
+                # resumed here still has the event's text in its context.
+                tool_allowlist=chat_session.tool_allowlist,
             )
 
         elif new_msg_req.deep_research:
@@ -1181,17 +1222,22 @@ def stream_chat_message(
         error_msg = str(e)
         stack_trace = traceback.format_exc()
 
-        if llm:
+        from om.workflows.blocks import WorkflowNodeError
+
+        if isinstance(e, WorkflowNodeError):
+            # The step's own message, and the reason the workflow stopped: step runners
+            # write it for the user and keep exception details in the server log.
+            yield StreamingError(
+                error=_redact_api_key(error_msg, llm),
+                error_code="WORKFLOW_STEP_FAILED",
+                is_retryable=False,
+            )
+        elif llm:
             client_error_msg, error_code, is_retryable = litellm_exception_to_error_msg(
                 e, llm
             )
-            if llm.config.api_key and len(llm.config.api_key) > 2:
-                client_error_msg = client_error_msg.replace(
-                    llm.config.api_key, "[REDACTED_API_KEY]"
-                )
-                stack_trace = stack_trace.replace(
-                    llm.config.api_key, "[REDACTED_API_KEY]"
-                )
+            client_error_msg = _redact_api_key(client_error_msg, llm)
+            stack_trace = _redact_api_key(stack_trace, llm)
 
             yield StreamingError(
                 error=client_error_msg,

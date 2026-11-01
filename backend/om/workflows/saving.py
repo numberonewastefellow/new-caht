@@ -38,6 +38,7 @@ from om.workflows.nodes.base import StepSummary
 from om.workflows.nodes.builtin import get_node_registry
 from om.workflows.nodes.registry import NodeTypeRegistry
 from om.workflows.nodes.registry import UnknownNodeTypeError
+from om.workflows.reference_check import old_format_problem
 from om.workflows.reference_check import reference_problem
 from om.workflows.versioning import pin_workflow_version
 
@@ -331,9 +332,13 @@ def _check_references(
     steps: list[WorkflowStepCreate], schema_version: int, mode: str
 ) -> None:
     # In LLM-decision mode the orchestrator writes each task; there's no fixed order.
-    if schema_version < CURRENT_SCHEMA_VERSION or mode == "llm_decision":
+    if mode == "llm_decision":
         return
-    problem = reference_problem(steps)
+    problem = (
+        old_format_problem(steps)
+        if schema_version < CURRENT_SCHEMA_VERSION
+        else reference_problem(steps)
+    )
     if problem:
         raise WorkflowSaveError(problem)
 

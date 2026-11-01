@@ -209,6 +209,31 @@ class TestParallelRun:
         assert combined["B0"] == "fine"
         assert "bad broke" in combined["B1"]["error"]
 
+    def test_a_failed_branch_is_an_explicit_error_for_later_steps(self) -> None:
+        ctx, container = _setup(
+            [_sleep("ok", 1, 0, 0.01, "fine"), _sleep("bad", 2, 1, 0.01, "", fail=True)],
+            on_branch_error="continue",
+        )
+        _drive(ctx, container)
+        outputs = ctx.state.context.step_outputs
+        assert outputs["ok"] == "fine"
+        assert "bad broke" in json.loads(outputs["bad"])["error"]
+
+    def test_an_unexpected_error_doesnt_reach_the_user(self) -> None:
+        ctx, container = _setup(
+            [_sleep("ok", 1, 0, 0.01, "fine"), _sleep("bad", 2, 1, 0.01, "")],
+            on_branch_error="continue",
+        )
+        real = ctx.registry
+        with patch.object(
+            _SleepRunner,
+            "run",
+            side_effect=RuntimeError("connection to db-internal:5432 failed"),
+        ):
+            _, outcome, _ = _drive(ctx, container)
+        assert real is ctx.registry
+        assert "db-internal" not in (outcome.output or "") + (outcome.error or "")
+
     def test_first_success_does_not_wait_for_slow_branches(self) -> None:
         ctx, container = _setup(
             [_sleep("fast", 1, 0, 0.05, "quick"), _sleep("slow", 2, 1, 1.5, "late")],

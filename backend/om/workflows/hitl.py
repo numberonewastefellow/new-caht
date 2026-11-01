@@ -19,6 +19,23 @@ _INPUT_SIGNAL_PATTERNS = [
 # Maximum clarification rounds before truncating older entries
 MAX_CLARIFICATION_ROUNDS = 5
 
+# Added to the system prompt of a step that may pause, so turning the option on is
+# all the workflow's author has to do.
+INPUT_REQUEST_GUIDANCE = f"""
+
+## Asking the user
+You can pause this workflow to ask the user for information.
+If you can't do your task properly without something only the user can give you, \
+start your reply with {NEEDS_INPUT_PREFIX} and ask for everything you need at once, as questions.
+Otherwise do your task and don't ask anything. Don't ask for what you've already been given."""
+
+
+def with_input_guidance(system_prompt: str) -> str:
+    """Tell the agent how to ask, unless its own prompt already covers it."""
+    if NEEDS_INPUT_PREFIX in system_prompt.upper():
+        return system_prompt
+    return system_prompt + INPUT_REQUEST_GUIDANCE
+
 
 def agent_requests_input(output: str) -> bool:
     """Detect whether the agent is asking the user for information.

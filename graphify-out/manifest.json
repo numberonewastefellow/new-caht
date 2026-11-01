@@ -2935,8 +2935,8 @@
     "semantic_hash": "dd95c1f27753a7d32ad1fb31bc40bcea"
   },
   "web/src/components/workflow-builder/NodeConfigPanel.tsx": {
-    "mtime": 1793476556.1475954,
-    "ast_hash": "51cd6c572b1c03a49da4ca377d4208c4",
+    "mtime": 1793529947.1396444,
+    "ast_hash": "d074b102cc01e572c822aa2bf926b0d0",
     "semantic_hash": ""
   },
   "web/src/components/workflow-builder/OrchestratorNode.tsx": {
@@ -3615,8 +3615,8 @@
     "semantic_hash": ""
   },
   "web/src/lib/workflows/interfaces.ts": {
-    "mtime": 1793385309.0666618,
-    "ast_hash": "704e3aae64cc56c22fb140156db776e2",
+    "mtime": 1793529947.1587777,
+    "ast_hash": "01546d76172dbfe3756d6a677cef5f81",
     "semantic_hash": ""
   },
   "web/src/providers/AppBackgroundProvider.tsx": {
@@ -4450,8 +4450,8 @@
     "semantic_hash": ""
   },
   "web/src/refresh-pages/WorkflowEditorPage.tsx": {
-    "mtime": 1793476545.5634458,
-    "ast_hash": "3d31c1d3572e250e7473f972eacc453b",
+    "mtime": 1793557989.7710862,
+    "ast_hash": "ea7bac0c1c04367c5642de95aac2f262",
     "semantic_hash": ""
   },
   "web/src/refresh-pages/WorkflowListPage.tsx": {
@@ -4465,8 +4465,8 @@
     "semantic_hash": ""
   },
   "web/src/refresh-pages/WorkflowVisualBuilderPage.tsx": {
-    "mtime": 1793436920.159184,
-    "ast_hash": "da319f8e562bd357cac4fb3d0d6a0944",
+    "mtime": 1793529947.1970022,
+    "ast_hash": "ce575040ad9ae2f4a7c1831cb2719c1c",
     "semantic_hash": ""
   },
   "web/src/refresh-pages/WorkspacesDashboardPage.tsx": {
@@ -8210,17 +8210,17 @@
     "semantic_hash": ""
   },
   "deployment/data/nginx/phoenix.conf.inc": {
-    "mtime": 1793474517.732008,
+    "mtime": 1793518721.364859,
     "ast_hash": "8e6be3b9512bd4239e466e2ed4afd684",
     "semantic_hash": "8e6be3b9512bd4239e466e2ed4afd684"
   },
   "deployment/data/nginx/phoenix_upstream.conf.inc": {
-    "mtime": 1793474517.7121172,
+    "mtime": 1793518721.3509743,
     "ast_hash": "5dcccd38bbd2426b3b2e6e24ab4a32fb",
     "semantic_hash": "5dcccd38bbd2426b3b2e6e24ab4a32fb"
   },
   "deployment/data/nginx/run-nginx.sh": {
-    "mtime": 1793474517.674836,
+    "mtime": 1793518721.3112192,
     "ast_hash": "f4599f2735dac507af49a4e41bd720fa",
     "semantic_hash": "f4599f2735dac507af49a4e41bd720fa"
   },
@@ -25985,8 +25985,8 @@
     "semantic_hash": "b53338f0a4be82764b477f4ac2d9a1f5"
   },
   "deployment/docker_compose/README-windows-dev.md": {
-    "mtime": 1792825922.1856544,
-    "ast_hash": "61abfe28a9043d3aed4550948d7dd9c6",
+    "mtime": 1793517778.0552936,
+    "ast_hash": "12b8d77eef6fbce90a6b767b1ba8ed86",
     "semantic_hash": ""
   },
   "deployment/docker_compose/README.md": {
@@ -26260,8 +26260,8 @@
     "semantic_hash": "3af73f3a730e8a13fd0438d9e96b28b1"
   },
   "deployment/helm/charts/onyx/templates/nginx-conf.yaml": {
-    "mtime": 1793288241.9054043,
-    "ast_hash": "1f346b2f9b2c8641f2ca453a0888a858",
+    "mtime": 1793529947.1119506,
+    "ast_hash": "6d7109cfe30067a69ae22fb8784baed6",
     "semantic_hash": ""
   },
   "deployment/helm/charts/onyx/templates/serviceaccount.yaml": {
@@ -26315,8 +26315,8 @@
     "semantic_hash": "ca48d9564924d8a25309fa92d8b9a405"
   },
   "deployment/helm/charts/onyx/values.yaml": {
-    "mtime": 1793385309.0306525,
-    "ast_hash": "986a9332dde016a444792d2dbea72432",
+    "mtime": 1793529947.1204793,
+    "ast_hash": "35461c9af628385d216f78d4ebc87f9e",
     "semantic_hash": ""
   },
   "deployment/terraform/modules/aws/README.md": {
@@ -26385,9 +26385,9 @@
     "semantic_hash": ""
   },
   "office-mcp-server/docker-compose.yml": {
-    "mtime": 1773067352.6512246,
-    "ast_hash": "148a317a9ce3e04c8dcb292a3f67fd60",
-    "semantic_hash": "148a317a9ce3e04c8dcb292a3f67fd60"
+    "mtime": 1793517772.7759593,
+    "ast_hash": "581ecfbb2bed0e300bb9dbc802b7739b",
+    "semantic_hash": ""
   },
   "phoenix/.agents/skills/agent-browser/SKILL.md": {
     "mtime": 1773139730.4421284,
@@ -35165,9 +35165,9 @@
     "semantic_hash": "078119f6a42ad189f8081b96ad799970"
   },
   "backend/om/chat/citation_processor.py": {
-    "mtime": 1784402973.5354536,
-    "ast_hash": "4ffb64aa8cfa55743fe6d94a4402054d",
-    "semantic_hash": "4ffb64aa8cfa55743fe6d94a4402054d"
+    "mtime": 1793529946.9610035,
+    "ast_hash": "c9531bc3336b260a7e162bb14987bbda",
+    "semantic_hash": ""
   },
   "backend/om/chat/citation_utils.py": {
     "mtime": 1784402973.5444524,
@@ -35190,13 +35190,13 @@
     "semantic_hash": "26628d9fd807c0266d5ca6ecc5e9774f"
   },
   "backend/om/chat/llm_step.py": {
-    "mtime": 1793472066.9238422,
-    "ast_hash": "fae5dcf216f40864bdaf1e0694927a33",
+    "mtime": 1793529946.9660141,
+    "ast_hash": "1f5cebfb8a2f3faa48cf98896ea5e4cd",
     "semantic_hash": ""
   },
   "backend/om/chat/models.py": {
-    "mtime": 1792846068.66608,
-    "ast_hash": "f439d03a0015a70986bf2328536ef225",
+    "mtime": 1793529946.9757726,
+    "ast_hash": "85c559699659827d8206a82a54b1d907",
     "semantic_hash": ""
   },
   "backend/om/chat/prompt_utils.py": {
@@ -35235,8 +35235,8 @@
     "semantic_hash": "b7667dc32d4cba3c677ac52cc7a0ca0f"
   },
   "backend/om/configs/constants.py": {
-    "mtime": 1793473361.1150417,
-    "ast_hash": "440883925c6354e178c98eaeb403c3bf",
+    "mtime": 1793529946.97879,
+    "ast_hash": "9376dee5804c4a2fe28e0385d5aba096",
     "semantic_hash": ""
   },
   "backend/om/configs/embedding_configs.py": {
@@ -36320,8 +36320,8 @@
     "semantic_hash": "bc2fb03e915cccca221d139c49f5f6ec"
   },
   "backend/om/db/models.py": {
-    "mtime": 1793473361.1186073,
-    "ast_hash": "41617b0e1c6c9f77d37b676ef4703b8a",
+    "mtime": 1793529946.9865334,
+    "ast_hash": "ad02e452047760c10f4d1f83f7c24f95",
     "semantic_hash": ""
   },
   "backend/om/db/notification.py": {
@@ -37095,9 +37095,9 @@
     "semantic_hash": "fc38446ea41c88f1f491acab1c9e7d30"
   },
   "backend/om/llm/litellm_singleton/monkey_patches.py": {
-    "mtime": 1784402977.1901896,
-    "ast_hash": "a2e83afc042eabf16084366e99b4f64d",
-    "semantic_hash": "a2e83afc042eabf16084366e99b4f64d"
+    "mtime": 1793529947.0051134,
+    "ast_hash": "6c8c95b4a2cd3ddaaa5ba799a47fe0ef",
+    "semantic_hash": ""
   },
   "backend/om/llm/model_metadata_enrichments.json": {
     "mtime": 1771612888.8448725,
@@ -38100,13 +38100,13 @@
     "semantic_hash": "6a3a4a6a0638431f95fd88623a923e88"
   },
   "backend/om/tools/tool_constructor.py": {
-    "mtime": 1792844897.8221827,
-    "ast_hash": "335f8195e9e11b3b93256b6123de3870",
+    "mtime": 1793529947.0333583,
+    "ast_hash": "df8f374205c397294091d329b3f83d65",
     "semantic_hash": ""
   },
   "backend/om/tools/tool_implementations/agent_tool.py": {
-    "mtime": 1793476133.902888,
-    "ast_hash": "4bbaf95b9e93f72e16aa2d8b06f2a8d5",
+    "mtime": 1793557982.6811237,
+    "ast_hash": "d53cb3d71552cb1609372804f2f5de34",
     "semantic_hash": ""
   },
   "backend/om/tools/tool_implementations/custom/base_tool_types.py": {
@@ -38575,8 +38575,8 @@
     "semantic_hash": ""
   },
   "backend/om/workflows/workflow_engine.py": {
-    "mtime": 1793476181.0482752,
-    "ast_hash": "656660a25b9cdbf03921891964e82959",
+    "mtime": 1793557987.0036545,
+    "ast_hash": "a2a1cce20f4c8138fbecba7b595c07cc",
     "semantic_hash": ""
   },
   "backend/tests/unit/migration_safety/test_no_shadowed_globals.py": {
@@ -38955,9 +38955,9 @@
     "semantic_hash": "700d6de67cd8d470132b025c3a0cb9eb"
   },
   "backend/tests/unit/om/llm/test_litellm_monkey_patches.py": {
-    "mtime": 1784402984.515005,
-    "ast_hash": "806025cb4dd5e40f451ee4cf67d29633",
-    "semantic_hash": "806025cb4dd5e40f451ee4cf67d29633"
+    "mtime": 1793529947.0885644,
+    "ast_hash": "2ef7e076c37380d606097cbd7a8ab6a2",
+    "semantic_hash": ""
   },
   "backend/tests/unit/om/llm/test_llm_provider_options.py": {
     "mtime": 1792871087.6993518,
@@ -39400,8 +39400,8 @@
     "semantic_hash": "b554affb18a444aa1b3bacadb458ece5"
   },
   "backend/om/chat/message_handler.py": {
-    "mtime": 1793437384.4077432,
-    "ast_hash": "f07c73ea72d83b1e76bdd789957c1f49",
+    "mtime": 1793529946.9690127,
+    "ast_hash": "7319f9d2441e8c667fd1c689d57b0941",
     "semantic_hash": ""
   },
   "backend/om/db/agent.py": {
@@ -41865,13 +41865,13 @@
     "semantic_hash": ""
   },
   "backend/om/configs/pulse_configs.py": {
-    "mtime": 1793473361.1160429,
-    "ast_hash": "85921d620ad0b46cc0eea4365a0323a2",
+    "mtime": 1793529946.982826,
+    "ast_hash": "7da735e5b36285849274d52f07173098",
     "semantic_hash": ""
   },
   "backend/om/db/pulse.py": {
-    "mtime": 1793473361.1196067,
-    "ast_hash": "9119feb9ef9cb16b98e387970c6a1e3c",
+    "mtime": 1793529946.9910674,
+    "ast_hash": "e14f55b9e6c3e0519c769fe7669c6c59",
     "semantic_hash": ""
   },
   "backend/om/pulse/__init__.py": {
@@ -41895,23 +41895,23 @@
     "semantic_hash": ""
   },
   "backend/om/pulse/notifications.py": {
-    "mtime": 1793473361.1241171,
-    "ast_hash": "c0b4702e6cabb82a4d4768303f41218a",
+    "mtime": 1793529947.0086167,
+    "ast_hash": "d43607175f0887dcb1c2a86df8dafd79",
     "semantic_hash": ""
   },
   "backend/om/pulse/outcome.py": {
-    "mtime": 1793473361.1241171,
-    "ast_hash": "449742c45b9e9a211a6bb34c31a15f1d",
+    "mtime": 1793529947.0121346,
+    "ast_hash": "a846d47cd55a7d65f075785d538828d5",
     "semantic_hash": ""
   },
   "backend/om/pulse/runner.py": {
-    "mtime": 1793473361.1251173,
-    "ast_hash": "31f6036f9059f117ab6f0d60d028c1e8",
+    "mtime": 1793529947.0151634,
+    "ast_hash": "80ee55870c027403cf1d17567d678644",
     "semantic_hash": ""
   },
   "backend/om/pulse/scheduler.py": {
-    "mtime": 1793473361.126117,
-    "ast_hash": "495370a2ac166c8a741c2e3c187eb64b",
+    "mtime": 1793529947.0196886,
+    "ast_hash": "e092f1effb3494e1cb7dcb8773a05878",
     "semantic_hash": ""
   },
   "backend/om/pulse/spec.py": {
@@ -42215,8 +42215,8 @@
     "semantic_hash": ""
   },
   "deployment/helm/charts/onyx/templates/pulse-worker.yaml": {
-    "mtime": 1792946531.2427142,
-    "ast_hash": "899f044b3c41489a8b77c4ddeacc84de",
+    "mtime": 1793529947.1166444,
+    "ast_hash": "ae9948492f3f1945f2e1412a199f6a7c",
     "semantic_hash": ""
   },
   "docs/scheduled-workflows/DESIGN.md": {
@@ -42225,8 +42225,8 @@
     "semantic_hash": ""
   },
   "docs/scheduled-workflows/OPERATIONS.md": {
-    "mtime": 1793473361.1839223,
-    "ast_hash": "2e2b9f8aefae015d040f500cae61f7bc",
+    "mtime": 1793529947.1286373,
+    "ast_hash": "abca2848cdcfb84db9f1d086d8ee25e7",
     "semantic_hash": ""
   },
   "docs/scheduled-workflows/PROGRESS.md": {
@@ -42235,8 +42235,8 @@
     "semantic_hash": ""
   },
   "docs/scheduled-workflows/USER_GUIDE.md": {
-    "mtime": 1793473361.1849287,
-    "ast_hash": "8b505fa806b52556c13d4790cdf03a5b",
+    "mtime": 1793529947.1316466,
+    "ast_hash": "627b33d77dc1b7a50f76f619040131cb",
     "semantic_hash": ""
   },
   "docs/scheduled-workflows/mockups/schedules.html": {
@@ -42890,18 +42890,18 @@
     "semantic_hash": ""
   },
   "backend/om/workflows/branches.py": {
-    "mtime": 1793434321.8798366,
-    "ast_hash": "d8ea993bd9f063275fc4e41ef27ddbcc",
+    "mtime": 1793529947.0413742,
+    "ast_hash": "792349aad2a62cebb8042d0ebe61d5b2",
     "semantic_hash": ""
   },
   "backend/om/workflows/graph.py": {
-    "mtime": 1793434270.2025526,
-    "ast_hash": "2b9e06c946e718762b42791a9a069000",
+    "mtime": 1793529947.0443742,
+    "ast_hash": "09aeed361923e193ed0891badf96a128",
     "semantic_hash": ""
   },
   "backend/om/workflows/hitl.py": {
-    "mtime": 1793385308.852325,
-    "ast_hash": "a43c0777170c06a30d2811d16ae42205",
+    "mtime": 1793557976.6599674,
+    "ast_hash": "322b7114a04e017f6c7fc1752b4968be",
     "semantic_hash": ""
   },
   "backend/om/workflows/inputs.py": {
@@ -42915,13 +42915,13 @@
     "semantic_hash": ""
   },
   "backend/om/workflows/nodes/agent.py": {
-    "mtime": 1793472191.1627538,
-    "ast_hash": "cf6ac43d947695c589be6b4392788593",
+    "mtime": 1793529947.0485358,
+    "ast_hash": "abcf8509a5d970bf48afc72e8ddccaa3",
     "semantic_hash": ""
   },
   "backend/om/workflows/nodes/agent_tools.py": {
-    "mtime": 1793472126.806978,
-    "ast_hash": "f53ed7f43134703cca1b43aa7a1dd9bb",
+    "mtime": 1793557984.0498424,
+    "ast_hash": "6b7eba27dd64e5f6be5318654db46a41",
     "semantic_hash": ""
   },
   "backend/om/workflows/nodes/base.py": {
@@ -42935,8 +42935,8 @@
     "semantic_hash": ""
   },
   "backend/om/workflows/nodes/code.py": {
-    "mtime": 1793437313.421583,
-    "ast_hash": "ff173fefadf99cf191b8d0da0354e45a",
+    "mtime": 1793529947.0544617,
+    "ast_hash": "3b7f4c323eeecc169ef198ae64ccf9af",
     "semantic_hash": ""
   },
   "backend/om/workflows/nodes/code_harness.py": {
@@ -42945,13 +42945,13 @@
     "semantic_hash": ""
   },
   "backend/om/workflows/nodes/loop.py": {
-    "mtime": 1793437313.4230986,
-    "ast_hash": "0ed9dae7d54a84a548f5421b8b1a2aea",
+    "mtime": 1793529947.0579715,
+    "ast_hash": "aae000887c157ca42ae8cb4afe3c87b6",
     "semantic_hash": ""
   },
   "backend/om/workflows/nodes/parallel.py": {
-    "mtime": 1793437313.424118,
-    "ast_hash": "e7e8b2f6a66638b27ed0a21db5f561ad",
+    "mtime": 1793529947.0604718,
+    "ast_hash": "bc7a16d6e2a0f21ed817f14fe0f91a5b",
     "semantic_hash": ""
   },
   "backend/om/workflows/nodes/registry.py": {
@@ -42965,13 +42965,13 @@
     "semantic_hash": ""
   },
   "backend/om/workflows/saving.py": {
-    "mtime": 1793472126.807984,
-    "ast_hash": "9cb9c907abc31faefb863bd5f64d0dee",
+    "mtime": 1793529947.0710368,
+    "ast_hash": "ece7ae5c479e49ba30ceaf564dfadf54",
     "semantic_hash": ""
   },
   "backend/om/workflows/sequential.py": {
-    "mtime": 1793437384.4042273,
-    "ast_hash": "72b3c2472824c23763d9fcd2d20784b1",
+    "mtime": 1793529947.0760546,
+    "ast_hash": "2e54546fea99a637835cd34bc6f17985",
     "semantic_hash": ""
   },
   "backend/om/workflows/state.py": {
@@ -43630,13 +43630,13 @@
     "semantic_hash": ""
   },
   "backend/tests/unit/om/workflows/nodes/test_loop.py": {
-    "mtime": 1793432831.383608,
-    "ast_hash": "99e49a5a627f277cde9f0224a860d342",
+    "mtime": 1793529947.0915606,
+    "ast_hash": "ef1112a458fe5dd305a55eb167c76120",
     "semantic_hash": ""
   },
   "backend/tests/unit/om/workflows/nodes/test_parallel.py": {
-    "mtime": 1793437384.5621016,
-    "ast_hash": "7d64a103fd7d3520dc015dfbc0a5d846",
+    "mtime": 1793529947.09607,
+    "ast_hash": "fe51c9afe1ace7e7f84a1cb91c8a72f8",
     "semantic_hash": ""
   },
   "backend/tests/unit/om/workflows/nodes/test_registry.py": {
@@ -43645,8 +43645,8 @@
     "semantic_hash": ""
   },
   "backend/tests/unit/om/workflows/nodes/test_runners.py": {
-    "mtime": 1793472126.8209887,
-    "ast_hash": "44889b809178c385b45b6ec1d9a459fa",
+    "mtime": 1793529947.099476,
+    "ast_hash": "c919755d5c0a1120e77622419189f6e5",
     "semantic_hash": ""
   },
   "backend/tests/unit/om/workflows/nodes/test_sequential_block.py": {
@@ -43660,8 +43660,8 @@
     "semantic_hash": ""
   },
   "backend/tests/unit/om/workflows/nodes/test_step_agents.py": {
-    "mtime": 1793472126.8228798,
-    "ast_hash": "dba3d62f6698cc12e562b5b7a25e7e7b",
+    "mtime": 1793529947.1037712,
+    "ast_hash": "e4f3df9efe69b23595fab987f1d54a60",
     "semantic_hash": ""
   },
   "code-interpreter/code-interpreter/app/api/security.py": {
@@ -43865,13 +43865,13 @@
     "semantic_hash": ""
   },
   "web/src/lib/workflows/stepAgents.test.ts": {
-    "mtime": 1793387888.9426155,
-    "ast_hash": "41dc2f938301c0ab560cacbfa7cec813",
+    "mtime": 1793529947.1719124,
+    "ast_hash": "139d6d1760a7f70bf298ef9c554a0fb7",
     "semantic_hash": ""
   },
   "web/src/lib/workflows/stepAgents.ts": {
-    "mtime": 1793387885.2333906,
-    "ast_hash": "d29f077e01a6947b0a998749a3dad427",
+    "mtime": 1793529947.1771588,
+    "ast_hash": "425d1dcc7545d6c5998a3a62d8cbe0ca",
     "semantic_hash": ""
   },
   "web/src/lib/workflows/testFixtures.ts": {
@@ -43985,8 +43985,8 @@
     "semantic_hash": ""
   },
   "backend/om/workflows/reference_check.py": {
-    "mtime": 1793472546.399297,
-    "ast_hash": "e84c068b01f88f7933ea6caf8b673da2",
+    "mtime": 1793529947.0680335,
+    "ast_hash": "2579e0a1015c68039b698f2690bd5cff",
     "semantic_hash": ""
   },
   "backend/tests/external_dependency_unit/workflow/test_workflow_save_safety_db.py": {
@@ -44060,8 +44060,8 @@
     "semantic_hash": ""
   },
   "web/src/components/workflow-builder/StepOptionsSection.tsx": {
-    "mtime": 1793432065.0181792,
-    "ast_hash": "20af92a8b91b8ce601ab56e4039d02d9",
+    "mtime": 1793557988.178502,
+    "ast_hash": "f62fc5a5d6b692f6f5625d4dc4ec9323",
     "semantic_hash": ""
   },
   "web/src/components/workflow-builder/containerLayout.test.ts": {
@@ -44150,13 +44150,13 @@
     "semantic_hash": ""
   },
   "docs/flow-nodes/TODO.md": {
-    "mtime": 1793476868.7608929,
-    "ast_hash": "1f8209b05824bec0eaccf5f6c8198326",
+    "mtime": 1793559006.6348581,
+    "ast_hash": "b20b982890cfd18a84022ada9fd5110f",
     "semantic_hash": ""
   },
   "docs/flow-nodes/WEBHOOKS_HANDOVER.md": {
-    "mtime": 1793473361.1819227,
-    "ast_hash": "86d3daeb2aecc2125910690c76615499",
+    "mtime": 1793529947.1251135,
+    "ast_hash": "ca09ce222e9143cd7736a0283ef7a12b",
     "semantic_hash": ""
   },
   "docs/flow-nodes/research/04-container-ui.md": {
@@ -44175,8 +44175,8 @@
     "semantic_hash": ""
   },
   "backend/om/db/pulse_webhook.py": {
-    "mtime": 1793473361.1206076,
-    "ast_hash": "93c581404c730b75e37d233761594104",
+    "mtime": 1793529946.994572,
+    "ast_hash": "ce535d29a1c7bd873dc426aab05c8723",
     "semantic_hash": ""
   },
   "backend/om/pulse/triggers/__init__.py": {
@@ -44240,13 +44240,13 @@
     "semantic_hash": ""
   },
   "backend/om/server/features/pulse/webhook_api.py": {
-    "mtime": 1793473361.1523502,
-    "ast_hash": "5d19f34dc24d1eb7592792b4715eff95",
+    "mtime": 1793529947.0255816,
+    "ast_hash": "b56a85e988d9faec535297ac25586156",
     "semantic_hash": ""
   },
   "backend/om/server/features/pulse/webhook_models.py": {
-    "mtime": 1793473361.1533551,
-    "ast_hash": "9812fa429ae8c835ba9603d1398e77ad",
+    "mtime": 1793529947.030842,
+    "ast_hash": "9e24bef1c0c0567a6e12a5c2f0abd99e",
     "semantic_hash": ""
   },
   "backend/om/server/middleware/cors.py": {
@@ -44255,8 +44255,8 @@
     "semantic_hash": ""
   },
   "backend/om/workflows/output_contract.py": {
-    "mtime": 1793472017.601895,
-    "ast_hash": "1ac270e165212f97226dbd006bb7cebc",
+    "mtime": 1793529947.063977,
+    "ast_hash": "1e92f75bd60d2c9dd606fbb44bb278b0",
     "semantic_hash": ""
   },
   "backend/tests/external_dependency_unit/pulse/test_pulse_health.py": {
@@ -44280,8 +44280,8 @@
     "semantic_hash": ""
   },
   "backend/tests/integration/tests/pulse/test_pulse_webhooks_api.py": {
-    "mtime": 1793473361.170864,
-    "ast_hash": "5cf6665b17dc8525ca9fab674981b188",
+    "mtime": 1793529947.08456,
+    "ast_hash": "1e8973755bdd6f2853c7762b736b384b",
     "semantic_hash": ""
   },
   "backend/tests/unit/om/pulse/test_webhook_core.py": {
@@ -44290,8 +44290,8 @@
     "semantic_hash": ""
   },
   "backend/tests/unit/om/workflows/test_output_contract.py": {
-    "mtime": 1793472126.8199813,
-    "ast_hash": "2bd38a4b7e965718d4b9e4b4e0eb0328",
+    "mtime": 1793529947.106921,
+    "ast_hash": "c94c5cc3906d7fb657670ffb655d35fb",
     "semantic_hash": ""
   },
   "web/src/app/admin/features/page.test.tsx": {
@@ -44300,8 +44300,8 @@
     "semantic_hash": ""
   },
   "web/src/app/admin/services/page.test.tsx": {
-    "mtime": 1793473361.186922,
-    "ast_hash": "f62db2c2d77bc5134af4a5e7a2f0e87d",
+    "mtime": 1793529947.134648,
+    "ast_hash": "28d77774241e701225b8df288f1e161b",
     "semantic_hash": ""
   },
   "web/src/app/app/schedules/webhooks/[id]/page.tsx": {
@@ -44330,8 +44330,8 @@
     "semantic_hash": ""
   },
   "web/src/hooks/useWebhooks.ts": {
-    "mtime": 1793473361.198128,
-    "ast_hash": "7dbe7e1d9b063163df701f662d81737a",
+    "mtime": 1793529947.1458225,
+    "ast_hash": "8a28444708a0b36045e29a16e8c0c0e6",
     "semantic_hash": ""
   },
   "web/src/lib/schedules/webhookHelp.test.ts": {
@@ -44340,8 +44340,8 @@
     "semantic_hash": ""
   },
   "web/src/lib/schedules/webhookHelp.ts": {
-    "mtime": 1793473361.2021492,
-    "ast_hash": "a4e029ac897b7413f5745510a4455a76",
+    "mtime": 1793529947.1503503,
+    "ast_hash": "c18f9b166a56419f1675835239454ded",
     "semantic_hash": ""
   },
   "web/src/lib/schedules/webhooks.test.ts": {
@@ -44350,8 +44350,8 @@
     "semantic_hash": ""
   },
   "web/src/lib/schedules/webhooks.ts": {
-    "mtime": 1793473361.2031448,
-    "ast_hash": "dc072396154ff107cdad78160a194fb3",
+    "mtime": 1793529947.155267,
+    "ast_hash": "adb2f58c5e7b70050e6770263a61b0df",
     "semantic_hash": ""
   },
   "web/src/lib/workflows/nodeConfigRules.test.ts": {
@@ -44360,8 +44360,8 @@
     "semantic_hash": ""
   },
   "web/src/refresh-pages/WebhookDetailPage.tsx": {
-    "mtime": 1793473361.2081437,
-    "ast_hash": "40ce379ab26b6a9a34597940a331f62e",
+    "mtime": 1793529947.1858058,
+    "ast_hash": "4363a920aae19941635759545abb6eac",
     "semantic_hash": ""
   },
   "web/src/sections/webhooks/AdminWebhooksTable.tsx": {
@@ -44380,8 +44380,8 @@
     "semantic_hash": ""
   },
   "web/src/sections/webhooks/WebhookModal.tsx": {
-    "mtime": 1793473361.2180078,
-    "ast_hash": "5c7e2395b174212f8867768eb13cbee1",
+    "mtime": 1793529947.2025108,
+    "ast_hash": "dd675a38bd5864aafd33d1a0115b4a1a",
     "semantic_hash": ""
   },
   "web/src/sections/webhooks/WebhookSecretDialog.tsx": {
@@ -44402,6 +44402,81 @@
   "backend/tests/workflow_creator/dry_run_workflows.py": {
     "mtime": 1793476373.2364635,
     "ast_hash": "db96604c21a1592fa99268a1e86431c9",
+    "semantic_hash": ""
+  },
+  "backend/alembic/versions/0005_webhook_allowed_tools.py": {
+    "mtime": 1793529947.4905682,
+    "ast_hash": "84ff6c194c03bf4fee5915f2b843e63b",
+    "semantic_hash": ""
+  },
+  "backend/alembic/versions/0006_webhook_notify_on_success.py": {
+    "mtime": 1793529947.711543,
+    "ast_hash": "1b42f8f77165478305cbc65b414fd8cf",
+    "semantic_hash": ""
+  },
+  "backend/tests/external_dependency_unit/pulse/test_pulse_webhook_never_started.py": {
+    "mtime": 1793529947.994289,
+    "ast_hash": "81d8425ab42a896546cf60644bbc7817",
+    "semantic_hash": ""
+  },
+  "backend/tests/external_dependency_unit/pulse/test_pulse_webhook_notify_success.py": {
+    "mtime": 1793529948.2773566,
+    "ast_hash": "60f2fbea17d155f8f85385a676c886f6",
+    "semantic_hash": ""
+  },
+  "backend/tests/unit/om/pulse/test_webhook_tool_allowlist.py": {
+    "mtime": 1793529948.6985927,
+    "ast_hash": "cab95c66a416736e80c5e48a5d6e63c6",
+    "semantic_hash": ""
+  },
+  "backend/tests/unit/om/workflows/engine_golden/golden/45_service_incident_note.json": {
+    "mtime": 1793529949.006713,
+    "ast_hash": "f5a1fe7521c938befb445a7d7503f20a",
+    "semantic_hash": ""
+  },
+  "backend/tests/unit/om/workflows/engine_golden/golden/46_page_change_summary.json": {
+    "mtime": 1793529949.3334923,
+    "ast_hash": "26b03d892380986c5779438e2f012272",
+    "semantic_hash": ""
+  },
+  "backend/tests/unit/om/workflows/test_agent_output_integrity.py": {
+    "mtime": 1793529949.6384797,
+    "ast_hash": "94e159644c6cdb2d76f790fe68d23dfa",
+    "semantic_hash": ""
+  },
+  "backend/tests/workflow_creator/workflows/45_service_incident_note.json": {
+    "mtime": 1793529949.922727,
+    "ast_hash": "98c96d0be449f74a81f553e034a14f6a",
+    "semantic_hash": ""
+  },
+  "backend/tests/workflow_creator/workflows/46_page_change_summary.json": {
+    "mtime": 1793529950.1847637,
+    "ast_hash": "0fce428c9acb9d53688a2d720ba9d8e5",
+    "semantic_hash": ""
+  },
+  "web/src/components/workflows/WorkflowUpgradeNotice.test.tsx": {
+    "mtime": 1793529950.6343899,
+    "ast_hash": "214eb367ae8adf0c7add1ae42f740e06",
+    "semantic_hash": ""
+  },
+  "web/src/components/workflows/WorkflowUpgradeNotice.tsx": {
+    "mtime": 1793529950.9975603,
+    "ast_hash": "dec2e3f347489b80106b57d12583fd8a",
+    "semantic_hash": ""
+  },
+  "deployment/docker_compose/docker-compose.event-sources.yml": {
+    "mtime": 1793529950.4193482,
+    "ast_hash": "467b2bded0fe08005dd07762675c8ef9",
+    "semantic_hash": ""
+  },
+  "deployment/docker_compose/docker-compose.local-https.yml": {
+    "mtime": 1793514216.8441796,
+    "ast_hash": "87364815c5756ef8656d7f89db59557b",
+    "semantic_hash": ""
+  },
+  "backend/tests/unit/om/workflows/test_hitl_guidance.py": {
+    "mtime": 1793558021.32927,
+    "ast_hash": "55771ad3067760e7939b5cfaa8a7c146",
     "semantic_hash": ""
   }
 }

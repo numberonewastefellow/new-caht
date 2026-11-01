@@ -188,3 +188,5 @@ class LlmStepResult(BaseModel):
     # Raw LLM text before any display-oriented filtering/sanitization.
     # Used for fallback tool-call extraction when providers emit calls as text.
     raw_answer: str | None = None
+    # Why the model stopped: "length" means it hit its output limit mid-reply
+    finish_reason: str | None = None

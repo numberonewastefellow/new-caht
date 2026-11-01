@@ -43,6 +43,7 @@ export const WEBHOOK_FEATURE_HELP: HelpContent = {
         "Open Schedules, then the Webhooks tab, and press New webhook.",
         "Workflow: choose the one to run. You need access to it.",
         "What the workflow receives: write the message. {{payload}} is the whole event, {{payload.ticket.title}} or {{payload.items[0]}} is one value, and {{date}} and {{now}} give the time.",
+        "Tools its runs can use: tick only what the workflow needs for this event. None are ticked by default.",
         "How the caller proves itself: use Signed (Standard Webhooks) if the other system can sign requests. Use Secret in a header only if it can't, because that mode doesn't protect the data or stop replays.",
         "What makes an event a repeat: systems often retry, and a repeat doesn't run again. Choose the webhook-id header when signed, or a field in the body such as event.id.",
         "Copy the URL and secret straight away. They're only shown once. If you lose them, press Rotate to get new ones.",
@@ -82,22 +83,22 @@ export const WEBHOOK_FEATURE_HELP: HelpContent = {
         { name: "429", detail: "Too many calls or too many runs waiting. Retry after the time in Retry-After." },
         { name: "503", detail: "Redis is down. Retry after the time in Retry-After." },
       ],
-      note: "If a call was refused, the webhook's page shows why, such as \"Signature does not match\".",
+      note: "If a call was refused, the webhook's page shows why, such as \"Signature does not match\". A repeat of an event that never got to run, because the webhook was paused or a limit was reached, runs as new. A repeat of one that did start is a duplicate, even if it failed, because it may already have changed something.",
     },
     {
       title: "Stop it",
       rows: [
-        { name: "Pause", detail: "Switch it off. Calls are refused until you turn it back on. Runs still waiting are skipped when a worker reaches them, and don't come back." },
+        { name: "Pause", detail: "Switch it off. Calls are refused until you turn it back on. Runs still waiting are skipped when a worker reaches them. The sender can resend those events once it's back on." },
         { name: "Rotate", detail: "Get a new URL and secret. You choose how long the old ones keep working, so you can update the other system first." },
         { name: "Revoke", detail: "Use this if the URL or secret may have leaked. They stop working immediately, and runs still waiting won't start." },
         { name: "Delete", detail: "Removes the webhook and its run history. Chats from earlier runs stay." },
         { name: "Allow webhooks", detail: "Admin > Workspace > General. Turns every webhook off at once. Existing webhooks are kept." },
       ],
-      note: "Admins can see every webhook under Admin > Pulse > Webhooks. They can pause or revoke one, but only its owner can rotate it, because new credentials would let someone start runs as the owner.",
+      note: "Admins can see every webhook under Admin > Pulse > Webhooks. They can pause, revoke or delete one, but only its owner can edit or rotate it, because runs use the owner's access.",
     },
     {
       title: "Before you rely on it",
-      text: "Runs use the owner's access: their documents, files and connected accounts. The data a system sends is marked for the AI as data rather than instructions, but that can't fully prevent an instruction hidden in it from being followed. So check which tools the workflow can use, especially ones that send or change things.",
+      text: "Runs use the owner's access: their documents, files and connected accounts. The data a system sends is marked for the AI as data rather than instructions, but that can't fully prevent an instruction hidden in it from being followed. So a webhook's runs can only use the tools its owner ticks, and none by default. Be careful with tools that send or change things.",
       note: "Event data kept with each run is cleared after 7 days, but the text the workflow received stays in that run's chat. After 5 failed runs in a row a webhook pauses itself and notifies its owner.",
     },
   ],
@@ -115,6 +116,7 @@ const WEBHOOK_SETTINGS: HelpRow[] = [
   { name: "PULSE_WEBHOOK_TIMESTAMP_TOLERANCE_SECONDS", value: "300", detail: "Allowed clock difference on signatures." },
   { name: "PULSE_WEBHOOK_PAYLOAD_RETENTION_DAYS", value: "7", detail: "How long event data is kept with each run." },
   { name: "PULSE_WEBHOOK_LISTEN_TTL_SECONDS", value: "300", detail: "How long Listen stays open." },
+  { name: "PULSE_WEBHOOK_RUN_MAX_WAIT_SECONDS", value: "86400", detail: "A run still waiting after this long isn't run. It's recorded as missed and the owner is notified." },
 ];
 
 export const WEBHOOK_SERVICE_HELP: HelpContent = {
@@ -139,7 +141,7 @@ export const WEBHOOK_SERVICE_HELP: HelpContent = {
       title: "Settings",
       text: "Set these in the .env file in deployment/docker_compose, then recreate the service that reads the setting.",
       rows: WEBHOOK_SETTINGS,
-      note: "PULSE_WEBHOOK_WORKER_CONCURRENCY is read by pulse_webhook_worker, PULSE_WEBHOOK_PAYLOAD_RETENTION_DAYS by pulse_scheduler, and the others by api_server.",
+      note: "PULSE_WEBHOOK_WORKER_CONCURRENCY is read by pulse_webhook_worker, PULSE_WEBHOOK_PAYLOAD_RETENTION_DAYS by pulse_scheduler, PULSE_WEBHOOK_RUN_MAX_WAIT_SECONDS by pulse_scheduler and pulse_webhook_worker, and the others by api_server.",
     },
     {
       title: "Security settings",
@@ -180,8 +182,8 @@ export const WEBHOOK_SERVICE_HELP: HelpContent = {
       ],
     },
     {
-      title: "Not supported yet",
-      text: "The Helm chart doesn't include this worker or the nginx limits, so webhooks won't work on Kubernetes until both are added.",
+      title: "Kubernetes",
+      text: "The Helm chart includes this worker and the nginx limits, but that hasn't been run on a real cluster yet.",
     },
   ],
 };

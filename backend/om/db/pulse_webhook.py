@@ -15,9 +15,11 @@ from sqlalchemy import update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
+from om.db.models import AgentWorkflow
 from om.db.models import PulseRun
 from om.db.models import PulseTrigger
 from om.db.models import PulseWebhook
+from om.db.models import Tool
 from om.db.pulse import ACTIVE_RUN_STATUSES
 from om.db.pulse import db_now
 from om.db.pulse import FIRED_WEBHOOK
@@ -51,8 +53,12 @@ def create_pulse_webhook(
     header_name: str | None,
     dedup_source: str,
     dedup_path: str | None,
+    allowed_tool_ids: list[int] | None = None,
+    notify_on_success: bool = False,
 ) -> PulseWebhook:
     webhook = PulseWebhook(
+        allowed_tool_ids=allowed_tool_ids or [],
+        notify_on_success=notify_on_success,
         user_id=user_id,
         updated_by_id=user_id,
         workflow_id=workflow_id,
@@ -215,6 +221,19 @@ def count_active_webhook_runs(db_session: Session) -> int:
         .where(PulseRun.fired_by == FIRED_WEBHOOK)
         .where(PulseRun.status.in_(ACTIVE_RUN_STATUSES))
     ).scalar_one()
+
+
+def workflow_tools(workflow: AgentWorkflow) -> dict[int, tuple[Tool, list[str]]]:
+    """Every tool the workflow's steps can use, with the names of the steps using it."""
+    found: dict[int, tuple[Tool, list[str]]] = {}
+    for step in sorted(workflow.steps, key=lambda s: s.step_order):
+        if step.agent is None:
+            continue
+        for tool in step.agent.tools:
+            override = step.tool_ids_override
+            if override is None or tool.id in override:
+                found.setdefault(tool.id, (tool, []))[1].append(step.step_name)
+    return found
 
 
 @dataclass(frozen=True)

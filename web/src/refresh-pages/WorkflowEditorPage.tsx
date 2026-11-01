@@ -16,7 +16,11 @@ import SimpleTooltip from "@/refresh-components/SimpleTooltip";
 import { Formik, Form, FieldArray, useFormikContext } from "formik";
 import * as Yup from "yup";
 import { useAgents } from "@/hooks/useAgents";
-import { selectableStepAgents } from "@/lib/workflows/stepAgents";
+import {
+  OVERRIDES_CLEARED_ON_AGENT_CHANGE,
+  selectableStepAgents,
+} from "@/lib/workflows/stepAgents";
+import WorkflowUpgradeNotice from "@/components/workflows/WorkflowUpgradeNotice";
 import { StepPlacementFields } from "@/components/workflows/StepPlacementFields";
 import { ancestorsOf } from "@/lib/workflows/containerRules";
 import {
@@ -411,6 +415,11 @@ function WorkflowStepRow({
                     `steps.${index}.agent_id`,
                     e.target.value === "" ? null : Number(e.target.value)
                   );
+                  for (const [field, cleared] of Object.entries(
+                    OVERRIDES_CLEARED_ON_AGENT_CHANGE
+                  )) {
+                    setFieldValue(`steps.${index}.${field}`, cleared);
+                  }
                 }}
               >
                 <option value="">-- Select Agent --</option>
@@ -542,7 +551,7 @@ function WorkflowStepRow({
                 <div className="flex items-center">
                   <Text secondaryBody text04>Can Request Input</Text>
                   <InfoTip>
-                    When enabled, this agent can pause the workflow and ask the user for more information.
+                    When enabled, this agent stops the workflow and asks the user when it&apos;s missing something. The agent is told how to ask automatically.
                   </InfoTip>
                 </div>
               </div>
@@ -805,6 +814,11 @@ export default function WorkflowEditorPage({
             <Text secondaryBody text03>Loading...</Text>
           </div>
         ) : (
+        <>
+        <WorkflowUpgradeNotice
+          workflow={existingWorkflow}
+          onUpgraded={() => refreshWorkflow?.()}
+        />
         <Formik
           key={existingWorkflow?.version ?? "new"}
           initialValues={initialValues}
@@ -1262,6 +1276,7 @@ export default function WorkflowEditorPage({
             </>
           )}
         </Formik>
+        </>
         )}
       </div>
 

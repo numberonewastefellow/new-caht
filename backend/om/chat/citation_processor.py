@@ -149,6 +149,7 @@ class DynamicCitationProcessor:
         self,
         citation_mode: CitationMode = CitationMode.HYPERLINK,
         stop_stream: str | None = STOP_STREAM_PAT,
+        keep_unknown_markers: bool = False,
     ):
         """
         Initialize the citation processor.
@@ -177,6 +178,9 @@ class DynamicCitationProcessor:
         self.hold = ""  # tokens held for stop token processing
         self.stop_stream = stop_stream
         self.citation_mode = citation_mode
+        # Leave a bracketed number with no matching document as written. When nothing was
+        # retrieved, [2] isn't a citation: it's "section [2]" or the JSON list [1, 2].
+        self.keep_unknown_markers = keep_unknown_markers
 
         # Citation tracking
         self.cited_documents_in_order: list[SearchDoc] = (
@@ -351,6 +355,12 @@ class DynamicCitationProcessor:
 
                 # Process the citation (returns formatted citation text and CitationInfo objects)
                 # Always tracks seen citations regardless of citation_mode
+                if self.keep_unknown_markers and not self._all_numbers_known(match.group()):
+                    if intermatch_str:
+                        yield intermatch_str
+                    yield match.group()
+                    continue
+
                 citation_text, citation_info_list = self._process_citation(
                     match, has_leading_space
                 )
@@ -410,6 +420,10 @@ class DynamicCitationProcessor:
 
         if result:
             yield result
+
+    def _all_numbers_known(self, citation_str: str) -> bool:
+        numbers = re.findall(r"\d+", citation_str)
+        return all(int(number) in self.citation_to_doc for number in numbers)
 
     def _process_citation(
         self, match: re.Match, has_leading_space: bool

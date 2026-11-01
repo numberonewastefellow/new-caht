@@ -122,7 +122,7 @@ with due work.
 ## Webhooks
 Webhook runs need their own service, `pulse_webhook_worker`: the same image as `pulse_worker`, with `PULSE_WORKER_QUEUE=pulse_webhook`. **Without it, accepted events wait in the queue and never run.** Scale it separately with `docker compose up -d --scale pulse_webhook_worker=N`.
 
-**Helm:** the chart doesn't include this worker or the nginx limits below yet. Add both before using webhooks on Kubernetes.
+**Helm:** the chart has this worker (`pulse.webhookWorker`, scaled by `replicaCount`) and the nginx limits below. It has been rendered and its nginx config checked, but not run on a real cluster.
 
 **Upgrading to `0004_pulse_triggers`:** stop `pulse_scheduler` and `pulse_worker` first, because the old code can't read the renamed tables. Back up the database. Recreate nginx too, or the limits below won't apply.
 
@@ -153,6 +153,7 @@ The `/api/hooks/` location in `app.conf.template`, `.prod` and `.no-letsencrypt`
 | `PULSE_WEBHOOK_TIMESTAMP_TOLERANCE_SECONDS` | 300 | Allowed clock difference on signatures |
 | `PULSE_WEBHOOK_PAYLOAD_RETENTION_DAYS` | 7 | `trigger_payload` is cleared after this; the run row stays. Rendered values also sit in the run's chat, which follows chat retention, not this setting |
 | `PULSE_WEBHOOK_LISTEN_TTL_SECONDS` | 300 | How long Listen stays open |
+| `PULSE_WEBHOOK_RUN_MAX_WAIT_SECONDS` | 86400 | A run still waiting after this long is recorded as `missed` and its owner notified, so old events don't all run when a worker returns |
 
 ### Observe
 `GET /api/admin/pulse/health` (admin only) has a `webhooks` section, and `pulse_workers_alive` for the schedule queue:

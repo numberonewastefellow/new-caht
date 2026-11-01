@@ -82,6 +82,8 @@ PULSE_WEBHOOK_MAX_VALUE_CHARS = _int_env("PULSE_WEBHOOK_MAX_VALUE_CHARS", 4000)
 PULSE_WEBHOOK_MAX_PAYLOAD_CHARS = _int_env("PULSE_WEBHOOK_MAX_PAYLOAD_CHARS", 32000)
 # Stored payloads are cleared after this long (the run row itself stays for history)
 PULSE_WEBHOOK_PAYLOAD_RETENTION_DAYS = _int_env("PULSE_WEBHOOK_PAYLOAD_RETENTION_DAYS", 7)
+# A webhook run still waiting after this long is recorded as `missed`, not executed
+PULSE_WEBHOOK_RUN_MAX_WAIT_SECONDS = _int_env("PULSE_WEBHOOK_RUN_MAX_WAIT_SECONDS", 86400)
 # Listen mode stays open this long, and old credentials keep working after a rotate
 PULSE_WEBHOOK_LISTEN_TTL_SECONDS = _int_env("PULSE_WEBHOOK_LISTEN_TTL_SECONDS", 300)
 PULSE_WEBHOOK_MAX_ROTATION_GRACE_HOURS = _int_env("PULSE_WEBHOOK_MAX_ROTATION_GRACE_HOURS", 168)

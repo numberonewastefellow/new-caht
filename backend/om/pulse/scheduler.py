@@ -69,6 +69,8 @@ from om.db.pulse_webhook import clear_old_payloads
 from om.db.workflow import get_latest_execution_by_chat_session
 from om.pulse.dispatch import enqueue_pulse_run
 from om.pulse.outcome import finalize_run
+from om.pulse.outcome import WEBHOOK_RUN_EXPIRED
+from om.pulse.outcome import webhook_run_expired
 from om.pulse.spec import spec_from_schedule
 from om.pulse.timing import decide_fire
 from om.pulse.timing import jitter_seconds
@@ -219,10 +221,10 @@ def tick_tenant(tenant_id: str) -> TickStats:
 
 def _resend_stale_pending(tenant_id: str) -> int:
     """Outbox sweeper: re-send runs whose enqueue was lost (or that still wait in the
-    queue), at most once per PULSE_PENDING_RESEND_SECONDS per run. Scheduled runs
-    that are already too late to start are recorded as `missed` instead."""
+    queue), at most once per PULSE_PENDING_RESEND_SECONDS per run. Runs that are
+    already too late to start are recorded as `missed` instead."""
     ids: list[tuple[int, bool]] = []  # (run_id, is it a webhook run)
-    expired: list[tuple[int, int]] = []
+    expired: list[tuple[int, int, str]] = []
     with get_session_with_tenant(tenant_id=tenant_id) as db_session:
         now = db_now(db_session)
         cutoff = now - timedelta(seconds=PULSE_PENDING_RESEND_SECONDS)
@@ -235,12 +237,15 @@ def _resend_stale_pending(tenant_id: str) -> int:
                     now=now,
                 )
                 if (now - run.scheduled_for).total_seconds() > limit:
-                    expired.append((run.id, trigger.id))
+                    expired.append((run.id, trigger.id, "no worker picked it up in time"))
                     continue
+            if run.fired_by == FIRED_WEBHOOK and webhook_run_expired(run, now):
+                expired.append((run.id, trigger.id, WEBHOOK_RUN_EXPIRED))
+                continue
             ids.append((run.id, run.fired_by == FIRED_WEBHOOK))
         db_session.commit()  # persists last_enqueued_at before sending (outbox)
 
-        for run_id, trigger_id in expired:
+        for run_id, trigger_id, reason in expired:
             expired_trigger = get_pulse_trigger(db_session, trigger_id)
             if expired_trigger is not None:
                 finalize_run(
@@ -248,7 +253,7 @@ def _resend_stale_pending(tenant_id: str) -> int:
                     expired_trigger,
                     run_id,
                     status=RUN_MISSED,
-                    skip_reason="no worker picked it up in time",
+                    skip_reason=reason,
                     from_statuses=(RUN_PENDING,),
                 )
     for run_id, is_webhook in ids:

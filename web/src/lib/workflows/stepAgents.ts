@@ -21,6 +21,21 @@ export function isSelectableStepAgent(agent: StepAgentCandidate): boolean {
   return agent.id !== DEFAULT_ASSISTANT_AGENT_ID && !agent.workflow_id;
 }
 
+/**
+ * A step's overrides were chosen for its agent, so changing the agent clears them. Both
+ * editors use this, so a step behaves the same whichever one changed it.
+ */
+export const OVERRIDES_CLEARED_ON_AGENT_CHANGE = {
+  llm_provider_override: null,
+  llm_model_override: null,
+  max_output_tokens_override: null,
+  system_prompt_override: null,
+  task_prompt_override: null,
+  tool_ids_override: null,
+  document_set_ids_override: null,
+  replace_base_system_prompt_override: null,
+} as const;
+
 export function selectableStepAgents<T extends StepAgentCandidate>(agents: T[]): T[] {
   return agents.filter(isSelectableStepAgent);
 }

@@ -17,6 +17,8 @@ Status checked against LiteLLM v1.81.6-nightly (2026-02-02):
            on the second chunk instead of when regular content starts.
 
 2. OpenAI Responses API Parallel Tool Calls (_patch_openai_responses_parallel_tool_calls):
+   - Also handles response.incomplete: LiteLLM ignores it, so a reply cut off by the token
+     limit reports "stop" instead of "length". STATUS: STILL NEEDED in LiteLLM 1.81.6.
    - LiteLLM's translate_responses_chunk_to_openai_stream hardcodes index=0 for all tool calls
    - This breaks parallel tool calls where multiple functions are called simultaneously
    - The OpenAI Responses API provides output_index in streaming events to track which
@@ -235,6 +237,12 @@ def _patch_ollama_chunk_parser() -> None:
     OllamaChatCompletionResponseIterator.chunk_parser = _patched_chunk_parser  # type: ignore[method-assign]
 
 
+def _incomplete_finish_reason(details: Any) -> str:
+    """The chat-completions finish reason for an incomplete Responses API reply."""
+    reason = details.get("reason") if isinstance(details, dict) else getattr(details, "reason", None)
+    return "content_filter" if reason == "content_filter" else "length"
+
+
 def _patch_openai_responses_parallel_tool_calls() -> None:
     """
     Patches OpenAiResponsesToChatCompletionStreamIterator to properly handle:
@@ -428,6 +436,21 @@ def _patch_openai_responses_parallel_tool_calls() -> None:
                         )
                     ]
                 )
+
+        elif event_type == "response.incomplete":
+            # LiteLLM has no handler for this event, so the stream then ends as "stop" and
+            # a reply cut off by the token limit looks like a normal finish to every caller.
+            return ModelResponseStream(
+                choices=[
+                    StreamingChoices(
+                        index=0,
+                        delta=Delta(content=""),
+                        finish_reason=_incomplete_finish_reason(
+                            (parsed_chunk.get("response") or {}).get("incomplete_details")
+                        ),
+                    )
+                ]
+            )
 
         # For all other event types, use the original static method
         return OpenAiResponsesToChatCompletionStreamIterator.translate_responses_chunk_to_openai_stream(

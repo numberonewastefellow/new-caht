@@ -34,8 +34,8 @@ from om.db.models import User
 from om.server.query_and_chat.streaming_models import Packet
 from om.utils.logger import setup_logger
 from om.workflows.blocks import run_block
+from om.workflows.blocks import WorkflowNodeError
 from om.workflows.graph import WorkflowNode
-from om.workflows.nodes.agent_tools import AgentToolCache
 from om.workflows.nodes.base import StepStatus
 from om.workflows.trace_models import now_iso
 from om.workflows.state import RunContext
@@ -182,13 +182,10 @@ def run_branches(
                     emitter=emitter,
                     execution=ctx.execution,
                     trace=trace,  # type: ignore[arg-type]
-                    agent_tools=AgentToolCache(
+                    agent_tools=ctx.agent_tools.for_branch(
                         db_session=db_session,
                         user=user,  # type: ignore[arg-type]
                         emitter=emitter,
-                        chat_files=ctx.chat_files,
-                        # A sandbox session is stateful; branches must not share it.
-                        sandbox_session_id=None,
                     ),
                     is_connected=ctx.is_connected,
                     chat_files=ctx.chat_files,
@@ -196,11 +193,19 @@ def run_branches(
                 )
                 status = yield_to_queue(run_block(nodes, branch_ctx), index, events)
             results[index] = BranchResult(index, status, state, trace)
-        except Exception as e:
+        except WorkflowNodeError as e:
             logger.exception(
                 "[Parallel] Branch %d of '%s' failed", index, container.name
             )
             results[index] = BranchResult(index, StepStatus.FAILED, state, trace, str(e))
+        except Exception:
+            # Details stay in the server log: exception text can hold SQL or hostnames
+            logger.exception(
+                "[Parallel] Branch %d of '%s' failed", index, container.name
+            )
+            results[index] = BranchResult(
+                index, StepStatus.FAILED, state, trace, "An internal error stopped this branch"
+            )
         finally:
             events.put((index, _DONE))
 
@@ -267,7 +272,7 @@ def merge_branch(ctx: RunContext, nodes: list[WorkflowNode], result: BranchResul
             )
             ctx.state.completed_keys.add(node.node_key)
 
-    branch_output_keys = {node.output_key for node in nodes}
+    branch_output_keys = ctx.graph.output_keys_under(nodes)
     branch_files = branch.context.shared_data.get("step_files", {})
     for key, files in branch_files.items():
         if key in branch_output_keys:

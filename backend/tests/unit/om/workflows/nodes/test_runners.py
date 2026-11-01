@@ -376,19 +376,30 @@ DAYS_SCHEMA = {
 }
 
 
+CUT_OFF = "<cut off>"
+NO_ANSWER = "(Agent did not produce a final answer)"
+
+
 def _replies(*outputs: str):
     """stream_agent_packets replaced by an agent returning each reply in turn."""
     remaining = list(outputs)
 
     def fake(agent_tool: Any, placement: Placement, emitter: Any, result: Any, **kw: Any):
-        result.response = MagicMock(
-            llm_facing_response=json.dumps({"agent_output": remaining.pop(0)})
-        )
+        reply = remaining.pop(0)
+        cut_off = reply.startswith(CUT_OFF)
+        response = {"agent_output": reply.removeprefix(CUT_OFF)}
+        if cut_off:
+            response["_cut_off"] = True
+        if reply == NO_ANSWER:
+            response["_no_answer"] = True
+        result.response = MagicMock(llm_facing_response=json.dumps(response))
         result.cancelled = False
         fake.tasks.append(kw.get("task"))
+        fake.calls.append(kw)
         return iter(())
 
     fake.tasks = []
+    fake.calls = []
     return fake
 
 
@@ -425,6 +436,33 @@ class TestExpectedOutput:
         assert "isn't a JSON object" in replies.tasks[1]
         assert "plain lines" in replies.tasks[1]
         assert json.loads(ctx.state.context.step_outputs["out_a"]) == {"days": ["a"]}
+
+    def test_the_retry_only_reformats_so_tools_cannot_run_twice(self) -> None:
+        replies = _replies("plain lines", '{"days": ["a"]}')
+        self._run(replies)
+        assert not replies.calls[0].get("format_only")
+        assert replies.calls[1]["format_only"] is True
+
+    def test_no_reply_fails_rather_than_asking_for_it_to_be_reformatted(self) -> None:
+        replies = _replies(NO_ANSWER)
+        _, outcome, _ = self._run(replies)
+        assert outcome.status == StepStatus.FAILED
+        assert "didn't produce a reply" in (outcome.error or "")
+        assert len(replies.tasks) == 1
+
+    def test_a_cut_off_reply_fails_instead_of_passing_as_a_shorter_list(self) -> None:
+        replies = _replies(CUT_OFF + '{"days":["a","b","Day thr')
+        _, outcome, ctx = self._run(replies)
+        assert outcome.status == StepStatus.FAILED
+        assert "cut off" in (outcome.error or "")
+        assert "out_a" not in ctx.state.context.step_outputs
+        assert len(replies.tasks) == 1, "the same limit would cut off a retry too"
+
+    def test_a_retry_that_is_cut_off_fails_too(self) -> None:
+        replies = _replies("plain lines", CUT_OFF + '{"days":["a"')
+        _, outcome, _ = self._run(replies)
+        assert outcome.status == StepStatus.FAILED
+        assert "cut off" in (outcome.error or "")
 
     def test_it_fails_clearly_when_the_retry_is_bad_too(self) -> None:
         replies = _replies("plain lines", "still plain")

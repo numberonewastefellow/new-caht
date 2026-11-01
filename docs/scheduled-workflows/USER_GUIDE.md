@@ -83,7 +83,7 @@ A webhook lets another system start a workflow when something happens there, lik
 6. **Copy the URL and secret straight away.** They're only shown once. If you lose them, press **Rotate** to get new ones.
 
 ## Before you rely on it
-Runs use your access: your documents, files and connected accounts. The data a system sends is marked for the AI as data rather than instructions, but that can't fully prevent an instruction hidden in it from being followed. So check which tools the workflow can use, especially ones that send or change things.
+Runs use your access: your documents, files and connected accounts. The data a system sends is marked for the AI as data rather than instructions, but that can't fully prevent an instruction hidden in it from being followed. So a webhook's runs can only use the tools you tick when you create or edit it, and none are ticked by default. Be careful with tools that send or change things.
 
 ## Test it
 On the webhook's page, press **Listen**, then **Send test event** or call the test URL (`/api/hooks/test/...`). You'll see what arrived and exactly what the workflow would receive. Nothing runs.
@@ -92,9 +92,99 @@ On the webhook's page, press **Listen**, then **Send test event** or call the te
 The webhook's page lists each accepted call with its result, its data and a link to its chat. If a call was refused, the page shows why, such as "Signature does not match".
 
 ## Stop it
-- **Pause:** switch it off. Calls are refused until you turn it back on. Runs still waiting are skipped when a worker reaches them, and don't come back.
+- **Pause:** switch it off. Calls are refused until you turn it back on. Runs still waiting are skipped when a worker reaches them. The sender can resend those events once it's back on.
 - **Rotate:** get a new URL and secret. You choose how long the old ones keep working, so you can update the other system first.
 - **Revoke:** use this if the URL or secret may have leaked. They stop working immediately, and runs still waiting won't start.
 - **Delete:** removes the webhook and its run history. Chats from earlier runs stay.
 
 The event data kept with each run is cleared after 7 days. The text the workflow received stays in that run's chat, like any other chat, until the webhook's run limit removes it, so avoid sending data you wouldn't keep in a chat. After 5 failed runs in a row a webhook pauses itself and notifies you.
+
+## Keep real events coming during development
+
+Two small tools can call your webhooks by themselves. They run apart from the app: they only send HTTP requests, so stopping or deleting them changes nothing else.
+
+- **Uptime Kuma** sends an event when a service goes down or recovers.
+- **changedetection.io** sends an event when a web page or feed changes.
+
+### Start them
+
+Start the main stack first. Then, in `deployment/docker_compose`:
+
+```
+docker compose -p event-sources -f docker-compose.event-sources.yml up -d
+```
+
+Uptime Kuma is at http://localhost:3010 and changedetection.io at http://localhost:5010.
+
+### Add the workflows
+
+In `backend/tests/workflow_creator`, with your admin API key:
+
+```
+python create_workflows.py --url https://localhost --key <key> --file workflows/45_service_incident_note.json
+python create_workflows.py --url https://localhost --key <key> --file workflows/46_page_change_summary.json
+```
+
+### Create one webhook per tool
+
+Go to **Pulse > Webhooks > New webhook** and choose:
+
+| Setting | Value |
+| --- | --- |
+| Workflow | Service Incident Note, or Page Change Summary |
+| How the caller proves itself | Secret in a header |
+| What makes an event a repeat | Don't check |
+| Tools | None |
+| Notify me when a run succeeds | On, if you want the result in your notifications |
+
+The URL and secret are shown once. Use the part of the URL after `/api/hooks/` below. These tools are on the Docker network, so they call `http://nginx:8088`, not `https://localhost`.
+
+### Connect Uptime Kuma
+
+1. Create an account when it asks.
+2. Go to **Settings > General** and turn off **NSCD**. If it stays on, Kuma keeps a restarted container's old address for an hour and keeps reporting it as down.
+3. Go to **Settings > Notifications > Setup Notification** and set:
+   - Notification Type: Webhook
+   - Post URL: `http://nginx:8088/api/hooks/<token>`
+   - Request Body: application/json
+   - Additional Headers: `{"x-webhook-secret": "<secret>"}`
+4. Add a monitor for each service, with that notification ticked and **Retries** at 2, so a short blip doesn't send an event:
+
+| Service | Monitor type | Address |
+| --- | --- | --- |
+| API | HTTP | `http://api_server:8080/version` |
+| nginx | TCP port | `nginx` port `8088` |
+| Postgres | TCP port | `relational_db` port `5432` |
+| Redis | TCP port | `cache` port `6379` |
+| OpenSearch | TCP port | `opensearch` port `9200` |
+| MinIO | TCP port | `minio` port `9000` |
+| Office MCP | TCP port | `office-mcp-server` port `8100` |
+| Code interpreter | TCP port | `code-interpreter` port `8000` |
+
+### Connect changedetection.io
+
+1. In the secret, replace `+` with `%2B`, `/` with `%2F` and `=` with `%3D`. A URL can't carry them as they are.
+2. Go to **Settings > Notifications** and add this notification URL:
+
+```
+json://nginx:8088/api/hooks/<token>?+x-webhook-secret=<encoded secret>
+```
+
+3. Set the check interval to 6 hours, and add the pages to watch, such as `https://github.com/BerriAI/litellm/releases.atom`.
+
+### Good to know
+
+- **Cost:** each event is one run on the cheap model, about 700 tokens in testing. Keep the intervals long and watch pages that change rarely.
+- **Secrets:** changedetection.io writes the notification URL, with the secret, to its own container log. Don't share those logs.
+- **API or nginx down:** an alert can't arrive while they're down. You get the recovery message afterwards.
+- **Background workers:** Kuma doesn't watch them, because that would need the Docker socket, which exposes every container's settings. Check them on **Admin > Services**.
+- **Private pages:** changedetection.io refuses to fetch private addresses. Leave that on unless you need to watch something on your own network.
+
+### Pause or remove them
+
+```
+docker compose -p event-sources -f docker-compose.event-sources.yml stop
+docker compose -p event-sources -f docker-compose.event-sources.yml down
+```
+
+`down` keeps their settings. Adding `-v` deletes them as well.

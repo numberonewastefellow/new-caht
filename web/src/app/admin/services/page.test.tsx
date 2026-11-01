@@ -42,7 +42,7 @@ describe("Platform Services page", () => {
       "Check its health",
       "Reading the health response",
       "If something's wrong",
-      "Not supported yet",
+      "Kubernetes",
     ]) {
       expect(within(dialog).getByRole("heading", { name: title })).toBeInTheDocument();
     }

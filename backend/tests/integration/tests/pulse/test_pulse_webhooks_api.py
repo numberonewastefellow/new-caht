@@ -604,6 +604,30 @@ def test_permissions(admin: Client, basic: Client, basic2: Client, hooks: list[H
         listing = client.get("/pulse/webhooks?all_users=true").text
         assert hook.secret not in listing and hook.token not in listing
 
+    # An admin can stop someone else's webhook, but not change what it does: runs use the
+    # owner's access.
+    theirs = _make(basic, hooks, plain_workflow, input_message="original")
+    for change in ({"input_message": "do something else"}, {"name": "x"}, {"dedup_source": "none"}):
+        assert admin.patch(f"/pulse/webhooks/{theirs.id}", change).status_code == 403
+    mixed = {"enabled": False, "input_message": "do something else"}
+    assert admin.patch(f"/pulse/webhooks/{theirs.id}", mixed).status_code == 403
+    unchanged = basic.get(f"/pulse/webhooks/{theirs.id}").json()
+    assert unchanged["input_message"] == "original" and unchanged["enabled"]
+    assert admin.patch(f"/pulse/webhooks/{theirs.id}", {"enabled": False}).ok
+    assert basic.patch(f"/pulse/webhooks/{theirs.id}", {"input_message": "owner's edit"}).ok
+
+    # A webhook gets no tools unless they're chosen, and only ones its workflow uses.
+    assert basic.get(f"/pulse/webhooks/{theirs.id}").json()["allowed_tool_ids"] == []
+    assert basic.patch(f"/pulse/webhooks/{theirs.id}", {"allowed_tool_ids": [999999]}).status_code == 400
+    assert admin.patch(f"/pulse/webhooks/{theirs.id}", {"allowed_tool_ids": []}).status_code == 403
+    assert basic.get(f"/pulse/webhooks/workflow-tools/{plain_workflow}").json() == []
+
+    # Telling the owner about good runs is off until the owner turns it on.
+    assert basic.get(f"/pulse/webhooks/{theirs.id}").json()["notify_on_success"] is False
+    assert admin.patch(f"/pulse/webhooks/{theirs.id}", {"notify_on_success": True}).status_code == 403
+    assert basic.patch(f"/pulse/webhooks/{theirs.id}", {"notify_on_success": True}).json()["notify_on_success"] is True
+    assert basic2.get("/pulse/webhooks/workflow-tools/999999").status_code == 404
+
     # Another user can't see it at all.
     assert basic2.get(f"/pulse/webhooks/{hook.id}").status_code == 404
     assert basic2.patch(f"/pulse/webhooks/{hook.id}", {"enabled": False}).status_code == 404

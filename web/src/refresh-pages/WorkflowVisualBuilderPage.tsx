@@ -35,6 +35,7 @@ import {
   type NodeUpgradeTarget,
 } from "@/components/workflows/NodeUpgradeDialog";
 import { WorkflowVersionsDialog } from "@/components/workflows/WorkflowVersionsDialog";
+import WorkflowUpgradeNotice from "@/components/workflows/WorkflowUpgradeNotice";
 import type { DragAgentData } from "@/components/workflow-builder/types";
 import {
   ORCHESTRATOR_NODE_ID,
@@ -420,6 +421,13 @@ function WorkflowVisualBuilderInner({
         llmProviders={llmProviders ?? []}
         onViewJson={() => setShowJsonView(true)}
         onOpenVersions={workflowId ? () => setShowVersions(true) : undefined}
+      />
+      <WorkflowUpgradeNotice
+        workflow={workflow}
+        onUpgraded={(upgraded) => {
+          markSaved(upgraded);
+          refreshWorkflow(upgraded, { revalidate: false });
+        }}
       />
       <div className="wfb-content">
         {/* Sidebar with dynamic width */}

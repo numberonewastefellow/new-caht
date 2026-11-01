@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy.orm import Session
 
+from om.context.search.models import SearchDocsResponse
 from om.chat.emitter import Emitter
 from om.db.models import Agent
 from om.server.query_and_chat.placement import Placement  # used by run() signature
@@ -22,6 +23,7 @@ from om.tools.models import ChatFile
 from om.tools.models import ToolResponse
 from om.tracing.framework.create import ensure_trace
 from om.utils.logger import setup_logger
+from om.workflows.hitl import with_input_guidance
 from shared_configs.contextvars import get_current_tenant_id
 
 logger = setup_logger()
@@ -32,6 +34,9 @@ if TYPE_CHECKING:
 
 
 AGENT_TOOL_RESPONSE_ID = "agent_tool_response"
+
+
+CUT_OFF_FINISH_REASONS = frozenset({"length", "max_tokens"})
 
 
 def _sanitize_tool_name(name: str) -> str:
@@ -130,6 +135,7 @@ class AgentTool(Tool[None]):
         llm: "LLM | None" = None,
         has_tools: bool | None = None,
         promote_output: bool = False,
+        can_request_input: bool = False,
         chat_files: list[ChatFile] | None = None,
         sandbox_session_id: str | None = None,
         # Step-level overrides (override agent defaults)
@@ -138,6 +144,8 @@ class AgentTool(Tool[None]):
         system_prompt_override: str | None = None,
         task_prompt_override: str | None = None,
         tool_ids_override: list[int] | None = None,
+        tool_allowlist: list[int] | None = None,
+        exact_output: bool = False,
         document_set_ids_override: list[int] | None = None,
         replace_base_system_prompt_override: bool | None = None,
         response_format: dict[str, Any] | None = None,
@@ -154,6 +162,7 @@ class AgentTool(Tool[None]):
         # Pre-check whether agent has tools (avoids lazy-load in bg thread)
         self._has_tools = has_tools if has_tools is not None else bool(agent.tools)
         self._promote_output = promote_output
+        self._can_request_input = can_request_input
         self._chat_files = chat_files or []
         self._sandbox_session_id = sandbox_session_id
         # Step-level overrides
@@ -162,6 +171,11 @@ class AgentTool(Tool[None]):
         self._system_prompt_override = system_prompt_override
         self._task_prompt_override = task_prompt_override
         self._tool_ids_override = tool_ids_override
+        # A limit from outside the step: the run's source isn't trusted with every tool.
+        # None means no limit, and an empty list means no tools at all.
+        self._tool_allowlist = tool_allowlist
+        # The reply is data that later steps parse, so nothing may rewrite its text
+        self._exact_output = exact_output
         self._document_set_ids_override = document_set_ids_override
         self._replace_base_system_prompt_override = replace_base_system_prompt_override
         self._response_format = response_format
@@ -254,6 +268,17 @@ class AgentTool(Tool[None]):
         ):
             return self._run_agent(placement, **llm_kwargs)
 
+    def _allowed_tool_ids(self) -> list[int] | None:
+        """The step's tools, cut down to the run's limit if it has one."""
+        if self._tool_allowlist is None:
+            return self._tool_ids_override
+        step_tools = (
+            self._tool_ids_override
+            if self._tool_ids_override is not None
+            else [tool.id for tool in self._agent.tools]
+        )
+        return [tool_id for tool_id in step_tools if tool_id in self._tool_allowlist]
+
     def _run_agent(self, placement: Placement, **llm_kwargs: Any) -> ToolResponse:
         task = llm_kwargs.get("task", "")
         if not task:
@@ -298,7 +323,10 @@ class AgentTool(Tool[None]):
         tools: list = []
         # Unique scope ID for MCP session persistence within this agent step
         mcp_scope_id = f"agent_step_{self._step_id}_{id(self)}"
-        if self._has_tools:
+        allowed_tool_ids = self._allowed_tool_ids()
+        # A retry only reformats a reply it already has, so nothing can run a second time
+        format_only = bool(llm_kwargs.get("format_only"))
+        if self._has_tools and allowed_tool_ids != [] and not format_only:
             from om.tools.tool_constructor import construct_tools
             from om.tools.tool_constructor import SearchToolConfig
 
@@ -310,7 +338,8 @@ class AgentTool(Tool[None]):
                 llm=llm,
                 search_tool_config=SearchToolConfig(),
                 chat_session_id=mcp_scope_id,
-                allowed_tool_ids=self._tool_ids_override,
+                allowed_tool_ids=allowed_tool_ids,
+                strict_allowlist=self._tool_allowlist is not None,
             )
             for tool_list in tool_dict.values():
                 tools.extend(tool_list)
@@ -341,6 +370,9 @@ class AgentTool(Tool[None]):
         if has_python_tool:
             from om.prompts.tool_prompts import PYTHON_TOOL_GUIDANCE
             system_prompt_text += PYTHON_TOOL_GUIDANCE
+
+        if self._can_request_input:
+            system_prompt_text = with_input_guidance(system_prompt_text)
 
         # Give the agent its attached files. PythonTool agents read the bytes
         # pre-loaded in their sandbox; agents without a PythonTool can't open
@@ -385,7 +417,12 @@ class AgentTool(Tool[None]):
 
         msg_history: list[ChatMessageSimple] = [user_message]
         state_container = ChatStateContainer()
-        citation_processor = DynamicCitationProcessor()
+        citation_processor = (
+            None
+            if self._exact_output
+            else DynamicCitationProcessor(keep_unknown_markers=True)
+        )
+        cut_off = False
 
         # Pre-compute tool definitions once (they don't change between cycles)
         tool_defs = [t.tool_definition() for t in tools]
@@ -428,6 +465,7 @@ class AgentTool(Tool[None]):
             )
 
             # If LLM produced a text answer (no tool calls), we're done
+            cut_off = llm_step_result.finish_reason in CUT_OFF_FINISH_REASONS
             if llm_step_result.answer and not llm_step_result.tool_calls:
                 final_answer = llm_step_result.answer
                 break
@@ -507,6 +545,12 @@ class AgentTool(Tool[None]):
                             llm_facing_response=f"Tool error: {error_msg}",
                         )
                     tool_response.tool_call = tc
+                    # Now [1] in its reply refers to a retrieved document. Agent steps
+                    # don't show links, so those markers are removed as before.
+                    if citation_processor and isinstance(
+                        tool_response.rich_response, SearchDocsResponse
+                    ):
+                        citation_processor.keep_unknown_markers = False
 
                     # Emit SectionEnd so the frontend marks the tool
                     # group as complete
@@ -550,7 +594,8 @@ class AgentTool(Tool[None]):
                 final_answer = llm_step_result.answer or ""
                 break
 
-        if not final_answer:
+        no_answer = not final_answer
+        if no_answer:
             final_answer = "(Agent did not produce a final answer)"
 
         # Post-step file capture: fetch any files tracked during this agent
@@ -584,6 +629,10 @@ class AgentTool(Tool[None]):
         }
         # Persist file metadata so session reload can reconstruct download
         # links and downstream workflow steps can access file info.
+        if cut_off:
+            response_dict["_cut_off"] = True
+        if no_answer:
+            response_dict["_no_answer"] = True
         if step_file_ids:
             response_dict["_file_ids"] = step_file_ids
             response_dict["_file_details"] = step_file_details

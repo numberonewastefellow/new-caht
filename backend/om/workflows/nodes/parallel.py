@@ -190,6 +190,19 @@ class ParallelRunnerV1:
             trace_container_finish(ctx, trace_id, message, "failed", started)
             return StepOutcome(status=StepStatus.FAILED, error=message)
 
+        # A step that didn't finish still gets an output, or a later step or router reading
+        # it would see empty text and carry on as if nothing was wrong.
+        for failure in failures:
+            for child in branches[failure.index]:
+                if child.node_key not in failure.state.completed_keys:
+                    state.record_output(
+                        child.output_key,
+                        json.dumps(
+                            {"error": failure.error or failure.status.value},
+                            ensure_ascii=False,
+                        ),
+                    )
+
         combined: dict[str, object] = {}
         for nodes, result, label in zip(branches, results, labels):
             if result is None:

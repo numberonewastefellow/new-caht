@@ -28,6 +28,9 @@ class WebhookCreate(BaseModel):
     # Default depends on auth_mode: webhook_id when signed, otherwise none
     dedup_source: DedupSourceLiteral | None = None
     dedup_path: str | None = Field(default=None, max_length=200)
+    # Text from outside is in these runs, so they get no tools unless chosen here
+    allowed_tool_ids: list[int] = Field(default_factory=list)
+    notify_on_success: bool = False
     enabled: bool = True
     retention_count: int | None = None
 
@@ -38,8 +41,18 @@ class WebhookUpdate(BaseModel):
     timezone: str | None = None
     dedup_source: DedupSourceLiteral | None = None
     dedup_path: str | None = Field(default=None, max_length=200)
+    allowed_tool_ids: list[int] | None = None
+    notify_on_success: bool | None = None
     enabled: bool | None = None
     retention_count: int | None = None
+
+
+class WebhookToolOption(BaseModel):
+    id: int
+    name: str
+    description: str | None
+    # The workflow steps that would use it
+    steps: list[str]
 
 
 class WebhookRotateRequest(BaseModel):
@@ -88,6 +101,8 @@ class WebhookResponse(BaseModel):
     header_name: str | None
     dedup_source: str
     dedup_path: str | None
+    allowed_tool_ids: list[int]
+    notify_on_success: bool
     input_message: str
     timezone: str
     retention_count: int
@@ -130,6 +145,8 @@ class WebhookResponse(BaseModel):
             header_name=webhook.header_name,
             dedup_source=webhook.dedup_source,
             dedup_path=webhook.dedup_path,
+            allowed_tool_ids=webhook.allowed_tool_ids,
+            notify_on_success=webhook.notify_on_success,
             input_message=webhook.input_message,
             timezone=webhook.timezone,
             retention_count=webhook.retention_count,

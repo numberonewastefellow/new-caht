@@ -16,7 +16,10 @@ import {
   HTTP_REQUEST_TOOL_ID,
 } from "@/app/app/components/tools/constants";
 import { structureValue, parseLlmDescriptor } from "@/lib/llm/utils";
-import { selectableStepAgents } from "@/lib/workflows/stepAgents";
+import {
+  OVERRIDES_CLEARED_ON_AGENT_CHANGE,
+  selectableStepAgents,
+} from "@/lib/workflows/stepAgents";
 import {
   StepOptionsSection,
   StepPlacementSection,
@@ -210,15 +213,7 @@ export function AgentConfigPanel({
                         agent.llm_model_version_override || null,
                       agent_llm_provider:
                         agent.llm_model_provider_override || null,
-                      // Clear all overrides when switching agent
-                      llm_provider_override: null,
-                      llm_model_override: null,
-                      max_output_tokens_override: null,
-                      system_prompt_override: null,
-                      task_prompt_override: null,
-                      tool_ids_override: null,
-                      document_set_ids_override: null,
-                      replace_base_system_prompt_override: null,
+                      ...OVERRIDES_CLEARED_ON_AGENT_CHANGE,
                     });
                   }
                 }}

@@ -191,6 +191,58 @@ class TestWhile:
         assert len(seen) == 4
 
 
+class _FileRunner(_EchoRunner):
+    """Body step that creates one file per iteration, as an agent step records them."""
+
+    def run(self, node: WorkflowNode, ctx: Any) -> Generator[Packet, None, StepOutcome]:
+        name = f"{ctx.state.variables['loop']['item']}.docx"
+        ctx.state.context.shared_data.setdefault("step_files", {})[node.output_key] = {
+            "file_ids": [f"id-{name}"],
+            "files": [{"filename": name, "file_path": name}],
+        }
+        return (yield from super().run(node, ctx))
+
+
+def test_files_from_every_iteration_are_kept() -> None:
+    ctx, loop = _setup({"mode": "for_each", "items": "$plan.output.cities"}, CITIES)
+    ctx.registry.register(NodeTypeSpec(
+        node_type="filer", version=1, label="Filer", description="t", category="t",
+        config_model=_EchoConfig, runner=_FileRunner(),
+    ))
+    body = WorkflowNode(
+        node_key="echo", node_type="filer", type_version=1, step_order=1, name="Filer",
+        output_key="echo", parent_key="lp", branch_index=0, config={},
+    )
+    ctx.graph = WorkflowGraph(
+        workflow_id=1, name="wf", orchestration_mode="sequential", nodes=[loop, body]
+    )
+
+    _, outcome = _drive(ctx, loop)
+
+    assert outcome.status == StepStatus.COMPLETED
+    files = ctx.state.context.shared_data["step_files"]["echo"]
+    assert [f["filename"] for f in files["files"]] == ["Goa.docx", "Pune.docx", "Agra.docx"]
+    assert files["file_ids"] == ["id-Goa.docx", "id-Pune.docx", "id-Agra.docx"]
+
+
+def test_files_from_steps_nested_in_the_body_are_kept_too() -> None:
+    nested = WorkflowNode(
+        node_key="inner", node_type="echo", type_version=1, step_order=2, name="Inner",
+        output_key="inner", parent_key="par", branch_index=0, config={},
+    )
+    container = WorkflowNode(
+        node_key="par", node_type="parallel", type_version=1, step_order=1, name="Par",
+        output_key="par", parent_key="lp", branch_index=0, config={},
+    )
+    top = WorkflowNode(
+        node_key="lp", node_type="loop", type_version=1, step_order=0, name="Loop",
+        output_key="lp", config={},
+    )
+    graph = WorkflowGraph(
+        workflow_id=1, name="wf", orchestration_mode="sequential", nodes=[top, container, nested]
+    )
+    assert graph.output_keys_under([container]) == {"par", "inner"}
+
 def test_agent_mappings_can_use_loop_variables() -> None:
     context = WorkflowContext(user_input="go", step_outputs={"loop.item": "Goa", "loop.index": "0"})
     text = apply_input_mapping({"task": "Plan a day in $loop.item (#$loop.index)"}, context)

@@ -1024,6 +1024,7 @@ def run_llm_step_pkt_generator(
     accumulated_reasoning = ""
     accumulated_answer = ""
     accumulated_raw_answer = ""
+    finish_reason: str | None = None
     xml_tool_call_content_filter = _XmlToolCallContentFilter()
 
     processor_state: Any = None
@@ -1166,6 +1167,7 @@ def run_llm_step_pkt_generator(
                 }
                 # Note: LLM cost tracking is now handled in multi_llm.py
             delta = packet.choice.delta
+            finish_reason = packet.choice.finish_reason or finish_reason
 
             # Weird behavior from some model providers, just log and ignore for now
             if (
@@ -1317,6 +1319,7 @@ def run_llm_step_pkt_generator(
             answer=accumulated_answer if accumulated_answer else None,
             tool_calls=tool_calls if tool_calls else None,
             raw_answer=accumulated_raw_answer if accumulated_raw_answer else None,
+            finish_reason=finish_reason,
         ),
         has_reasoned,
     )

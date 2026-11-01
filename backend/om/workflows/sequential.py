@@ -76,6 +76,7 @@ def run_workflow_sequential_v2(
     chat_files: list[ChatFile] | None = None,
     sandbox_session_id: str | None = None,
     assistant_message_id: int | None = None,
+    tool_allowlist: list[int] | None = None,
 ) -> Generator[Packet, None, None]:
     """Run a workflow in sequential mode — fixed order, no LLM routing.
 
@@ -112,6 +113,7 @@ def run_workflow_sequential_v2(
             emitter=emitter,
             chat_files=chat_files,
             sandbox_session_id=sandbox_session_id,
+            tool_allowlist=tool_allowlist,
         ),
         is_connected=is_connected,
         chat_files=chat_files,

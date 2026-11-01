@@ -3,7 +3,8 @@
 De-duplication relies on the notification table's unique (user, type, additional_data)
 index: we key failures by the start of the failure streak, so a trigger produces at
 most one open "failed" notification per streak, one "needs input" per run, and one
-"auto-paused" per pause event. Successful runs never notify.
+"auto-paused" per pause event. Successful runs only notify on a webhook whose owner asked,
+one per run.
 """
 
 from datetime import datetime
@@ -20,17 +21,23 @@ from om.utils.logger import setup_logger
 
 logger = setup_logger()
 
+MAX_DESCRIPTION_CHARS = 500
+
 
 def _noun(trigger: PulseTrigger) -> str:
     return "Webhook" if trigger.kind == "webhook" else "Scheduled"
 
 
 def _link(trigger: PulseTrigger, run: PulseRun | None) -> dict:
-    data: dict = {"pulse_trigger_id": trigger.id}
+    """`link` is where the notification goes when clicked: the run's chat if it got that far,
+    otherwise the trigger's page."""
+    page = "webhooks/" if trigger.kind == "webhook" else ""
+    data: dict = {"pulse_trigger_id": trigger.id, "link": f"/app/schedules/{page}{trigger.id}"}
     if run is not None:
         data["pulse_run_id"] = run.id
         if run.chat_session_id:
             data["chat_session_id"] = str(run.chat_session_id)
+            data["link"] = f"/app?chatId={run.chat_session_id}"
     return data
 
 
@@ -52,6 +59,41 @@ def notify_run_failed(
         )
     except Exception:
         logger.exception("Pulse: failed to create run-failed notification")
+        db_session.rollback()
+
+
+def notify_run_succeeded(
+    db_session: Session, trigger: PulseTrigger, run: PulseRun
+) -> None:
+    try:
+        create_notification(
+            user_id=trigger.user_id,
+            notif_type=NotificationType.PULSE_RUN_SUCCEEDED,
+            db_session=db_session,
+            title=f"{_noun(trigger)} run finished: {trigger.name}",
+            description=(run.output_preview or "The workflow finished.")[:MAX_DESCRIPTION_CHARS],
+            additional_data=_link(trigger, run),
+        )
+    except Exception:
+        logger.exception("Pulse: failed to create run-succeeded notification")
+        db_session.rollback()
+
+
+def notify_run_not_started(
+    db_session: Session, trigger: PulseTrigger, run: PulseRun
+) -> None:
+    """One per run: unlike a failure streak, each of these is an event that was lost."""
+    try:
+        create_notification(
+            user_id=trigger.user_id,
+            notif_type=NotificationType.PULSE_RUN_FAILED,
+            db_session=db_session,
+            title=f"{_noun(trigger)} run didn't start: {trigger.name}",
+            description=(run.error or run.skip_reason or "The run didn't start.")[:500],
+            additional_data=_link(trigger, run),
+        )
+    except Exception:
+        logger.exception("Pulse: failed to create run-not-started notification")
         db_session.rollback()
 
 

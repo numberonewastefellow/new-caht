@@ -104,7 +104,7 @@ export function StepOptionsSection({
       {canPause && (
         <OptionRow
           label="Can Request Input (HITL)"
-          description="Agent can pause for user input"
+          description="Agent stops and asks you when it's missing something"
           checked={data.can_request_input}
           onChange={(v) => onUpdate(nodeId, { can_request_input: v })}
         />

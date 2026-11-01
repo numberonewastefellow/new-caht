@@ -267,14 +267,17 @@ def execute_code(config: CodeNodeConfigV1, inputs: dict[str, Any]) -> dict[str, 
             build_harness(config.code, inputs, nonce), config.timeout_seconds * 1000
         )
     except Exception as e:
-        raise CodeNodeError(f"the code interpreter is unavailable ({e})") from e
+        # Details stay in the server log: the error can hold the sandbox's internal address
+        logger.exception("Code step: could not reach the code interpreter")
+        raise CodeNodeError("the code interpreter is unavailable") from e
 
     if response.timed_out or response.error_kind == "timeout":
         raise CodeNodeError(f"timed out after {config.timeout_seconds}s")
     if response.error_kind == "oom":
         raise CodeNodeError("ran out of memory")
     if response.error_kind == "sandbox_error":
-        raise CodeNodeError(f"the sandbox failed to run the code: {response.stderr[-300:]}")
+        logger.error("Code step: sandbox error: %s", response.stderr[-300:])
+        raise CodeNodeError("the sandbox failed to run the code")
 
     try:
         result = parse_harness_output(response.stdout, nonce)

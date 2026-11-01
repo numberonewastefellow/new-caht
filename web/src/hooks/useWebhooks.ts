@@ -12,7 +12,9 @@ import {
   webhookListenUrl,
   WebhookListenStatus,
   webhookRunsUrl,
+  WebhookToolOption,
   webhookUrl,
+  webhookWorkflowToolsUrl,
   WEBHOOKS_URL,
 } from "@/lib/schedules/webhooks";
 
@@ -44,6 +46,14 @@ export function useWebhookRuns(id: number | null | undefined, limit = 50) {
     { refreshInterval: ACTIVE_POLL_MS }
   );
   return { runs: data ?? [], error, isLoading, refresh: mutate };
+}
+
+export function useWebhookWorkflowTools(workflowId: number | null) {
+  const { data, error, isLoading } = useSWR<WebhookToolOption[]>(
+    workflowId != null ? webhookWorkflowToolsUrl(workflowId) : null,
+    errorHandlingFetcher
+  );
+  return { tools: data ?? [], error, isLoading };
 }
 
 export function useWebhookConfig() {

@@ -2385,6 +2385,9 @@ class ChatSession(Base):
         nullable=True,
         index=True,
     )
+    # The only tools this chat's workflow may use. Text from outside is in its context, so
+    # it stays limited for as long as the chat lasts. None means no limit.
+    tool_allowlist: Mapped[list[int] | None] = mapped_column(PGJSONB, nullable=True)
 
     workspace: Mapped["Workspace"] = relationship(
         "Workspace", back_populates="chat_sessions", foreign_keys=[workspace_id]
@@ -5269,6 +5272,15 @@ class PulseWebhook(PulseTrigger):
         DateTime(timezone=True), nullable=True
     )
     last_rejected_reason: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    # Tools its runs may use. Text from outside is in those runs, so none unless chosen.
+    allowed_tool_ids: Mapped[list[int]] = mapped_column(
+        PGJSONB, nullable=False, server_default="[]"
+    )
+    # Nobody is watching a webhook, so a good result can go unseen unless the owner asks.
+    notify_on_success: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default="false"
+    )
 
     __mapper_args__ = {"polymorphic_identity": "webhook"}
 

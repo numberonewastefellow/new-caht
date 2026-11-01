@@ -162,6 +162,16 @@ class WorkflowGraph(BaseModel):
                 by_branch.setdefault(node.branch_index, []).append(node)
         return [by_branch[index] for index in sorted(by_branch)]
 
+    def output_keys_under(self, nodes: list[WorkflowNode]) -> set[str]:
+        """The output keys of ``nodes`` and of everything nested inside them."""
+        keys: set[str] = set()
+        pending = list(nodes)
+        while pending:
+            node = pending.pop()
+            keys.add(node.output_key)
+            pending.extend(n for n in self.nodes if n.parent_key == node.node_key)
+        return keys
+
     def depth(self, node_key: str) -> int:
         """Container nesting depth: 0 for top-level nodes."""
         depth = 0

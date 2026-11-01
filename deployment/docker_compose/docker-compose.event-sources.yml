@@ -1,0 +1,40 @@
+# Optional senders that keep real events reaching Pulse webhooks during development.
+# They run on their own and only call webhook URLs, so stopping or deleting them doesn't
+# affect the main stack. Setup: docs/scheduled-workflows/USER_GUIDE.md
+#
+#   docker compose -p event-sources -f docker-compose.event-sources.yml up -d
+#
+# Start the main stack first, because this joins its network.
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:2.5.9
+    restart: unless-stopped
+    environment:
+      # Skips the database question on first start
+      - UPTIME_KUMA_DB_TYPE=sqlite
+    ports:
+      - "127.0.0.1:${EVENT_KUMA_PORT:-3010}:3001"
+    volumes:
+      - uptime_kuma_data:/app/data
+    networks:
+      - main_stack
+
+  changedetection:
+    image: dgtlmoon/changedetection.io:0.60.10
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${EVENT_CHANGEDETECTION_PORT:-5010}:5000"
+    volumes:
+      - changedetection_data:/datastore
+    networks:
+      - main_stack
+
+volumes:
+  uptime_kuma_data:
+  changedetection_data:
+
+networks:
+  main_stack:
+    external: true
+    name: virtualai_default

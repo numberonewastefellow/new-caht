@@ -256,6 +256,7 @@ class NotificationType(str, Enum):
     FEATURE_ANNOUNCEMENT = "feature_announcement"
     # Pulse (scheduled workflows)
     PULSE_RUN_FAILED = "pulse_run_failed"
+    PULSE_RUN_SUCCEEDED = "pulse_run_succeeded"
     PULSE_NEEDS_INPUT = "pulse_needs_input"
     PULSE_AUTO_PAUSED = "pulse_auto_paused"
     PULSE_SCHEDULE_CHANGED_BY_ADMIN = "pulse_schedule_changed_by_admin"

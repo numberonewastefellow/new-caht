@@ -31,6 +31,7 @@ from om.configs.pulse_configs import PULSE_WEBHOOK_LISTEN_TTL_SECONDS
 from om.configs.pulse_configs import PULSE_WEBHOOK_MAX_BODY_BYTES
 from om.configs.pulse_configs import PULSE_WEBHOOK_MAX_ROTATION_GRACE_HOURS
 from om.db.engine.sql_engine import get_session
+from om.db.models import AgentWorkflow
 from om.db.models import PulseRun
 from om.db.models import PulseWebhook
 from om.db.models import User
@@ -42,6 +43,7 @@ from om.db.pulse import get_pulse_run
 from om.db.pulse import list_runs_for_trigger
 from om.db.pulse import lock_trigger_row
 from om.db.pulse import lock_user_schedules
+from om.db.pulse_webhook import workflow_tools
 from om.db.pulse_webhook import count_webhooks_for_user
 from om.db.pulse_webhook import create_pulse_webhook
 from om.db.pulse_webhook import get_pulse_webhook
@@ -83,6 +85,7 @@ from om.server.features.pulse.webhook_models import WebhookPreviewRequest
 from om.server.features.pulse.webhook_models import WebhookPreviewResponse
 from om.server.features.pulse.webhook_models import WebhookResponse
 from om.server.features.pulse.webhook_models import WebhookRotateRequest
+from om.server.features.pulse.webhook_models import WebhookToolOption
 from om.server.features.pulse.webhook_models import WebhookRunPayload
 from om.server.features.pulse.webhook_models import WebhookTestEventRequest
 from om.server.features.pulse.webhook_models import WebhookUpdate
@@ -193,12 +196,22 @@ def _check_enabled_setting() -> None:
         raise HTTPException(status_code=403, detail="An admin has turned webhooks off")
 
 
-def _check_workflow(db_session: Session, workflow_id: int, owner: User) -> None:
+def _check_workflow(db_session: Session, workflow_id: int, owner: User) -> AgentWorkflow:
     """The workflow must be usable by the OWNER, because runs execute as them."""
     try:
-        get_accessible_workflow(db_session, workflow_id, owner.id)
+        return get_accessible_workflow(db_session, workflow_id, owner.id)
     except PulseAccessError as e:
         raise HTTPException(status_code=404 if e.workflow_deleted else 403, detail=str(e))
+
+
+def _check_allowed_tools(workflow: AgentWorkflow, tool_ids: list[int]) -> list[int]:
+    unknown = set(tool_ids) - set(workflow_tools(workflow))
+    if unknown:
+        raise HTTPException(
+            status_code=400,
+            detail=f"This workflow doesn't use these tools: {sorted(unknown)}",
+        )
+    return sorted(set(tool_ids))
 
 
 def _check_retention(value: int | None) -> int:
@@ -325,6 +338,25 @@ def _notify_admin_change(
 # ========================
 
 
+@router.get("/workflow-tools/{workflow_id}")
+def list_workflow_tools(
+    workflow_id: int,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> list[WebhookToolOption]:
+    """What a webhook on this workflow could be allowed to use."""
+    workflow = _check_workflow(db_session, workflow_id, user)
+    return [
+        WebhookToolOption(
+            id=tool.id,
+            name=tool.display_name or tool.name,
+            description=tool.description,
+            steps=steps,
+        )
+        for tool, steps in workflow_tools(workflow).values()
+    ]
+
+
 @router.get("/config")
 def get_webhook_config(_: User = Depends(current_user)) -> WebhookConfigResponse:
     return WebhookConfigResponse(
@@ -356,7 +388,8 @@ def create_webhook(
     db_session: Session = Depends(get_session),
 ) -> WebhookCredentials:
     _check_enabled_setting()
-    _check_workflow(db_session, request.workflow_id, user)
+    workflow = _check_workflow(db_session, request.workflow_id, user)
+    allowed_tool_ids = _check_allowed_tools(workflow, request.allowed_tool_ids)
     header_name = (
         _check_header_name(request.header_name)
         if request.auth_mode == AUTH_HEADER_TOKEN
@@ -389,6 +422,8 @@ def create_webhook(
         header_name=header_name,
         dedup_source=dedup_source,
         dedup_path=dedup_path,
+        allowed_tool_ids=allowed_tool_ids,
+        notify_on_success=request.notify_on_success,
     )
     url, test_url = _urls(token)
     return WebhookCredentials(
@@ -417,6 +452,12 @@ def update_webhook(
 ) -> WebhookResponse:
     webhook = _get_webhook_or_404(db_session, webhook_id, user)
     changes = request.model_dump(exclude_unset=True)
+    # Runs use the owner's access, so what a run does stays the owner's decision. An admin
+    # can stop a webhook, but can't change what it tells the workflow to do.
+    if webhook.user_id != user.id and set(changes) - {"enabled"}:
+        raise HTTPException(
+            status_code=403, detail="Only the owner can edit a webhook. Admins can pause it."
+        )
     lock_trigger_row(db_session, webhook.id)
     db_session.refresh(webhook)
 
@@ -434,6 +475,15 @@ def update_webhook(
             changes.get("dedup_source", webhook.dedup_source),
             changes.get("dedup_path", webhook.dedup_path),
         )
+
+    if changes.get("allowed_tool_ids") is not None:
+        webhook.allowed_tool_ids = _check_allowed_tools(
+            _check_workflow(db_session, webhook.workflow_id, webhook.user),
+            changes["allowed_tool_ids"],
+        )
+
+    if changes.get("notify_on_success") is not None:
+        webhook.notify_on_success = changes["notify_on_success"]
 
     if changes.get("enabled") is True and not webhook.enabled:
         if webhook.revoked_at is not None:

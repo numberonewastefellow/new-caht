@@ -26,6 +26,8 @@ export interface PulseWebhook {
   header_name: string | null;
   dedup_source: WebhookDedupSource;
   dedup_path: string | null;
+  allowed_tool_ids: number[];
+  notify_on_success: boolean;
   input_message: string;
   timezone: string;
   retention_count: number;
@@ -61,6 +63,8 @@ export interface WebhookCreate {
   header_name?: string | null;
   dedup_source?: WebhookDedupSource | null;
   dedup_path?: string | null;
+  allowed_tool_ids?: number[];
+  notify_on_success?: boolean;
   retention_count?: number | null;
 }
 
@@ -72,10 +76,19 @@ export type WebhookUpdate = Partial<
     | "timezone"
     | "dedup_source"
     | "dedup_path"
+    | "allowed_tool_ids"
+    | "notify_on_success"
     | "enabled"
     | "retention_count"
   >
 >;
+
+export interface WebhookToolOption {
+  id: number;
+  name: string;
+  description: string | null;
+  steps: string[];
+}
 
 export interface WebhookConfig {
   enabled: boolean;
@@ -101,6 +114,8 @@ export interface WebhookListenStatus {
 
 export const WEBHOOKS_URL = `${PULSE_BASE}/webhooks`;
 export const WEBHOOK_CONFIG_URL = `${WEBHOOKS_URL}/config`;
+export const webhookWorkflowToolsUrl = (workflowId: number) =>
+  `${WEBHOOKS_URL}/workflow-tools/${workflowId}`;
 export const webhookUrl = (id: number) => `${WEBHOOKS_URL}/${id}`;
 export const webhookRunsUrl = (id: number, limit = 50) =>
   `${webhookUrl(id)}/runs?limit=${limit}`;

@@ -164,6 +164,34 @@ def _value_problem(
     return _unavailable(step, [value], names, steps)
 
 
+def old_format_problem(steps: Sequence[_Step]) -> str | None:
+    """A field read from a step's result on a ``schema_version`` 1 workflow.
+
+    A router reads any such reference as empty, so it takes the wrong branch. In text the
+    format swaps in ``$key`` or ``$key.output`` and leaves the rest, which is what
+    ``$report.pdf`` relies on, so only ``$key.output.field`` is wrong there.
+    """
+    names = {step.output_key for step in steps}
+    for step in sorted(steps, key=lambda s: s.step_order):
+        values = [value for value in _values_of(step) if isinstance(value, str)]
+        checks = [
+            *((text, False) for text in _templates_of(step)),
+            *((value, True) for value in values),
+        ]
+        for text, reads_as_one_value in checks:
+            for reference in find_references(text):
+                reads_a_field = reference_field(reference) and (
+                    reads_as_one_value or ".output." in reference
+                )
+                if reads_a_field and reference_name(reference) in names:
+                    return (
+                        f'"{step.step_name}" reads {reference}, but this workflow uses the '
+                        "older reference format, which can't read a single field. Use "
+                        '"Upgrade references" in the editor, then save again.'
+                    )
+    return None
+
+
 def reference_problem(steps: Sequence[_Step]) -> str | None:
     """The first reference that can't resolve when its step runs, if any."""
     for step in sorted(steps, key=lambda s: s.step_order):

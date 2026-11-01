@@ -188,6 +188,10 @@ class _AgentResult:
     output: str
     file_ids: list[str]
     file_details: list[dict[str, Any]]
+    # It hit its output limit mid-reply
+    cut_off: bool = False
+    # It produced nothing, and its output is only a placeholder saying so
+    no_answer: bool = False
 
 
 def _parse_agent_response(response: ToolResponse | None) -> _AgentResult:
@@ -198,9 +202,28 @@ def _parse_agent_response(response: ToolResponse | None) -> _AgentResult:
             output=data.get("agent_output", ""),
             file_ids=data.get("_file_ids", []),
             file_details=data.get("_file_details", []),
+            cut_off=bool(data.get("_cut_off")),
+            no_answer=bool(data.get("_no_answer")),
         )
     except (json.JSONDecodeError, AttributeError):
         return _AgentResult(output=raw or "", file_ids=[], file_details=[])
+
+
+@dataclass(frozen=True)
+class _RetryFailed:
+    message: str
+
+
+def _no_answer_message(node: WorkflowNode, agent_tool: AgentTool) -> str:
+    return f'"{node.name}" (agent {agent_tool._agent.name}) didn\'t produce a reply.'
+
+
+def _cut_off_message(node: WorkflowNode, agent_tool: AgentTool) -> str:
+    return (
+        f'"{node.name}" (agent {agent_tool._agent.name}) was cut off at its output limit '
+        "before it finished, so its result can't be used. Raise the step's max output "
+        "tokens, or ask for less."
+    )
 
 
 class AgentRunnerV1:
@@ -306,7 +329,7 @@ class AgentRunnerV1:
         if config.output_schema:
             checked = yield from self._expected_output(
                 node, ctx, placement, agent_tool, config.output_schema, agent_input,
-                output, trace_node_id, step_start,
+                result, trace_node_id, step_start,
             )
             if isinstance(checked, StepOutcome):
                 return checked
@@ -329,20 +352,64 @@ class AgentRunnerV1:
         agent_tool: AgentTool,
         schema: dict[str, Any],
         task: str,
-        reply: str,
+        first: _AgentResult,
         trace_node_id: str | None,
         step_start: float,
     ) -> Generator[Packet, None, str | StepOutcome]:
-        """The reply as the declared JSON, asking the agent once more if it isn't."""
+        """The reply as the declared JSON, asking the agent once more if it isn't.
+
+        A cut-off reply isn't repaired: closing its brackets would pass off part of the
+        data as all of it. A retry wouldn't help either, because the limit is the same.
+        """
+        reply = first.output
+        problem = ""
+        if first.no_answer:
+            # Nothing to reformat: asked to, a model with no tools would make the data up
+            message = _no_answer_message(node, agent_tool)
+        elif not first.cut_off:
+            try:
+                return read_output(reply, schema)
+            except OutputContractError as e:
+                problem = str(e)
+            logger.warning(
+                "[Sequential] Step '%s': output doesn't match its schema (%s); retrying",
+                node.name,
+                problem,
+            )
+            outcome = yield from self._retry_expected_output(
+                node, ctx, placement, agent_tool, schema, task, reply, problem
+            )
+            if isinstance(outcome, (str, StepOutcome)):
+                return outcome
+            message = outcome.message
+        else:
+            message = _cut_off_message(node, agent_tool)
+        yield Packet(placement=placement, obj=WorkflowStepDelta(content=message, replace=True))
+        yield from _close_step(node, placement)
+        ctx.state.turn.advance()
         try:
-            return read_output(reply, schema)
-        except OutputContractError as e:
-            problem = str(e)
-        logger.warning(
-            "[Sequential] Step '%s': output doesn't match its schema (%s); retrying",
-            node.name,
-            problem,
-        )
+            ctx.trace.finish_agent(
+                trace_node_id,
+                message,
+                status="failed",
+                duration_ms=int((time.monotonic() - step_start) * 1000),
+            )
+            ctx.persist_trace()
+        except Exception:
+            logger.debug("[Trace] finish_agent failed", exc_info=True)
+        return StepOutcome(status=StepStatus.FAILED, error=message)
+
+    def _retry_expected_output(
+        self,
+        node: WorkflowNode,
+        ctx: RunContext,
+        placement: Placement,
+        agent_tool: AgentTool,
+        schema: dict[str, Any],
+        task: str,
+        reply: str,
+        problem: str,
+    ) -> Generator[Packet, None, str | StepOutcome | _RetryFailed]:
 
         state = ctx.state
         retry = StreamingAgentResult(start_turn_index=state.turn.value)
@@ -355,6 +422,7 @@ class AgentRunnerV1:
             stream_answer_as_step=True,
             stream_reasoning_as_step=True,
             task=retry_task(task, reply, problem, schema),
+            format_only=True,
         )
         if retry.cancelled:
             yield from _close_step(node, placement)
@@ -363,29 +431,19 @@ class AgentRunnerV1:
             return StepOutcome(status=StepStatus.CANCELLED)
 
         state.turn.observe(retry.max_turn_index)
-        second = _parse_agent_response(retry.response).output
+        parsed = _parse_agent_response(retry.response)
+        if parsed.no_answer:
+            return _RetryFailed(_no_answer_message(node, agent_tool))
+        if parsed.cut_off:
+            return _RetryFailed(_cut_off_message(node, agent_tool))
         try:
-            return read_output(second, schema)
+            return read_output(parsed.output, schema)
         except OutputContractError as e:
-            message = (
+            return _RetryFailed(
                 f'"{node.name}" (agent {agent_tool._agent.name}) didn\'t return its '
                 f"expected output, even after a retry: {e}. It replied: "
-                f"{second[:MAX_REPLY_IN_ERROR]}"
+                f"{parsed.output[:MAX_REPLY_IN_ERROR]}"
             )
-        yield Packet(placement=placement, obj=WorkflowStepDelta(content=message, replace=True))
-        yield from _close_step(node, placement)
-        state.turn.advance()
-        try:
-            ctx.trace.finish_agent(
-                trace_node_id,
-                message,
-                status="failed",
-                duration_ms=int((time.monotonic() - step_start) * 1000),
-            )
-            ctx.persist_trace()
-        except Exception:
-            logger.debug("[Trace] finish_agent failed", exc_info=True)
-        return StepOutcome(status=StepStatus.FAILED, error=message)
 
     @staticmethod
     def _task_input(node: WorkflowNode, ctx: RunContext) -> str:

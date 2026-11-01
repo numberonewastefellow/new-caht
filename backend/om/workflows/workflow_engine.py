@@ -171,6 +171,7 @@ def _build_agent_tools(
     user: User | None = None,
     chat_files: list[ChatFile] | None = None,
     sandbox_session_id: str | None = None,
+    tool_allowlist: list[int] | None = None,
 ) -> list[AgentTool]:
     """Build AgentTool instances for each workflow step's agent.
 
@@ -235,6 +236,7 @@ def _build_agent_tools(
                 llm=llm_cache[llm_key],
                 has_tools=has_tools,
                 promote_output=step.promote_output,
+                can_request_input=step.can_request_input,
                 chat_files=chat_files,
                 sandbox_session_id=sandbox_session_id,
                 # Step-level overrides (applied in AgentTool.run())
@@ -242,6 +244,7 @@ def _build_agent_tools(
                 system_prompt_override=step.system_prompt_override,
                 task_prompt_override=step.task_prompt_override,
                 tool_ids_override=step.tool_ids_override,
+                tool_allowlist=tool_allowlist,
                 document_set_ids_override=step.document_set_ids_override,
                 replace_base_system_prompt_override=step.replace_base_system_prompt_override,
             )
@@ -296,6 +299,7 @@ def run_workflow_sequential(
     chat_files: list[ChatFile] | None = None,
     sandbox_session_id: str | None = None,
     assistant_message_id: int | None = None,
+    tool_allowlist: list[int] | None = None,
 ) -> Generator[Packet, None, None]:
     """Run a workflow in sequential mode — fixed order, no LLM routing.
 
@@ -475,12 +479,14 @@ def run_workflow_sequential(
             llm=llm_cache[agent.id],
             has_tools=has_tools,
             promote_output=step.promote_output,
+            can_request_input=step.can_request_input,
             chat_files=chat_files,
             sandbox_session_id=sandbox_session_id,
             max_output_tokens_override=step.max_output_tokens_override,
             system_prompt_override=step.system_prompt_override,
             task_prompt_override=step.task_prompt_override,
             tool_ids_override=step.tool_ids_override,
+            tool_allowlist=tool_allowlist,
             document_set_ids_override=step.document_set_ids_override,
             replace_base_system_prompt_override=step.replace_base_system_prompt_override,
         )
@@ -1104,6 +1110,7 @@ def run_workflow_llm_decision(
     chat_files: list[ChatFile] | None = None,
     sandbox_session_id: str | None = None,
     assistant_message_id: int | None = None,
+    tool_allowlist: list[int] | None = None,
 ) -> Generator[Packet, None, None]:
     """Run a workflow in LLM-decision mode — orchestrator LLM decides which agent to call.
 
@@ -1125,7 +1132,7 @@ def run_workflow_llm_decision(
     )
 
     # Build agent tools (with cached LLMs + user — Tier 1.5)
-    agent_tools = _build_agent_tools(steps, emitter, db_session, user=user, chat_files=chat_files, sandbox_session_id=sandbox_session_id)
+    agent_tools = _build_agent_tools(steps, emitter, db_session, user=user, chat_files=chat_files, sandbox_session_id=sandbox_session_id, tool_allowlist=tool_allowlist)
     if not agent_tools:
         raise ValueError("No valid agent tools found for workflow")
 
@@ -2375,6 +2382,7 @@ def run_workflow(
     chat_files: list[ChatFile] | None = None,
     sandbox_session_id: str | None = None,
     assistant_message_id: int | None = None,
+    tool_allowlist: list[int] | None = None,
 ) -> Generator[Packet, None, None]:
     """Main entry point — dispatches to the appropriate orchestration mode.
 
@@ -2429,6 +2437,7 @@ def run_workflow(
             chat_files=chat_files,
             sandbox_session_id=sandbox_session_id,
             assistant_message_id=assistant_message_id,
+            tool_allowlist=tool_allowlist,
         )
     elif mode == "llm_decision":
         yield from run_workflow_llm_decision(
@@ -2439,6 +2448,7 @@ def run_workflow(
             chat_files=chat_files,
             sandbox_session_id=sandbox_session_id,
             assistant_message_id=assistant_message_id,
+            tool_allowlist=tool_allowlist,
         )
     else:
         raise ValueError(f"Unsupported orchestration mode: {mode}")

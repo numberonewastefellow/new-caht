@@ -101,3 +101,39 @@ def test_ollama_chunk_parser_preserves_content_when_thinking_and_content_coexist
 
     assert response.choices[0].delta.reasoning_content == "Need one thought"
     assert response.choices[0].delta.content == "Visible answer token"
+
+
+class TestResponsesApiReportsWhyAReplyEnded:
+    """litellm has no handler for `response.incomplete`, so a reply cut off by the token
+    limit used to look like a normal finish to every caller."""
+
+    @staticmethod
+    def _finish(event: dict) -> str | None:
+        from litellm.completion_extras.litellm_responses_transformation.transformation import (
+            OpenAiResponsesToChatCompletionStreamIterator,
+        )
+
+        from om.llm.litellm_singleton.monkey_patches import apply_monkey_patches
+
+        apply_monkey_patches()
+        iterator = OpenAiResponsesToChatCompletionStreamIterator.__new__(
+            OpenAiResponsesToChatCompletionStreamIterator
+        )
+        return iterator.chunk_parser(event).choices[0].finish_reason
+
+    def test_token_limit_is_reported_as_length(self) -> None:
+        event = {
+            "type": "response.incomplete",
+            "response": {"incomplete_details": {"reason": "max_output_tokens"}},
+        }
+        assert self._finish(event) == "length"
+
+    def test_content_filter_is_reported_as_such(self) -> None:
+        event = {
+            "type": "response.incomplete",
+            "response": {"incomplete_details": {"reason": "content_filter"}},
+        }
+        assert self._finish(event) == "content_filter"
+
+    def test_a_normal_finish_is_still_stop(self) -> None:
+        assert self._finish({"type": "response.completed", "response": {}}) == "stop"

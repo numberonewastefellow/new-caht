@@ -38,14 +38,31 @@ class AgentToolCache:
         emitter: Emitter,
         chat_files: list[ChatFile] | None = None,
         sandbox_session_id: str | None = None,
+        tool_allowlist: list[int] | None = None,
     ) -> None:
         self._db_session = db_session
         self._user = user
         self._emitter = emitter
         self._chat_files = chat_files
         self._sandbox_session_id = sandbox_session_id
+        self._tool_allowlist = tool_allowlist
         self._tools: dict[str, AgentTool] = {}
         self._llms: dict[tuple[int, str | None, str | None], LLM] = {}
+
+    def for_branch(self, *, db_session: Session, user: User, emitter: Emitter) -> "AgentToolCache":
+        """A cache for one parallel branch, which has its own session and packet queue.
+
+        Built from this one so that what limits the run limits its branches. A sandbox
+        session is stateful, so branches don't share it.
+        """
+        return AgentToolCache(
+            db_session=db_session,
+            user=user,
+            emitter=emitter,
+            chat_files=self._chat_files,
+            sandbox_session_id=None,
+            tool_allowlist=self._tool_allowlist,
+        )
 
     def get(self, node: WorkflowNode, config: AgentStepConfigV1) -> AgentTool:
         """The AgentTool for ``node``.
@@ -78,6 +95,7 @@ class AgentToolCache:
             llm=llm,
             has_tools=has_tools,
             promote_output=node.promote_output,
+            can_request_input=node.can_request_input,
             chat_files=self._chat_files,
             sandbox_session_id=self._sandbox_session_id,
             # Step-level overrides (applied in AgentTool.run())
@@ -85,6 +103,8 @@ class AgentToolCache:
             system_prompt_override=config.system_prompt_override,
             task_prompt_override=config.task_prompt_override,
             tool_ids_override=config.tool_ids_override,
+            tool_allowlist=self._tool_allowlist,
+            exact_output=bool(schema),
             document_set_ids_override=config.document_set_ids_override,
             replace_base_system_prompt_override=config.replace_base_system_prompt_override,
             response_format=(
