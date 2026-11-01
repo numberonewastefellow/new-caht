@@ -1,6 +1,6 @@
 # Flow nodes: TODO
 
-**Where we are:** everything through item 4 is built, self-reviewed, tested in a real browser and live on port 3000. Webhooks (5) is with another agent (`D:/llm/danswer-webhooks`). **Item 6 is deferred by the user (2026-10-31).** **In progress: 3k, agent steps with an expected output.** Then item 7, or merge item 5 when it's ready.
+**Where we are:** everything through item 4 is built, self-reviewed, tested in a real browser and live on port 3000. Webhooks (5) is with another agent (`D:/llm/danswer-webhooks`). **Item 6 is deferred by the user (2026-10-31).** **Final review done 2026-11-01; findings below are not fixed: the user asked for review only.** The webhook work (5) is in this checkout, and the other agent is testing it.
 
 Work top to bottom, one item at a time: implement, test, check on screen, tick, add a progress line. Why each item exists: [FIX_PLAN.md](FIX_PLAN.md) (evidence) and the plan review in the progress log below.
 
@@ -48,12 +48,49 @@ Work top to bottom, one item at a time: implement, test, check on screen, tick, 
 | [x] | 3f | Wizard: children indented, safe reorder and delete, Next no longer saves by itself. Browser-tested | Frontend | Done 2026-10-31 |
 | [x] | 3g | Built parallel + loop on screen, saved, reloaded; the same definition ran on the real backend with real agents (Paris, then Rome) | End to end | Done 2026-10-31 |
 | [x] | 4 | Run view: scope on steps, fork/join and real times in the trace, a trace node for loops, labels kept after reload. Browser-tested on a saved chat; the user's real run 571 read and correct | Backend + frontend | Done 2026-10-31 |
-| [ ] | 3k | Agent steps can declare an expected output (JSON schema): the provider enforces it where the model supports that, small mistakes are repaired, the reply is validated, one retry sends the error back, then the step fails clearly. Both editors. The save check refuses fields a step doesn't declare. Demo moved to it. Found 2026-10-31: the outline agent returned three different shapes for one prompt. **Code and unit tests done; open: live runs, browser check** | Full stack | India and other requests run through the real workflow; agents' output read |
+| [x] | 3k | Agent steps can declare an expected output (JSON schema): the provider enforces it where the model supports that, small mistakes are repaired, the reply is validated, one retry sends the error back, then the step fails clearly. Both editors. The save check refuses fields a step doesn't declare. Demo moved to it (version 5). Live runs and browser-tested | Full stack | Done 2026-11-01 |
 | [ ] | 5 | Webhooks in Pulse (W1–W5). **Handed to another agent by the user, 2026-10-31**, in its own worktree and scratch DB; brief: [WEBHOOKS_HANDOVER.md](WEBHOOKS_HANDOVER.md). Left for this track: review its work, back up the real DB, merge, user's screen check | Full stack | Reviewed, merged, screenshot |
 | [ ] | 6 | **Deferred by the user, 2026-10-31: develop later.** Engine hardening, in order: cancel + fail-fast + timeout; budgets + concurrency; retry; sandbox admission + code errors; opt-in router upgrade. A loop must not silently drop items beyond `max_iterations`: say so in the output and the trace. Decide whether `llm_decision` runs on the pinned definition | Backend | Each with tests; goldens green |
 | [ ] | 7 | Dry-run script in the repo, template JSONs, multi-agent review, `graphify update .`, docs (`research/00-platform-survey.md`, DESIGN, HANDOVER), remove `flowdev.bat` and the flow-dev compose file, drop `flow_dev` only if the user agrees. Look at the `No active trace` log errors | Mixed | Checklist done; rollout notes for the user |
 
 **Not scheduled; the user decides at the end:** durable runs and crash resume, idempotency for side-effecting tools, cost budgets per tenant, approvals inside containers, OpenTelemetry, audit and RBAC, draft/publish, PII retention. See `REVIEW_88eb334e5.md`.
+
+## Final review, 2026-11-01: not fixed, the user decides
+
+Three independent reviewers. "Reproduced" means I ran it; "read" means traced in the code.
+
+**Flow nodes**
+
+| Sev | Finding | Where | Checked |
+|---|---|---|---|
+| High | The citation processor strips `[n]` from agent replies: `{"ids":[1, 2]}` becomes `{"ids":}`, "section [2]" loses the number. Free-text steps too | `agent_tool.py`, `llm_step.py` | Reproduced |
+| High | A schema that isn't strict-compatible (bare `array`, open nested object, `anyOf`) passes save, then the LLM call fails on every run | `output_contract.py` | Reproduced |
+| High | A reply cut off by the token limit can pass: `{"days":["a","b","Day thr` becomes a shorter valid list; `finish_reason` is never read | `output_contract.py` | Reproduced |
+| High | A schema is accepted on `schema_version` 1 workflows, where `$s.output.status` in a router reads as empty and takes the wrong branch | `nodes/agent.py`, `saving.py` | Read |
+| Med | A failed run loses all its step records on reload: `save_chat_turn` is skipped when the run raises | `message_handler.py:503`, `sequential.py:137` | Read |
+| Med | The retry re-runs the whole agent, so a tool that changes something runs twice; retry files are dropped | `nodes/agent.py` | Read |
+| Med | With `on_branch_error: continue`, a failed branch's output reads as empty to later steps | `state.py` | Read |
+| Med | A loop keeps only the last iteration's files | `nodes/loop.py:298` | Read |
+| Med | Changing a step's agent clears its overrides in the Visual Builder but not in the Wizard | `WorkflowEditorPage.tsx:409` | Read |
+| Med | Optional schema fields become required under strict mode; without `required`, `{"day":[1]}` passes on models without enforcement | `output_contract.py` | Partly reproduced |
+| Low | Delete key removes a box and its steps with no confirmation; only top-level `$step.output` fields are checked on save; schema box loses a custom schema on Text → JSON; legacy engine ignores `output_schema` | Various | Read |
+
+**Webhooks (owned by the other agent)**
+
+| Sev | Finding | Where | Checked |
+|---|---|---|---|
+| High | Behind TLS, every caller shares one rate-limit bucket (`127.0.0.1`), so anyone sending 301 requests a minute blocks all webhooks | `nginx/app.conf.template.prod`, `limits.py` | Read |
+| Med | The TLS nginx block doesn't redact tokens in its logs; Helm has no redaction | `nginx/app.conf.template.prod` | Read |
+| Med | An admin can rewrite `input_message` on another user's webhook, which then runs with the owner's access (rotation is owner-only, this isn't) | `webhook_api.py:418` | Read |
+| Med | Payload text can steer an agent with all the workflow's tools; `<untrusted_data>` is the only defence | `runner.py`, `payload.py` | Read |
+| Med | Reaching the owner's rate limit counts as failures, which auto-pauses the webhook | `runner.py:301` | Read |
+| Med | A resend after a skipped or failed run returns "duplicate" and nothing runs | `pulse_webhook.py:283` | Read |
+| Med | Webhook runs never expire while the worker is down, and old events all run when it returns | `scheduler.py` | Read |
+| Med | Owner isn't notified when a webhook is disabled at run time; one user can use up the tenant's run cap | `runner.py:284`, `pulse_webhook.py:288` | Read |
+| Med | Helm has no worker for the `pulse_webhook` queue | `helm/.../pulse-worker.yaml` | Reviewer's report |
+| Low | Replay of signed requests when dedup is off; `ENCRYPTION_KEY_SECRET` unset stores signing secrets in plaintext (true here); dev compose exposes port 8080 on all interfaces; `test_url` never shown in the UI; `prod-no-letsencrypt` compose names a template that doesn't exist; no migration lock timeout | Various | Partly read |
+
+**Item 7 so far:** `No active trace` fix written, 3 tests pass, not deployed. Dry-run script in the repo: 0 problems in 48 templates, 49 workflows, 289 steps, 123 paused runs. `flowdev.bat` and its compose file removed, and unused code removed, with the user's OK. Docs not updated.
 
 ## Open after the self-review (2026-10-31)
 
@@ -65,7 +102,7 @@ Not fixed; each goes with the item named, or the user decides.
 | `input_mapping` is stored as JSONB, which reorders keys: the outline agent gets `where they stay` before `chosen destination`, not the authored order | Needs its own look |
 | Expected output on `llm_decision` steps; refused on save for now | Later |
 | A cut-off reply can still pass if it fits the schema, so schemas should use rules like `minItems` | Note for authors |
-| `create_workflows.py --update` resets an agent's model override: re-set it after each deploy | Shared tooling, the user decides |
+| A follow-up message in a workflow chat starts a new run with only that message: after "plan india…", "i'm planning from UAE" (run 596) lost India and the 6 days | Design question, the user decides |
 | A branch abandoned by `first_success` leaves no trace node | Item 6 (cancel) |
 | The container trace stays "running" if the client disconnects mid-step (cancel and failure paths are closed) | Item 6 (cancel) |
 | Whole trace rewritten about 3× per `llm_decision` step; checkpoints rewrite all outputs each step. Grows with run size, not noticeable at today's sizes | Item 6 (budgets), only if a real run shows it |
@@ -86,6 +123,7 @@ Not fixed; each goes with the item named, or the user decides.
 
 ## Progress log
 
+- **2026-11-01, 3k done.** Real workflow, 6 runs: India, UAE snow and Japan twice each, all completed with the right day counts (6, 6, 7), read. The user's own chat runs 591 and 596 completed too. Measured on the real bad replies from runs 584 and 586, enforcement off: old array prompt 0/10 on the first try, schema stated in the task 10/10, retry with the error 10/10; new object prompt 10/10; API-enforced schema 10/10 on run 584's input. An agent with a tool and a schema completes. Real backend, no LLM: refused bad schema, pausing step, LLM Decision and undeclared field; a schema survives settings saves and comes back on restore, 8/8. Browser: output format 21/21, run view 11/11, editors 83/84 (the #418 error). Unit 593, goldens 116 unchanged, DB 57, web 217. The browser check caught one bug: the validator didn't run the rules on agent steps; fixed. Backup: `D:/llm/backups/virtualai_postgres_before_output_contract_20261101_003917.dump`. One temp key was left by a deploy interrupted partway; removed.
 - **2026-11-01, 3k, expected output.** `om/workflows/output_contract.py`; the schema is stored in the agent step's `config` column, no migration, and left out when empty, so existing definitions keep their hash: all 116 goldens unchanged. `json_repair` (new dependency, images need a rebuild) returned `""` on both real failures, so it's one layer, not the fix. `om/chat/llm_step.py` now passes `structured_response_format` where it had a TODO.
 - **2026-10-31, tested in a real browser at the user's request.** Headless Chromium on the real web image, isolated network, fake API serving captured responses of the real workflow. A scratch API on `flow_dev` was refused by the permission system as a shared-resource change, so nothing there ran. Saves went to the fake; the definition built on screen was then created and run on the real backend with a temp key and removed. Results on the final image: editors 83/84, item 4 11/11; the one failure is hydration error #418, on all admin pages in dark mode. Real backend, no LLM: trace 11/11, nesting 28/28, saves 11/11. Run from the UI's definition: 5/5. **Found and fixed:** a step dragged out of a box always landed last (now where dropped); **Wizard: after any edit, Next on step 2 saved and left without showing step 3** (older bug: one DOM button changing type mid-click); saved workflows opened zoomed in on Start; trace minimap empty and zoom buttons white in dark mode; list page showing `Agent #null` for code steps. Migration `0003` (other work stream) was applied by someone else's restart at 09:47 UTC.
 - **2026-10-31, self-review.** Two independent reviews, each claim checked against the code. **Fixed in the editors:** Visual Builder crash on load (a hook after an early return); moving a step into a box keeps options the server refuses; Add/rename of code inputs could overwrite data; typing in box settings rebuilt the canvas and brought back deleted edges; branch-name fallback text while typing; new Code/Parallel steps missing their defaults; changing the type of a box with steps; Delete key skipping the tree rules; layout using too-small sizes; a drop on a box's header left the box; multi-select drag; hidden limits still validated in Sequential. **Fixed in the backend:** a later agent's pause reusing an earlier agent's task; persisted output mixing up parallel branches; references to steps that didn't run failing or passing inconsistently; router conditions ignoring paths (schema 2); save check not matching how settings are read (`$500` in a code input, `items` reading its own body, `$loop.foo`); a paused step that's gone losing the user's reply; re-pause exceeding `max_calls_per_agent`; a run pinning a stale definition; new workflow saved in pieces; metadata saves failing on old workflows (my regression); `first_success` + `fail` depending on timing; a loop inside a losing branch still spending LLM calls; save checks running in `llm_decision`, where order isn't fixed. **Optimized:** `graph_from_workflow` 2 instead of up to 4 per save; no deep copy of the context per while check; no canvas rebuild per keystroke. **Measured, no change needed:** Wizard placement at 100 steps, 2.4 ms per keystroke. Two goldens regenerated (`fx_llmd_repause`, `fx_llmd_resume_legacy_checkpoint`), intended changes only.

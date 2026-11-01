@@ -348,7 +348,6 @@ export function AgentConfigPanel({
               data={data}
               effectiveToolIds={effectiveToolIds}
               availableTools={availableTools}
-              currentAgent={currentAgent}
               onUpdate={onUpdate}
             />
 
@@ -359,7 +358,6 @@ export function AgentConfigPanel({
               effectiveDocSetIds={effectiveDocSetIds}
               availableTools={availableTools}
               documentSets={documentSets}
-              currentAgent={currentAgent}
               onUpdate={onUpdate}
             />
 
@@ -622,14 +620,12 @@ function ToolsSection({
   data,
   effectiveToolIds,
   availableTools,
-  currentAgent,
   onUpdate,
 }: {
   nodeId: string;
   data: AgentNodeData;
   effectiveToolIds: Set<number>;
   availableTools: ToolSnapshot[];
-  currentAgent: MinimalAgentSnapshot | undefined;
   onUpdate: (nodeId: string, partial: Partial<AgentNodeData>) => void;
 }) {
   const isToolsOverridden = data.tool_ids_override != null;
@@ -915,7 +911,6 @@ function KnowledgeSection({
   effectiveDocSetIds,
   availableTools,
   documentSets,
-  currentAgent,
   onUpdate,
 }: {
   nodeId: string;
@@ -924,7 +919,6 @@ function KnowledgeSection({
   effectiveDocSetIds: Set<number>;
   availableTools: ToolSnapshot[];
   documentSets: DocumentSetSummary[];
-  currentAgent: MinimalAgentSnapshot | undefined;
   onUpdate: (nodeId: string, partial: Partial<AgentNodeData>) => void;
 }) {
   const isDocSetsOverridden = data.document_set_ids_override != null;

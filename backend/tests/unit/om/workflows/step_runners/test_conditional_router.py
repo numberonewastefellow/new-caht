@@ -11,8 +11,6 @@ Tests cover:
   - Unknown operators
 """
 
-import pytest
-
 from om.workflows.models import WorkflowContext
 from om.workflows.step_runners.conditional_router import (
     OPERATORS,

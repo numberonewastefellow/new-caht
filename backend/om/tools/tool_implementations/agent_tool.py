@@ -20,7 +20,9 @@ from om.server.query_and_chat.streaming_models import SectionEnd
 from om.tools.interface import Tool
 from om.tools.models import ChatFile
 from om.tools.models import ToolResponse
+from om.tracing.framework.create import ensure_trace
 from om.utils.logger import setup_logger
+from shared_configs.contextvars import get_current_tenant_id
 
 logger = setup_logger()
 
@@ -240,6 +242,19 @@ class AgentTool(Tool[None]):
         llm_loop infrastructure to run a full agent cycle with the agent's
         own LLM, tools, and knowledge configuration.
         """
+        # A trace is opened per agent: this runs on its own thread, and a workflow's
+        # generator can't hold one open across its yields.
+        with ensure_trace(
+            "workflow_agent",
+            metadata={
+                "tenant_id": get_current_tenant_id(),
+                "agent": self._agent.name,
+                "step": self._step_name,
+            },
+        ):
+            return self._run_agent(placement, **llm_kwargs)
+
+    def _run_agent(self, placement: Placement, **llm_kwargs: Any) -> ToolResponse:
         task = llm_kwargs.get("task", "")
         if not task:
             return ToolResponse(

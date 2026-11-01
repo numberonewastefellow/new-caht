@@ -56,6 +56,7 @@ from om.server.query_and_chat.streaming_models import WorkflowStepEnd
 from om.server.query_and_chat.streaming_models import WorkflowPauseForInput
 from om.server.query_and_chat.streaming_models import WorkflowStepStart
 from om.tools.tool_implementations.agent_tool import AgentTool
+from om.tracing.framework.create import ensure_trace
 from om.tools.models import ChatFile
 from om.utils.logger import setup_logger
 from om.workflows.agent_streaming import AGENT_SUPPRESS_TYPES as _AGENT_SUPPRESS_TYPES
@@ -79,6 +80,7 @@ from om.workflows.orchestrator_history import serialize_history
 from om.workflows.sequential import run_workflow_sequential_v2
 from om.workflows.step_runners.conditional_router import evaluate_condition
 from om.workflows.versioning import pin_workflow_version
+from shared_configs.contextvars import get_current_tenant_id
 
 logger = setup_logger()
 
@@ -1744,18 +1746,24 @@ def run_workflow_llm_decision(
             citation_processor = DynamicCitationProcessor()
 
             orchestrator_call_start = time.monotonic()
-            llm_step_result, has_reasoned = run_llm_step(
-                emitter=emitter,
-                history=truncated_history,
-                tool_definitions=available_defs,
-                tool_choice=tool_choice,
-                llm=orchestrator_llm,
-                placement=placement,
-                citation_processor=citation_processor,
-                state_container=state_container,
-                final_documents=None,
-                user_identity=None,
-            )
+            # This function is a generator, so a trace can't stay open across its yields.
+            with ensure_trace(
+                "workflow_orchestrator",
+                group_id=str(chat_session_id) if chat_session_id else None,
+                metadata={"tenant_id": get_current_tenant_id(), "workflow": workflow.name},
+            ):
+                llm_step_result, has_reasoned = run_llm_step(
+                    emitter=emitter,
+                    history=truncated_history,
+                    tool_definitions=available_defs,
+                    tool_choice=tool_choice,
+                    llm=orchestrator_llm,
+                    placement=placement,
+                    citation_processor=citation_processor,
+                    state_container=state_container,
+                    final_documents=None,
+                    user_identity=None,
+                )
 
             # Drain emitter: captures orchestrator reasoning/thinking packets.
             # Suppress answer types — the engine yields them separately as

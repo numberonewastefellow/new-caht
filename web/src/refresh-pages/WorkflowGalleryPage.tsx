@@ -24,11 +24,6 @@ import {
 
 type WorkflowFilter = "all" | "autonomous" | "sequential" | "pinned";
 
-function updatedMs(w: WorkflowSnapshot): number {
-  const ms = new Date(w.updated_at).getTime();
-  return Number.isNaN(ms) ? 0 : ms;
-}
-
 export default function WorkflowGalleryPage() {
   const route = useAppRouter();
   const { workflows, isLoading } = useWorkflows();

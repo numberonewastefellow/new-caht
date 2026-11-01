@@ -813,7 +813,7 @@ export default function WorkflowEditorPage({
           validateOnChange
           validateOnBlur
         >
-          {({ isSubmitting, isValid, dirty, values, setFieldValue, errors, setTouched, touched }) => (
+          {({ isSubmitting, isValid, dirty, values, setFieldValue }) => (
             <>
               {upgradeTarget && (
                 <NodeUpgradeDialog
