@@ -11,12 +11,12 @@ from office365.sharepoint.client_context import ClientContext  # type: ignore[im
 from office365.sharepoint.permissions.securable_object import RoleAssignmentCollection  # type: ignore[import-untyped]
 from pydantic import BaseModel
 
-from om.db.external_perm import ExternalUserGroup
 from om.access.models import ExternalAccess
 from om.access.utils import build_ext_team_name_for_om
 from om.configs.constants import DocumentSource
-from om.connectors.sharepoint.connector import SHARED_DOCUMENTS_MAP_REVERSE
-from om.connectors.sharepoint.connector import sleep_and_retry
+from om.datasource.sharepoint.connector import SHARED_DOCUMENTS_MAP_REVERSE
+from om.datasource.sharepoint.connector import sleep_and_retry
+from om.db.external_perm import ExternalUserGroup
 from om.utils.logger import setup_logger
 
 logger = setup_logger()

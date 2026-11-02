@@ -160,16 +160,16 @@ jobs:
         with:
           filters: |
             hubspot:
-              - 'backend/om/connectors/hubspot/**'
-              - 'backend/tests/daily/connectors/hubspot/**'
+              - 'backend/om/datasource/hubspot/**'
+              - 'backend/tests/daily/datasource/hubspot/**'
               - 'uv.lock'
             salesforce:
-              - 'backend/om/connectors/salesforce/**'
-              - 'backend/tests/daily/connectors/salesforce/**'
+              - 'backend/om/datasource/salesforce/**'
+              - 'backend/tests/daily/datasource/salesforce/**'
               - 'uv.lock'
             github:
-              - 'backend/om/connectors/github/**'
-              - 'backend/tests/daily/connectors/github/**'
+              - 'backend/om/datasource/github/**'
+              - 'backend/tests/daily/datasource/github/**'
               - 'uv.lock'
             file_processing:
               - 'backend/om/file_processing/**'
@@ -185,11 +185,11 @@ jobs:
             -o junit_family=xunit2 \
             -xv \
             --ff \
-            backend/tests/daily/connectors \
-            --ignore backend/tests/daily/connectors/hubspot \
-            --ignore backend/tests/daily/connectors/salesforce \
-            --ignore backend/tests/daily/connectors/github \
-            --ignore backend/tests/daily/connectors/coda
+            backend/tests/daily/datasource \
+            --ignore backend/tests/daily/datasource/hubspot \
+            --ignore backend/tests/daily/datasource/salesforce \
+            --ignore backend/tests/daily/datasource/github \
+            --ignore backend/tests/daily/datasource/coda
 
       - name: Run HubSpot Connector Tests
         if: ${{ github.event_name == 'schedule' || steps.changes.outputs.hubspot == 'true' || steps.changes.outputs.file_processing == 'true' }}
@@ -202,7 +202,7 @@ jobs:
             -o junit_family=xunit2 \
             -xv \
             --ff \
-            backend/tests/daily/connectors/hubspot
+            backend/tests/daily/datasource/hubspot
 
       - name: Run Salesforce Connector Tests
         if: ${{ github.event_name == 'schedule' || steps.changes.outputs.salesforce == 'true' || steps.changes.outputs.file_processing == 'true' }}
@@ -215,7 +215,7 @@ jobs:
             -o junit_family=xunit2 \
             -xv \
             --ff \
-            backend/tests/daily/connectors/salesforce
+            backend/tests/daily/datasource/salesforce
 
       - name: Run GitHub Connector Tests
         if: ${{ github.event_name == 'schedule' || steps.changes.outputs.github == 'true' || steps.changes.outputs.file_processing == 'true' }}
@@ -228,7 +228,7 @@ jobs:
             -o junit_family=xunit2 \
             -xv \
             --ff \
-            backend/tests/daily/connectors/github
+            backend/tests/daily/datasource/github
 
       - name: Alert on Failure
         if: failure() && github.event_name == 'schedule'

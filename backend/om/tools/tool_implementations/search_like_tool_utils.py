@@ -1,6 +1,6 @@
-from om.connectors.models import Document
-from om.connectors.models import IndexingDocument
-from om.connectors.models import Section
+from om.datasource.models import Document
+from om.datasource.models import IndexingDocument
+from om.datasource.models import Section
 
 
 FINAL_CONTEXT_DOCUMENTS_ID = "final_context_documents"

@@ -33,7 +33,7 @@ from om.configs.app_configs import SHAREPOINT_PERMISSION_GROUP_SYNC_FREQUENCY
 from om.configs.app_configs import SLACK_PERMISSION_DOC_SYNC_FREQUENCY
 from om.configs.app_configs import TEAMS_PERMISSION_DOC_SYNC_FREQUENCY
 from om.configs.constants import DocumentSource
-from om.connectors.folder.doc_sync import folder_doc_sync
+from om.datasource.folder.doc_sync import folder_doc_sync
 from om.external_permissions.confluence.doc_sync import confluence_doc_sync
 from om.external_permissions.confluence.group_sync import confluence_group_sync
 from om.external_permissions.github.doc_sync import github_doc_sync

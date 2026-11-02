@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 from fastapi import HTTPException
 
-from om.connectors.cross_connector_utils.miscellaneous_utils import time_str_to_utc
+from om.datasource.cross_connector_utils.miscellaneous_utils import time_str_to_utc
 from om.tools.tool_implementations.open_url.models import WebContent
 from om.tools.tool_implementations.open_url.models import WebContentProvider
 from om.tools.tool_implementations.web_search.models import (

@@ -11,14 +11,14 @@ from om.configs.app_configs import MAX_CHUNKS_PER_DOC_BATCH
 from om.configs.app_configs import VERIFY_CREATE_OPENSEARCH_INDEX_ON_INIT_MT
 from om.configs.constants import OmRedisLocks
 from om.configs.constants import PUBLIC_DOC_PAT
-from om.connectors.cross_connector_utils.miscellaneous_utils import (
-    get_experts_stores_representations,
-)
-from om.connectors.models import convert_metadata_list_of_strings_to_dict
 from om.context.search.enums import QueryType
 from om.context.search.models import IndexFilters
 from om.context.search.models import InferenceChunk
 from om.context.search.models import InferenceChunkUncleaned
+from om.datasource.cross_connector_utils.miscellaneous_utils import (
+    get_experts_stores_representations,
+)
+from om.datasource.models import convert_metadata_list_of_strings_to_dict
 from om.db.enums import EmbeddingPrecision
 from om.db.models import DocumentSource
 from om.document_index.chunk_content_enrichment import cleanup_content_for_chunks
@@ -36,9 +36,6 @@ from om.document_index.opensearch.client import OpenSearchClient
 from om.document_index.opensearch.client import OpenSearchIndexClient
 from om.document_index.opensearch.client import SearchHit
 from om.document_index.opensearch.cluster_settings import OPENSEARCH_CLUSTER_SETTINGS
-from om.document_index.opensearch.hybrid_rescore import get_rescore_fetch_size
-from om.document_index.opensearch.hybrid_rescore import load_hybrid_rescore_settings
-from om.document_index.opensearch.hybrid_rescore import rescore_hybrid_chunks
 from om.document_index.opensearch.constants import DEFAULT_MAX_CHUNK_SIZE
 from om.document_index.opensearch.constants import (
     DEFAULT_NUM_HYBRID_SUBQUERY_CANDIDATES,
@@ -47,14 +44,18 @@ from om.document_index.opensearch.constants import (
     DEFAULT_OPENSEARCH_MAX_RESULT_WINDOW,
 )
 from om.document_index.opensearch.constants import OpenSearchSearchType
+from om.document_index.opensearch.hybrid_rescore import get_rescore_fetch_size
+from om.document_index.opensearch.hybrid_rescore import load_hybrid_rescore_settings
+from om.document_index.opensearch.hybrid_rescore import rescore_hybrid_chunks
 from om.document_index.opensearch.schema import ACCESS_CONTROL_LIST_FIELD_NAME
+from om.document_index.opensearch.schema import AGENTS_FIELD_NAME
+from om.document_index.opensearch.schema import BOOST_FIELD_NAME
 from om.document_index.opensearch.schema import CHUNK_TEXT_FIELD_NAME
 from om.document_index.opensearch.schema import DOCUMENT_SETS_FIELD_NAME
 from om.document_index.opensearch.schema import DocumentChunk
 from om.document_index.opensearch.schema import DocumentChunkWithoutVectors
 from om.document_index.opensearch.schema import DocumentSchema
 from om.document_index.opensearch.schema import get_opensearch_doc_chunk_id
-from om.document_index.opensearch.schema import BOOST_FIELD_NAME
 from om.document_index.opensearch.schema import IS_HIDDEN_FIELD_NAME
 from om.document_index.opensearch.schema import KG_ENTITIES_FIELD_NAME
 from om.document_index.opensearch.schema import KG_RELATIONSHIP_SOURCE_FIELD_NAME
@@ -62,7 +63,6 @@ from om.document_index.opensearch.schema import KG_RELATIONSHIP_TARGET_FIELD_NAM
 from om.document_index.opensearch.schema import KG_RELATIONSHIP_TYPE_FIELD_NAME
 from om.document_index.opensearch.schema import KG_RELATIONSHIPS_FIELD_NAME
 from om.document_index.opensearch.schema import KG_TERMS_FIELD_NAME
-from om.document_index.opensearch.schema import AGENTS_FIELD_NAME
 from om.document_index.opensearch.schema import USER_WORKSPACES_FIELD_NAME
 from om.document_index.opensearch.search import DocumentQuery
 from om.document_index.opensearch.search import (

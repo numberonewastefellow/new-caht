@@ -527,7 +527,7 @@ The goal with these tests are to minimize mocking while giving some flexibility 
 need strictly controlled behavior, or need to have their internal behavior validated (e.g. verify a function is called
 with certain args, something that would be impossible with proper integration tests).
 
-A great example of this type of test is `backend/tests/external_dependency_unit/connectors/confluence/test_confluence_group_sync.py`.
+A great example of this type of test is `backend/tests/external_dependency_unit/datasource/confluence/test_confluence_group_sync.py`.
 
 To run them:
 

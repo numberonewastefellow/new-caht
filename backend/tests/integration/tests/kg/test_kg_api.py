@@ -6,7 +6,7 @@ import pytest
 import requests
 
 from om.configs.constants import DocumentSource
-from om.connectors.models import InputType
+from om.datasource.models import InputType
 from om.db.connector import create_connector
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.kg_config import get_kg_config_settings

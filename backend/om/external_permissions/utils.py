@@ -1,14 +1,14 @@
 from collections.abc import Generator
 
-from om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunction
 from om.access.models import DocExternalAccess
 from om.access.models import ElementExternalAccess
 from om.access.models import ExternalAccess
 from om.access.models import NodeExternalAccess
 from om.configs.constants import DocumentSource
-from om.connectors.interfaces import SlimConnectorWithPermSync
-from om.connectors.models import HierarchyNode
+from om.datasource.interfaces import SlimConnectorWithPermSync
+from om.datasource.models import HierarchyNode
 from om.db.models import ConnectorCredentialPair
+from om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunction
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.utils.logger import setup_logger
 

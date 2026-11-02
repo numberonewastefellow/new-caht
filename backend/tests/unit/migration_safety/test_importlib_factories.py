@@ -1,13 +1,13 @@
 """Every dynamic-factory `module_path` string must resolve.
 
-`connectors/factory.py` and `federated_connectors/factory.py` build connectors by
+`datasource/factory.py` and `federated_connectors/factory.py` build connectors by
 `importlib.import_module(mapping.module_path)` + `getattr(module, class_name)` at
-RUNTIME. The registries hold ~105 (+ federated) `module_path="om.connectors...."`
+RUNTIME. The registries hold ~105 (+ federated) `module_path="om.datasource...."`
 strings that never fail at startup -- only when that connector is instantiated. This
 resolves every one (rename-agnostic, MIT-or-EE + env tolerant).
 
 Complements the existing `tests/unit/onyx/connectors/test_connector_factory.py`, whose
-`module_path.startswith("om.connectors.")` literal must flip to the new root at
+`module_path.startswith("om.datasource.")` literal must flip to the new root at
 rename time; this suite instead reads the current registry with no hardcoded root.
 """
 
@@ -20,7 +20,7 @@ from tests.unit.migration_safety.conftest import qualified
 from tests.unit.migration_safety.conftest import resolve_symbol
 
 _REGISTRIES = [
-    ("connectors.registry", "CONNECTOR_CLASS_MAP"),
+    ("datasource.registry", "CONNECTOR_CLASS_MAP"),
     ("federated_connectors.registry", "FEDERATED_CONNECTOR_CLASS_MAP"),
 ]
 

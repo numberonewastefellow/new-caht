@@ -3,10 +3,10 @@ from datetime import datetime
 from datetime import timezone
 
 from om.configs.constants import DocumentSource
-from om.connectors.models import ConnectorFailure
-from om.connectors.models import Document
-from om.connectors.models import DocumentFailure
-from om.connectors.models import TextSection
+from om.datasource.models import ConnectorFailure
+from om.datasource.models import Document
+from om.datasource.models import DocumentFailure
+from om.datasource.models import TextSection
 
 
 def create_test_document(

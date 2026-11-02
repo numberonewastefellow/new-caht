@@ -8,14 +8,14 @@ from uuid import uuid4
 import pytest
 
 from om.configs.constants import DocumentSource
-from om.connectors.google_utils.resources import GoogleDriveService
-from om.connectors.google_utils.shared_constants import (
+from om.datasource.google_utils.resources import GoogleDriveService
+from om.datasource.google_utils.shared_constants import (
     DB_CREDENTIALS_DICT_SERVICE_ACCOUNT_KEY,
 )
-from om.connectors.google_utils.shared_constants import (
+from om.datasource.google_utils.shared_constants import (
     DB_CREDENTIALS_PRIMARY_ADMIN_KEY,
 )
-from om.connectors.models import InputType
+from om.datasource.models import InputType
 from om.db.enums import AccessType
 from tests.integration.common_utils.document_index import DocumentIndexClient
 from tests.integration.common_utils.managers.cc_pair import CCPairManager

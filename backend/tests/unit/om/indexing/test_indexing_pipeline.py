@@ -8,12 +8,12 @@ from unittest.mock import patch
 import pytest
 
 from om.configs.app_configs import MAX_DOCUMENT_CHARS
-from om.connectors.models import Document
-from om.connectors.models import DocumentSource
-from om.connectors.models import ImageSection
-from om.connectors.models import Section
-from om.connectors.models import TableSection
-from om.connectors.models import TextSection
+from om.datasource.models import Document
+from om.datasource.models import DocumentSource
+from om.datasource.models import ImageSection
+from om.datasource.models import Section
+from om.datasource.models import TableSection
+from om.datasource.models import TextSection
 from om.indexing.chunker import Chunker
 from om.indexing.embedder import DefaultIndexingEmbedder
 from om.indexing.indexing_pipeline import add_contextual_summaries

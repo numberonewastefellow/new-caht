@@ -7,12 +7,12 @@ THERE IS NO USERGROUP <-> DOCUMENT PERMISSION MAPPING
 
 from slack_sdk import WebClient
 
+from om.datasource.credentials_provider import OmDBCredentialsProvider
+from om.datasource.slack.connector import SlackConnector
+from om.datasource.slack.utils import make_paginated_slack_api_call
 from om.db.external_perm import ExternalUserGroup
-from om.external_permissions.slack.utils import fetch_user_id_to_email_map
-from om.connectors.credentials_provider import OmDBCredentialsProvider
-from om.connectors.slack.connector import SlackConnector
-from om.connectors.slack.utils import make_paginated_slack_api_call
 from om.db.models import ConnectorCredentialPair
+from om.external_permissions.slack.utils import fetch_user_id_to_email_map
 from om.redis.redis_pool import get_redis_client
 from om.utils.logger import setup_logger
 

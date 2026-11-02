@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
 from om.configs.constants import DocumentSource
-from om.connectors.factory import identify_connector_class
+from om.datasource.factory import identify_connector_class
 from om.utils.logger import setup_logger
 
 logger = setup_logger()

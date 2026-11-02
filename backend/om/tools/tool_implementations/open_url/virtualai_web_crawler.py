@@ -8,9 +8,9 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from datetime import timezone
 
-from om.connectors.web.connector import BOT_DETECTION_GRACE_PERIOD_MS
-from om.connectors.web.connector import DEFAULT_HEADERS
-from om.connectors.web.connector import DEFAULT_USER_AGENT
+from om.datasource.web.connector import BOT_DETECTION_GRACE_PERIOD_MS
+from om.datasource.web.connector import DEFAULT_HEADERS
+from om.datasource.web.connector import DEFAULT_USER_AGENT
 from om.file_processing.html_utils import parse_html_with_trafilatura
 from om.file_processing.html_utils import ParsedHTML
 from om.file_processing.html_utils import web_html_cleanup
@@ -283,7 +283,7 @@ class VirtualAIWebCrawler(WebContentProvider):
         results: list[WebContent] = []
 
         try:
-            from om.connectors.web.connector import start_playwright
+            from om.datasource.web.connector import start_playwright
 
             playwright, context = start_playwright()
         except Exception as exc:

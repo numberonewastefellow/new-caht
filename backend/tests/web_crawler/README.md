@@ -53,8 +53,8 @@ class VirtualAIWebCrawler(WebContentProvider):
 
 | What | From |
 |------|------|
-| `DEFAULT_HEADERS`, `DEFAULT_USER_AGENT` | `om.connectors.web.connector` |
-| `start_playwright()`, `BOT_DETECTION_GRACE_PERIOD_MS` | `om.connectors.web.connector` |
+| `DEFAULT_HEADERS`, `DEFAULT_USER_AGENT` | `om.datasource.web.connector` |
+| `start_playwright()`, `BOT_DETECTION_GRACE_PERIOD_MS` | `om.datasource.web.connector` |
 | `web_html_cleanup()`, `parse_html_with_trafilatura()` | `om.file_processing.html_utils` |
 | `ssrf_safe_get()`, `SSRFException` | `om.utils.url` |
 | `decode_html_bytes()`, `extract_pdf_text()`, `is_pdf_resource()` | `om.utils.web_content` |

@@ -14,13 +14,13 @@ from om.access.access import get_access_for_knowledge_files
 from om.access.models import DocumentAccess
 from om.configs.constants import DEFAULT_BOOST
 from om.configs.constants import NotificationType
-from om.connectors.models import Document
+from om.datasource.models import Document
 from om.db.enums import KnowledgeFileStatus
+from om.db.knowledge_file import fetch_chunk_counts_for_knowledge_files
+from om.db.knowledge_file import fetch_user_workspace_ids_for_knowledge_files
 from om.db.models import Agent
 from om.db.models import KnowledgeFile
 from om.db.notification import create_notification
-from om.db.knowledge_file import fetch_chunk_counts_for_knowledge_files
-from om.db.knowledge_file import fetch_user_workspace_ids_for_knowledge_files
 from om.file_store.utils import store_user_file_plaintext
 from om.indexing.indexing_pipeline import DocumentBatchPrepareContext
 from om.indexing.models import BuildMetadataAwareChunksResult

@@ -25,8 +25,8 @@ from datetime import timezone
 
 from om.access.models import default_public_access
 from om.configs.constants import DocumentSource
-from om.connectors.models import Document
-from om.connectors.models import TextSection
+from om.datasource.models import Document
+from om.datasource.models import TextSection
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.engine.sql_engine import SqlEngine
 from om.db.search_settings import get_current_search_settings

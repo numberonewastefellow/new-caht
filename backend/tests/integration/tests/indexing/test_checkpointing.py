@@ -6,10 +6,10 @@ from datetime import timezone
 import httpx
 
 from om.configs.constants import DocumentSource
-from om.connectors.mock_connector.connector import MockConnectorCheckpoint
-from om.connectors.models import ConnectorFailure
-from om.connectors.models import EntityFailure
-from om.connectors.models import InputType
+from om.datasource.mock_connector.connector import MockConnectorCheckpoint
+from om.datasource.models import ConnectorFailure
+from om.datasource.models import EntityFailure
+from om.datasource.models import InputType
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.enums import IndexingStatus
 from tests.integration.common_utils.constants import MOCK_CONNECTOR_SERVER_HOST

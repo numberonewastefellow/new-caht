@@ -2,6 +2,18 @@ from collections.abc import Generator
 from datetime import datetime
 from datetime import timezone
 
+from om.access.models import DocExternalAccess
+from om.access.models import ElementExternalAccess
+from om.access.models import ExternalAccess
+from om.access.models import NodeExternalAccess
+from om.access.utils import build_ext_team_name_for_om
+from om.configs.constants import DocumentSource
+from om.datasource.google_drive.connector import GoogleDriveConnector
+from om.datasource.google_drive.models import GoogleDriveFileType
+from om.datasource.google_utils.resources import GoogleDriveService
+from om.datasource.interfaces import GenerateSlimDocumentOutput
+from om.datasource.models import HierarchyNode
+from om.db.models import ConnectorCredentialPair
 from om.external_permissions.google_drive.models import GoogleDrivePermission
 from om.external_permissions.google_drive.models import PermissionType
 from om.external_permissions.google_drive.permission_retrieval import (
@@ -9,18 +21,6 @@ from om.external_permissions.google_drive.permission_retrieval import (
 )
 from om.external_permissions.perm_sync_types import FetchAllDocumentsFunction
 from om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunction
-from om.access.models import DocExternalAccess
-from om.access.models import ElementExternalAccess
-from om.access.models import ExternalAccess
-from om.access.models import NodeExternalAccess
-from om.access.utils import build_ext_team_name_for_om
-from om.configs.constants import DocumentSource
-from om.connectors.google_drive.connector import GoogleDriveConnector
-from om.connectors.google_drive.models import GoogleDriveFileType
-from om.connectors.google_utils.resources import GoogleDriveService
-from om.connectors.interfaces import GenerateSlimDocumentOutput
-from om.connectors.models import HierarchyNode
-from om.db.models import ConnectorCredentialPair
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.utils.logger import setup_logger
 

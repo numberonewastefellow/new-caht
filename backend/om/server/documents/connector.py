@@ -30,9 +30,9 @@ from om.background.celery.tasks.pruning.tasks import (
 )
 from om.background.celery.versioned_apps.client import app as client_app
 from om.configs.app_configs import EMAIL_CONFIGURED
-from om.configs.app_configs import OM_CONNECTOR_REQUEST_EMAIL
 from om.configs.app_configs import ENABLED_CONNECTOR_TYPES
 from om.configs.app_configs import MOCK_CONNECTOR_FILE_PATH
+from om.configs.app_configs import OM_CONNECTOR_REQUEST_EMAIL
 from om.configs.constants import DocumentSource
 from om.configs.constants import FileOrigin
 from om.configs.constants import MilestoneRecordType
@@ -40,39 +40,39 @@ from om.configs.constants import OM_METADATA_FILENAME
 from om.configs.constants import OmCeleryPriority
 from om.configs.constants import OmCeleryTask
 from om.configs.constants import PUBLIC_API_TAGS
-from om.connectors.exceptions import ConnectorValidationError
-from om.connectors.factory import validate_ccpair_for_user
-from om.connectors.google_utils.google_auth import (
+from om.datasource.exceptions import ConnectorValidationError
+from om.datasource.factory import validate_ccpair_for_user
+from om.datasource.google_utils.google_auth import (
     get_google_oauth_creds,
 )
-from om.connectors.google_utils.google_kv import (
+from om.datasource.google_utils.google_kv import (
     build_service_account_creds,
 )
-from om.connectors.google_utils.google_kv import (
+from om.datasource.google_utils.google_kv import (
     delete_google_app_cred,
 )
-from om.connectors.google_utils.google_kv import (
+from om.datasource.google_utils.google_kv import (
     delete_service_account_key,
 )
-from om.connectors.google_utils.google_kv import get_auth_url
-from om.connectors.google_utils.google_kv import (
+from om.datasource.google_utils.google_kv import get_auth_url
+from om.datasource.google_utils.google_kv import (
     get_google_app_cred,
 )
-from om.connectors.google_utils.google_kv import (
+from om.datasource.google_utils.google_kv import (
     get_service_account_key,
 )
-from om.connectors.google_utils.google_kv import (
+from om.datasource.google_utils.google_kv import (
     update_credential_access_tokens,
 )
-from om.connectors.google_utils.google_kv import (
+from om.datasource.google_utils.google_kv import (
     upsert_google_app_cred,
 )
-from om.connectors.google_utils.google_kv import (
+from om.datasource.google_utils.google_kv import (
     upsert_service_account_key,
 )
-from om.connectors.google_utils.google_kv import verify_csrf
-from om.connectors.google_utils.shared_constants import DB_CREDENTIALS_DICT_TOKEN_KEY
-from om.connectors.google_utils.shared_constants import (
+from om.datasource.google_utils.google_kv import verify_csrf
+from om.datasource.google_utils.shared_constants import DB_CREDENTIALS_DICT_TOKEN_KEY
+from om.datasource.google_utils.shared_constants import (
     GoogleOAuthAuthenticationMethod,
 )
 from om.db.connector import create_connector

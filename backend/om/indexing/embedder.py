@@ -3,9 +3,9 @@ from abc import ABC
 from abc import abstractmethod
 from collections import defaultdict
 
-from om.connectors.models import ConnectorFailure
-from om.connectors.models import ConnectorStopSignal
-from om.connectors.models import DocumentFailure
+from om.datasource.models import ConnectorFailure
+from om.datasource.models import ConnectorStopSignal
+from om.datasource.models import DocumentFailure
 from om.db.models import SearchSettings
 from om.document_index.chunk_content_enrichment import (
     generate_enriched_content_for_chunk_embedding,
@@ -17,9 +17,9 @@ from om.indexing.models import IndexChunk
 from om.natural_language_processing.search_nlp_models import EmbeddingModel
 from om.utils.logger import setup_logger
 from om.utils.timing import log_function_time
+from shared_configs.embedding_models import Embedding
 from shared_configs.enums import EmbeddingProvider
 from shared_configs.enums import EmbedTextType
-from shared_configs.embedding_models import Embedding
 
 
 logger = setup_logger()

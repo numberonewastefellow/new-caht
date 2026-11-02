@@ -268,7 +268,7 @@ data access** (run SQL now, read this folder now, fetch the latest mail now).
 
 ### Can we reuse the `connectors/` folder? — Analysis
 
-- There are **60+ connectors** in `backend/om/connectors/` (Gmail, IMAP, SharePoint, Google Drive, S3,
+- There are **60+ connectors** in `backend/om/datasource/` (Gmail, IMAP, SharePoint, Google Drive, S3,
   Confluence, Jira, Slack, Salesforce, …) but they are **batch indexers**, not live tools: they implement
   `LoadConnector`/`PollConnector`/`CheckpointedConnector` (`connectors/interfaces.py`) and **yield whole
   `Document` batches into the Vespa index via Celery** (`background/celery/tasks/docfetching`).
@@ -284,7 +284,7 @@ provides the live query interface connectors lack.
 ### Worked example — wire the IMAP mail connector into an agent (the "simple one")
 
 IMAP is the simplest case: plain username/password (no OAuth), and the connector already exposes reusable
-module-level primitives in `backend/om/connectors/imap/connector.py`:
+module-level primitives in `backend/om/datasource/imap/connector.py`:
 
 - `_get_mail_client()` → logs into `imaplib.IMAP4_SSL` from `{imap_username, imap_password}`
 - `_fetch_email_ids_in_mailbox(client, mailbox, start, end)` → IMAP `SEARCH` with a date range

@@ -4,8 +4,8 @@ from http import HTTPStatus
 
 import httpx
 
-from om.connectors.models import ConnectorFailure
-from om.connectors.models import DocumentFailure
+from om.datasource.models import ConnectorFailure
+from om.datasource.models import DocumentFailure
 from om.document_index.interfaces_new import DocumentIndex
 from om.document_index.interfaces_new import DocumentInsertionRecord
 from om.document_index.interfaces_new import IndexingMetadata

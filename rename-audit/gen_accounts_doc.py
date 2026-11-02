@@ -14,8 +14,8 @@ sys.path.insert(0, str(ROOT))
 from tests.connector_accounts import _names_in, _any_groups_in  # noqa: E402
 
 SUITES = [
-    ("daily", ROOT / "tests/daily/connectors"),
-    ("external_dependency_unit", ROOT / "tests/external_dependency_unit/connectors"),
+    ("daily", ROOT / "tests/daily/datasource"),
+    ("external_dependency_unit", ROOT / "tests/external_dependency_unit/datasource"),
     ("integration", ROOT / "tests/integration/connector_job_tests"),
 ]
 IDENT = re.compile(r"[\w.+-]+@virtualai[\w.-]*\.(?:com|app)|[\w-]*virtualai[\w.-]*\.(?:com|slab\.com|zendesk\.com|gappssmtp\.com)|virtualai-[a-z0-9-]+|VirtualAI-\w+|virtualai/[\w-]+")

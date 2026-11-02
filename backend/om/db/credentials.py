@@ -10,7 +10,7 @@ from sqlalchemy.sql.expression import or_
 
 from om.auth.schemas import UserRole
 from om.configs.constants import DocumentSource
-from om.connectors.google_utils.shared_constants import (
+from om.datasource.google_utils.shared_constants import (
     DB_CREDENTIALS_DICT_SERVICE_ACCOUNT_KEY,
 )
 from om.db.enums import ConnectorCredentialPairStatus

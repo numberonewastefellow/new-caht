@@ -253,7 +253,7 @@ file attachments on schedules, and the multi-tenant cloud due-index (v1.1, desig
 ## Demo workflow — "Scheduled Intelligence Brief"
 File: `workflow_creator/workflows/43_scheduled_intel_brief.json`. Sequential, public, timeout 900s.
 1. **Knowledge Scout** (SearchTool): reads files through a LocalFolderConnector-watched folder
-   (`om/connectors/folder/connector.py:151`).
+   (`om/datasource/folder/connector.py:151`).
 2. **Web Scout** (WebSearchTool + OpenURLTool): looks for news since `{{window_start}}`; degrades gracefully
    if web search isn't available.
 3. **Analyst:** merges and ranks the findings.

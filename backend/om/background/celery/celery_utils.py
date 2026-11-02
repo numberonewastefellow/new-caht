@@ -10,21 +10,21 @@ from typing import TypeVar
 from pydantic import BaseModel
 
 from om.configs.app_configs import MAX_PRUNING_DOCUMENT_RETRIEVAL_PER_MINUTE
-from om.connectors.connector_runner import CheckpointOutputWrapper
-from om.connectors.cross_connector_utils.rate_limit_wrapper import (
+from om.datasource.connector_runner import CheckpointOutputWrapper
+from om.datasource.cross_connector_utils.rate_limit_wrapper import (
     rate_limit_builder,
 )
-from om.connectors.interfaces import BaseConnector
-from om.connectors.interfaces import CheckpointedConnector
-from om.connectors.interfaces import ConnectorCheckpoint
-from om.connectors.interfaces import LoadConnector
-from om.connectors.interfaces import PollConnector
-from om.connectors.interfaces import SlimConnector
-from om.connectors.interfaces import SlimConnectorWithPermSync
-from om.connectors.models import ConnectorFailure
-from om.connectors.models import Document
-from om.connectors.models import HierarchyNode
-from om.connectors.models import SlimDocument
+from om.datasource.interfaces import BaseConnector
+from om.datasource.interfaces import CheckpointedConnector
+from om.datasource.interfaces import ConnectorCheckpoint
+from om.datasource.interfaces import LoadConnector
+from om.datasource.interfaces import PollConnector
+from om.datasource.interfaces import SlimConnector
+from om.datasource.interfaces import SlimConnectorWithPermSync
+from om.datasource.models import ConnectorFailure
+from om.datasource.models import Document
+from om.datasource.models import HierarchyNode
+from om.datasource.models import SlimDocument
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.utils.logger import setup_logger
 

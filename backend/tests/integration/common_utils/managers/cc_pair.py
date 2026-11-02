@@ -5,7 +5,7 @@ from uuid import uuid4
 
 import requests
 
-from om.connectors.models import InputType
+from om.datasource.models import InputType
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.server.documents.models import CCPairFullInfo

@@ -4,8 +4,8 @@ from datetime import timezone
 
 import pytest
 
-from om.connectors.models import InputType
-from om.connectors.slack.models import ChannelType
+from om.datasource.models import InputType
+from om.datasource.slack.models import ChannelType
 from om.db.enums import AccessType
 from om.server.documents.models import DocumentSource
 from tests.integration.common_utils.document_index import DocumentIndexClient

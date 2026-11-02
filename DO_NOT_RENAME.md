@@ -119,14 +119,14 @@ set.
 | `da_function_lock:` | `backend/om/configs/constants.py:164` | live Redis lock keys |
 | `onyxapikey.ai`, `API_KEY__` | `backend/om/configs/constants.py:98,99` | stamped on existing API-key pseudo-user rows (matched by `.endswith()`) |
 | `onyx-files` (S3), `onyx-sandboxes` (k8s ns) | `backend/om/configs/app_configs.py:1129` (`S3_FILE_STORE_PREFIX`), sandbox config | prefixes on existing objects / live namespace |
-| `ONYX_METADATA` file marker (`<!-- ONYX_METADATA={…} -->`, `#ONYX_METADATA=`, `.onyx_metadata.json`) | `backend/om/file_processing/extract_file_text.py:122-127`, `backend/om/connectors/file/utils.py:163` | user-authored file format |
+| `ONYX_METADATA` file marker (`<!-- ONYX_METADATA={…} -->`, `#ONYX_METADATA=`, `.onyx_metadata.json`) | `backend/om/file_processing/extract_file_text.py:122-127`, `backend/om/datasource/file/utils.py:163` | user-authored file format |
 | `telemetry.onyx.app`, `cloud.onyx.app`, `docs.onyx.app`, `api.onyx.app` | `backend/om/utils/telemetry.py:24`; `desktop/**`; `widget/**`; helm/env templates | real hosted endpoints |
 | `app.onyx.desktop` (Tauri bundle id + on-disk config dir), `tabbingIdentifier:"onyx"` | `desktop/src-tauri/tauri.conf.json:5,30`, `src/main.rs:199` | OS app identity; orphans installs + saved config |
 | `onyxExtension*` (7 keys) | `extensions/chrome/src/utils/constants.js:22-29` | persisted `chrome.storage.local` keys on existing installs |
 | `ONYX_APP_LOADED` | `web/src/lib/extension/constants.ts:15` + `extensions/chrome/src/utils/constants.js:34` | web↔extension postMessage type — must match both sides |
 | `<onyx-chat-widget>`, `onyx-widget.js` | `widget/src/widget.ts:20`, `widget/src/index.ts:11,13`, `widget/vite.config.ts:20` | public custom-element tag + bundle name embedders depend on |
 | `onyxTheme`, `onyx:hideMoveCustomAgentModal`, `onyx-widget-session` | `web/src/lib/extension/constants.ts:27`, `web/src/sections/sidebar/constants.ts:8`, `widget/src/utils/storage.ts:7` | persisted browser storage keys |
-| `@danswer.ai` / `@onyx.app` fixture emails | `backend/tests/external_dependency_unit/connectors/**`, `backend/tests/daily/connectors/**` | baked into recorded connector test data |
+| `@danswer.ai` / `@onyx.app` fixture emails | `backend/tests/external_dependency_unit/datasource/**`, `backend/tests/daily/datasource/**` | baked into recorded connector test data |
 | Alembic revision ids | `backend/alembic/versions/*onyx*.py` (filenames + `down_revision`) | migration-chain identity — rename bodies/comments only, never ids |
 | Prometheus metric names `onyx_*` | `docs/METRICS.md` + backend emit sites | Grafana dashboards / alerts depend |
 | `ONYX_GITHUB_*` secret names | `.github/workflows/pr-integration-tests.yml:40-44` | must match repo secret settings |

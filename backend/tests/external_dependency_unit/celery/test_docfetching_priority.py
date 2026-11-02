@@ -22,7 +22,7 @@ from om.background.celery.tasks.docfetching.task_creation_utils import (
 )
 from om.configs.constants import DocumentSource
 from om.configs.constants import OmCeleryPriority
-from om.connectors.models import InputType
+from om.datasource.models import InputType
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import EmbeddingPrecision

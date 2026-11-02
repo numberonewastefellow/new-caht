@@ -13,7 +13,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from om.configs.constants import DocumentSource
-from om.connectors.models import InputType
+from om.datasource.models import InputType
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import PermissionSyncStatus

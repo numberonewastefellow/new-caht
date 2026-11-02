@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from om.configs.app_configs import DEFAULT_PRUNING_FREQ
 from om.configs.constants import DocumentSource
-from om.connectors.models import InputType
+from om.datasource.models import InputType
 from om.db.enums import IndexingMode
 from om.db.models import Connector
 from om.db.models import ConnectorCredentialPair

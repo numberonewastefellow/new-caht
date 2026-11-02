@@ -10,9 +10,9 @@ from typing import TypeAlias
 from pydantic import BaseModel
 
 from om.configs.constants import FileOrigin
-from om.connectors.models import DocExtractionContext
-from om.connectors.models import DocIndexingContext
-from om.connectors.models import Document
+from om.datasource.models import DocExtractionContext
+from om.datasource.models import DocIndexingContext
+from om.datasource.models import Document
 from om.file_store.file_store import FileStore
 from om.file_store.file_store import get_default_file_store
 from om.utils.logger import setup_logger

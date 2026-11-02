@@ -32,7 +32,7 @@ from om.configs.ombot_configs import (
 from om.configs.ombot_configs import (
     OM_BOT_RESPONSE_LIMIT_TIME_PERIOD_SECONDS,
 )
-from om.connectors.slack.utils import SlackTextCleaner
+from om.datasource.slack.utils import SlackTextCleaner
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.users import get_user_by_email
 from om.ombot.slack.constants import FeedbackVisibility

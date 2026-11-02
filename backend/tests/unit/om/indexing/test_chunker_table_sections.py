@@ -4,10 +4,10 @@ set of chunks, placed in document order among the text chunks."""
 import pytest
 
 from om.configs.constants import DocumentSource
-from om.connectors.models import Document
-from om.connectors.models import IndexingDocument
-from om.connectors.models import TableSection
-from om.connectors.models import TextSection
+from om.datasource.models import Document
+from om.datasource.models import IndexingDocument
+from om.datasource.models import TableSection
+from om.datasource.models import TextSection
 from om.indexing.chunker import Chunker
 from om.indexing.embedder import DefaultIndexingEmbedder
 from om.indexing.indexing_pipeline import process_image_sections

@@ -2,7 +2,7 @@ import requests
 from retry import retry
 
 from om.configs.constants import DocumentSource
-from om.connectors.models import InputType
+from om.datasource.models import InputType
 from om.db.enums import IndexingStatus
 from om.server.documents.models import ConnectorBase
 from tests.regression.answer_quality.cli_utils import get_api_server_host_port

@@ -33,7 +33,7 @@
 
 - Embedder: `backend/om/indexing/embedder.py` exists (the FUTURE-model embedder a port needs).
 - Source time fields: `doc_created_at` / `doc_updated_at` already on our document models
-  (`om/connectors/models.py`, `om/db/models.py`); index populate already reads
+  (`om/datasource/models.py`, `om/db/models.py`); index populate already reads
   `source_document.doc_updated_at` (`opensearch_document_index.py:275`).
 - Chunk model + UTC helper: `DocumentChunk` model with `updated_at` + `@field_serializer`/
   `@field_validator` using `set_or_convert_timezone_to_utc` (`schema.py:208, 284-318`) — our

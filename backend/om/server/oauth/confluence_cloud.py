@@ -14,14 +14,13 @@ from pydantic import BaseModel
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
-from om.server.oauth.api_router import router
 from om.auth.users import current_admin_user
 from om.configs.app_configs import DEV_MODE
 from om.configs.app_configs import OAUTH_CONFLUENCE_CLOUD_CLIENT_ID
 from om.configs.app_configs import OAUTH_CONFLUENCE_CLOUD_CLIENT_SECRET
 from om.configs.app_configs import WEB_DOMAIN
 from om.configs.constants import DocumentSource
-from om.connectors.confluence.utils import CONFLUENCE_OAUTH_TOKEN_URL
+from om.datasource.confluence.utils import CONFLUENCE_OAUTH_TOKEN_URL
 from om.db.credentials import create_credential
 from om.db.credentials import fetch_credential_by_id_for_user
 from om.db.credentials import update_credential_json
@@ -29,6 +28,7 @@ from om.db.engine.sql_engine import get_session
 from om.db.models import User
 from om.redis.redis_pool import get_redis_client
 from om.server.documents.models import CredentialBase
+from om.server.oauth.api_router import router
 from om.utils.logger import setup_logger
 from shared_configs.contextvars import get_current_tenant_id
 

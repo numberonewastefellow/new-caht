@@ -21,9 +21,6 @@ from tenacity import retry_if_exception
 from tenacity import stop_after_delay
 from tenacity import wait_random_exponential
 
-from om.db.connector_credential_pair import get_all_auto_sync_cc_pairs
-from om.db.document import upsert_document_external_perms
-from om.external_permissions.sync_params import get_source_perm_sync_config
 from om.access.models import DocExternalAccess
 from om.access.models import ElementExternalAccess
 from om.background.celery.apps.app_base import task_logger
@@ -36,20 +33,22 @@ from om.configs.app_configs import JOB_TIMEOUT
 from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import CELERY_PERMISSIONS_SYNC_LOCK_TIMEOUT
 from om.configs.constants import CELERY_TASK_WAIT_FOR_FENCE_TIMEOUT
-from om.configs.constants import OM_REDIS_FUNCTION_LOCK_PREFIX
 from om.configs.constants import DocumentSource
+from om.configs.constants import OM_REDIS_FUNCTION_LOCK_PREFIX
 from om.configs.constants import OmCeleryPriority
 from om.configs.constants import OmCeleryQueues
 from om.configs.constants import OmCeleryTask
 from om.configs.constants import OmRedisConstants
 from om.configs.constants import OmRedisLocks
 from om.configs.constants import OmRedisSignals
-from om.connectors.factory import validate_ccpair_for_user
+from om.datasource.factory import validate_ccpair_for_user
 from om.db.connector import mark_cc_pair_as_permissions_synced
+from om.db.connector_credential_pair import get_all_auto_sync_cc_pairs
 from om.db.connector_credential_pair import get_connector_credential_pair_from_id
 from om.db.document import get_document_ids_for_connector_credential_pair
 from om.db.document import get_documents_for_connector_credential_pair_limited_columns
 from om.db.document import upsert_document_by_connector_credential_pair
+from om.db.document import upsert_document_external_perms
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.engine.sql_engine import get_session_with_tenant
 from om.db.enums import AccessType
@@ -72,6 +71,7 @@ from om.db.users import batch_add_ext_perm_user_if_not_exists
 from om.db.utils import DocumentRow
 from om.db.utils import is_retryable_sqlalchemy_error
 from om.db.utils import SortOrder
+from om.external_permissions.sync_params import get_source_perm_sync_config
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.redis.redis_connector import RedisConnector
 from om.redis.redis_connector_doc_perm_sync import RedisConnectorPermissionSync

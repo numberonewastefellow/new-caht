@@ -3,7 +3,7 @@
 The connector tests run against real third-party services. **A test whose account is not configured is skipped with a reason**
 (see `backend/tests/connector_accounts.py`); it never fails just because you have not created the account yet.
 To enable a connector: create the account, create the listed sample users/resources, put the credentials in `backend/.test.env`
-(git-ignored) or the environment, and run `pytest tests/daily/connectors/<connector> -rs`.
+(git-ignored) or the environment, and run `pytest tests/daily/datasource/<connector> -rs`.
 
 Identities below use the test organisation domain `virtualai.com` (the domain all fixtures were converted to). Create users with these
 local parts, or change the fixtures to your own. Never commit credentials.

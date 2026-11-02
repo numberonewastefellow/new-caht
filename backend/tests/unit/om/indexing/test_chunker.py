@@ -6,8 +6,8 @@ import pytest
 from om.configs.app_configs import USE_CHUNK_SUMMARY
 from om.configs.app_configs import USE_DOCUMENT_SUMMARY
 from om.configs.constants import DocumentSource
-from om.connectors.models import Document
-from om.connectors.models import TextSection
+from om.datasource.models import Document
+from om.datasource.models import TextSection
 from om.indexing.chunker import Chunker
 from om.indexing.embedder import DefaultIndexingEmbedder
 from om.indexing.indexing_pipeline import process_image_sections

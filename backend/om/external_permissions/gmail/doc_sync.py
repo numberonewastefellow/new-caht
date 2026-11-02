@@ -2,16 +2,16 @@ from collections.abc import Generator
 from datetime import datetime
 from datetime import timezone
 
-from om.external_permissions.perm_sync_types import FetchAllDocumentsFunction
-from om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunction
 from om.access.models import DocExternalAccess
 from om.access.models import ElementExternalAccess
 from om.access.models import NodeExternalAccess
 from om.configs.constants import DocumentSource
-from om.connectors.gmail.connector import GmailConnector
-from om.connectors.interfaces import GenerateSlimDocumentOutput
-from om.connectors.models import HierarchyNode
+from om.datasource.gmail.connector import GmailConnector
+from om.datasource.interfaces import GenerateSlimDocumentOutput
+from om.datasource.models import HierarchyNode
 from om.db.models import ConnectorCredentialPair
+from om.external_permissions.perm_sync_types import FetchAllDocumentsFunction
+from om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunction
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.utils.logger import setup_logger
 

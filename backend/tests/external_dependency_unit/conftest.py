@@ -94,5 +94,5 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
 
     # Only the connector tests talk to third-party accounts.
     skip_unprovisioned(
-        items, Path(__file__).parent / "connectors", "backend/tests/daily/ACCOUNTS.md"
+        items, Path(__file__).parent / "datasource", "backend/tests/daily/ACCOUNTS.md"
     )

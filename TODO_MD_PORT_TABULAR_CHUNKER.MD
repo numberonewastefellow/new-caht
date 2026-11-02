@@ -30,13 +30,13 @@
 - **Target (our tree; the names are explained in §5):**
   - `backend/om/indexing/table_chunking/` (new package)
   - `backend/om/indexing/chunker.py`: one new branch
-  - `backend/om/connectors/models.py`
-  - `backend/om/connectors/cross_connector_utils/table_file_sections.py` (new)
+  - `backend/om/datasource/models.py`
+  - `backend/om/datasource/cross_connector_utils/table_file_sections.py` (new)
   - `backend/om/utils/csv_parsing.py` (new)
   - `backend/om/natural_language_processing/utils.py`: two new functions added, nothing existing changed
   - `backend/om/file_processing/extract_file_text.py`: new `xlsx_sheets_to_csv()`; `xlsx_to_text` is **unchanged**
   - `backend/om/configs/app_configs.py`: inside a `# --- tabular-chunker ---` block
-  - `backend/om/connectors/file/utils.py` (`_process_file`), `backend/om/connectors/blob/connector.py`
+  - `backend/om/datasource/file/utils.py` (`_process_file`), `backend/om/datasource/blob/connector.py`
   - `backend/om/indexing/indexing_pipeline.py`, `backend/om/background/indexing/run_docfetching.py`: section-type checks only
 - **Dropped or deferred (see §6.4–6.6):**
   - Upstream's **file-backed staging** (a staged CSV file id, a staging module, an indexing-staging file origin, promotion and an orphan janitor). We have none of it.
@@ -55,7 +55,7 @@
 - Upstream migration `8188861f4e92_csv_to_tabular_chat_file_type` rewrites `chat_message.files[].type` from `csv` to `tabular`. It belongs to upstream's chat-upload change and has nothing to do with indexing. Our `ChatFileType` still has `CSV = "csv"` (`om/file_store/models.py`), and chat never goes through the indexing chunker. **Out of scope; we need no equivalent now.** If that chat change is ported later, its own doc must add an equivalent migration under our names.
 
 ## 3. Model mapping
-- **`om/connectors/models.py`** (owned by this lane for this batch):
+- **`om/datasource/models.py`** (owned by this lane for this batch):
   - New `class SectionKind(str, Enum)` with `TEXT = "text"`, `IMAGE = "image"`, `TABLE = "table"`.
   - `TextSection` gets `kind: Literal[SectionKind.TEXT] = SectionKind.TEXT`, and `ImageSection` gets `kind: Literal[SectionKind.IMAGE] = SectionKind.IMAGE`. Both have defaults, so every existing constructor call and old serialized JSON without `kind` still validates exactly as it does today.
   - New `TableSection(Section)` with:
@@ -96,7 +96,7 @@ None. Spreadsheets keep showing up as normal search results and citations. Their
 | Packer class | `ChunkPacker` in `chunk_builder.py` | Says what it packs |
 | `cell_values.py` (number and date parsing, header detection) | `table_chunking/cell_parsing.py` | Parsing of cell strings |
 | Overview / full-rows / profile / value blocks | `_overview_block`, `_all_rows_block`, `_summary_block`, `_frequent_values_block` | Our words for the four chunk kinds |
-| Section type enum + tabular section model | `SectionKind` + `TableSection` in `om/connectors/models.py` | Matches `TextSection` / `ImageSection`; `kind` doesn't clash with `type` in our code |
+| Section type enum + tabular section model | `SectionKind` + `TableSection` in `om/datasource/models.py` | Matches `TextSection` / `ImageSection`; `kind` doesn't clash with `type` in our code |
 | Heading `"file :: sheet"` packed into the heading | `TableSection.sheet_name` (file name comes from `document.semantic_identifier`) | An explicit field instead of a string to parse |
 | `tabular_section_utils.py` (`is_tabular_file`, `tabular_file_to_sections`) | `cross_connector_utils/table_file_sections.py` (`is_table_file`, `table_file_to_sections`) | Our existing folder for helpers shared by connectors |
 | `csv_utils.csv_reader` | `om/utils/csv_parsing.py::read_csv_rows` | Our `om/utils` naming |
@@ -189,7 +189,7 @@ None. Spreadsheets keep showing up as normal search results and citations. Their
 | NUL cleanup and size warning | `background/indexing/run_docfetching.py:184,661` | Treat `TableSection` like TextSection | Unit test on the cleanup helper |
 | `IndexingDocument.get_total_char_length`, `get_text_content` | `connectors/models.py` | Include `TableSection` text | Model unit test |
 | Batch storage round-trip | `file_store/document_batch_storage.py` | None; relies on the discriminator | `test_table_section_roundtrip` (dump/validate and batch-storage serialize/deserialize; old JSON without `kind`) |
-| File connector, workspace files, folder connector | `connectors/file/utils.py::_process_file`; `connectors/folder/connector.py` | xlsx/csv/tsv → `TableSection`s | New `test_file_table_sections.py` + existing `tests/unit/om/connectors/folder/test_folder_connector.py` (it already writes a `data.csv`) |
+| File connector, workspace files, folder connector | `connectors/file/utils.py::_process_file`; `connectors/folder/connector.py` | xlsx/csv/tsv → `TableSection`s | New `test_file_table_sections.py` + existing `tests/unit/om/datasource/folder/test_folder_connector.py` (it already writes a `data.csv`) |
 | Blob connector | `connectors/blob/connector.py` | Same | New unit test with a mocked `_download_object` |
 | `xlsx_to_text` users: chat upload, workspace plaintext, `read_file`, Google Drive, `extract_file_text`, agent tool, SharePoint, Drupal | `file_processing/extract_file_text.py` | **None** (function untouched) | Existing tests + a byte-equality assertion on a fixture |
 | Public ingestion API | `server/om_api/ingestion.py` | Accepts an optional `kind` | Existing tests; a payload without `kind` still parses |
@@ -209,9 +209,9 @@ None. Spreadsheets keep showing up as normal search results and citations. Their
 | `tests/unit/om/indexing/table_chunking/test_cell_parsing.py` | Numbers, dates, ID values, unit markers |
 | `tests/unit/om/indexing/test_chunker_table_sections.py` | `Chunker._chunk_table_sections`: grouping by link, mixed text+table doc, chunk-id order, the cap, an empty sheet, multipass on, contextual RAG on |
 | `tests/unit/om/indexing/test_chunker_golden.py` | Non-tabular output unchanged |
-| `tests/unit/om/connectors/cross_connector_utils/test_table_file_sections.py` | xlsx multi-sheet, csv, tsv→csv, empty, quoting, the `0` cell, a corrupt xlsx |
-| `tests/unit/om/connectors/test_table_section_model.py` | Discriminator round-trip, old JSON without `kind`, `__sizeof__` |
-| `tests/unit/om/connectors/file/test_file_table_sections.py` | `_process_file` with xlsx/csv: `TableSection`s; the kill switch gives a TextSection; an extraction failure falls back |
+| `tests/unit/om/datasource/cross_connector_utils/test_table_file_sections.py` | xlsx multi-sheet, csv, tsv→csv, empty, quoting, the `0` cell, a corrupt xlsx |
+| `tests/unit/om/datasource/test_table_section_model.py` | Discriminator round-trip, old JSON without `kind`, `__sizeof__` |
+| `tests/unit/om/datasource/file/test_file_table_sections.py` | `_process_file` with xlsx/csv: `TableSection`s; the kill switch gives a TextSection; an extraction failure falls back |
 | `tests/unit/om/indexing/test_indexing_pipeline.py` (extend) | **Public entry point:** `process_image_sections` + `filter_documents` + `Chunker` on a table doc, end to end with a mocked embedder |
 
 - **Fixtures:** a 3-sheet `.xlsx` (built with openpyxl in a conftest, nothing binary committed) and copies of 2–3 dept CSVs from `tests/workflow_creator/test_data/` (aarogyasri, cid). These are synthetic gov data; check them for upstream names.
@@ -219,7 +219,7 @@ None. Spreadsheets keep showing up as normal search results and citations. Their
 
 ## 9. Gates
 - [x] Naming grep on all new and changed files and fixtures (no upstream name, and no upstream identifiers left over from §5's left column)
-- [x] `pytest backend/tests/unit/om/indexing backend/tests/unit/om/connectors` green; golden test byte-identical
+- [x] `pytest backend/tests/unit/om/indexing backend/tests/unit/om/datasource` green; golden test byte-identical
 - [x] `pytest backend/tests/unit/migration_safety`:
   - the golden snapshot **will** list the new modules;
   - **do not edit** `tests/unit/migration_safety/snapshots/baseline.json` (the integrator regenerates it);
@@ -289,14 +289,14 @@ None. Spreadsheets keep showing up as normal search results and citations. Their
 ## 12. Files this lane owns / shared hot files
 - **Owns:**
   - `om/indexing/table_chunking/**`
-  - `om/connectors/cross_connector_utils/table_file_sections.py`
+  - `om/datasource/cross_connector_utils/table_file_sections.py`
   - `om/utils/csv_parsing.py`
   - the new tests and fixtures
-  - `om/connectors/models.py` (this batch)
+  - `om/datasource/models.py` (this batch)
 - **Shared, minimal and additive edits:**
   - `om/indexing/chunker.py` (one branch + one private method)
   - `om/indexing/indexing_pipeline.py` and `om/background/indexing/run_docfetching.py` (section-type checks)
-  - `om/connectors/file/utils.py` and `om/connectors/blob/connector.py` (table branch)
+  - `om/datasource/file/utils.py` and `om/datasource/blob/connector.py` (table branch)
   - `om/file_processing/extract_file_text.py` (new function only)
   - `om/natural_language_processing/utils.py` (two new functions)
   - `om/configs/app_configs.py` (**only** inside `# --- tabular-chunker ---`)
@@ -306,7 +306,7 @@ None. Spreadsheets keep showing up as normal search results and citations. Their
 - [x] 2026-10-30 Research: upstream package and history, our chunker and callers, Section model and serialization, extraction, connectors, file reader, migrations, Python version
 - [x] 2026-10-30 Naming & structure table (§5) and cross-verification plan (§10) added
 - [x] 2026-10-30 User approval of this plan (and answers to §14)
-- [x] 2026-10-30 Check that `extract_file_text.py` has no uncommitted changes (pdfium committed; worktree fast-forwarded to `2fa6ebfc3`). Baseline `pytest tests/unit/om/indexing tests/unit/om/connectors`: 231 passed, 5 pre-existing failures (3× `test_censoring` salesforce, `test_confluence_checkpointing::test_retrieve_all_slim_docs_perm_sync`, `test_connector_factory::test_all_connector_mappings_exist`) + mediawiki collection errors (missing `pywikibot` module) — all unrelated
+- [x] 2026-10-30 Check that `extract_file_text.py` has no uncommitted changes (pdfium committed; worktree fast-forwarded to `2fa6ebfc3`). Baseline `pytest tests/unit/om/indexing tests/unit/om/datasource`: 231 passed, 5 pre-existing failures (3× `test_censoring` salesforce, `test_confluence_checkpointing::test_retrieve_all_slim_docs_perm_sync`, `test_connector_factory::test_all_connector_mappings_exist`) + mediawiki collection errors (missing `pywikibot` module) — all unrelated
 - [x] 2026-10-30 Capture the golden non-tabular chunk fixture with the **unchanged** code (`tests/unit/om/indexing/fixtures/golden_text_chunks.json`, 12 cases / 47 chunks, e5-base-v2 tokenizer; captured at `2fa6ebfc3` before any source edit)
 - [x] 2026-10-30 `connectors/models.py`: `SectionKind`, discriminators, `TableSection`; model round-trip tests
 - [x] 2026-10-30 `utils/csv_parsing.py`; `count_tokens_safely` / `split_by_token_limit`
@@ -326,7 +326,7 @@ None. Spreadsheets keep showing up as normal search results and citations. Their
 
 - [x] 2026-10-30 Gates (§9):
   - Naming grep: 0 hits for upstream names in new and changed sources, tests and fixtures. 0 left-over upstream identifiers from §5.
-  - `pytest tests/unit/om/indexing tests/unit/om/connectors`: 351 passed, 4 skipped. The same 5 pre-existing failures as baseline. The golden test is byte-identical.
+  - `pytest tests/unit/om/indexing tests/unit/om/datasource`: 351 passed, 4 skipped. The same 5 pre-existing failures as baseline. The golden test is byte-identical.
   - Full `tests/unit`: 1783 passed. 20 failures, all pre-existing: the same set fails on a pristine export of `2fa6ebfc3` (chat_utils, llm model map, websearch snippets, discord, tool_utils, plus the 5 above). There are 2 pre-existing collection errors: `mcp.types` missing, and a cp1252 decode error in `test_snippet_finding`.
   - `migration_safety`: the only diff is `[modules] added=` the 7 new modules `<root>.connectors.cross_connector_utils.table_file_sections`, `<root>.indexing.table_chunking` (+ `.cell_parsing`, `.chunk_builder`, `.sheet_summary`, `.table_chunker`) and `<root>.utils.csv_parsing`. `baseline.json` was NOT edited; the integrator regenerates it.
   - Import check of the caller modules passes, and `compileall` passes on Python 3.11.7.
@@ -384,7 +384,7 @@ None. Spreadsheets keep showing up as normal search results and citations. Their
 ## 15. Rollout and verification (user)
 1. Rebuild `api_server` and `background`. No new dependency and no migration.
 2. Unit tests in a throwaway container (the backend image has no `tests/` folder and the dev compose mounts only `backend/om`, so `docker exec` into api_server cannot run them). From PowerShell at the repo root:
-   `docker run --rm -v "${PWD}\backend\om:/app/om:ro" -v "${PWD}\backend\tests:/app/tests:ro" -v "${PWD}\backend\pytest.ini:/app/pytest.ini:ro" -w /app om/om-backend:latest python -m pytest tests/unit/om/indexing tests/unit/om/connectors/cross_connector_utils -q -p no:cacheprovider`
+   `docker run --rm -v "${PWD}\backend\om:/app/om:ro" -v "${PWD}\backend\tests:/app/tests:ro" -v "${PWD}\backend\pytest.ini:/app/pytest.ini:ro" -w /app om/om-backend:latest python -m pytest tests/unit/om/indexing tests/unit/om/datasource/cross_connector_utils -q -p no:cacheprovider`
 3. **Check A, workspace:**
    - Upload a multi-sheet xlsx (for example a dept register) to a workspace.
    - Ask "how many rows / total X by district".

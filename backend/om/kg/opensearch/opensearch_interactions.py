@@ -1,6 +1,6 @@
 from collections.abc import Generator
 
-from om.connectors.models import convert_metadata_list_of_strings_to_dict
+from om.datasource.models import convert_metadata_list_of_strings_to_dict
 from om.db.document import get_document_kg_entities_and_relationships
 from om.db.document import get_num_chunks_for_document
 from om.db.engine.sql_engine import get_session_with_current_tenant

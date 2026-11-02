@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from datetime import timezone
 
-from om.connectors.models import InputType
+from om.datasource.models import InputType
 from om.server.documents.models import DocumentSource
 from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.user import UserManager

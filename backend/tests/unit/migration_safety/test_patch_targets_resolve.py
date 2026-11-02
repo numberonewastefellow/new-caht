@@ -9,7 +9,7 @@ than a missed rename.
 This shipped twice already:
 
   * Stage 1 renamed the class `OmConfluence` -> `OmConfluence`, but
-    `@patch("om.connectors.confluence.om_confluence.OmConfluence.retrieve_...")`
+    `@patch("om.datasource.confluence.om_confluence.OmConfluence.retrieve_...")`
     is a STRING, so the rename never touched it. Five such patch targets were left
     pointing at classes that no longer exist (OmConfluence, OmAPIClient,
     OmDiscordClient, OmDBCredentialsProvider, OmSalesforceSQLite).

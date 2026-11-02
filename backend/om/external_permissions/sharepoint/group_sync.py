@@ -1,11 +1,11 @@
 from collections.abc import Generator
 
+from om.datasource.sharepoint.connector import SharepointConnector
 from om.db.external_perm import ExternalUserGroup
+from om.db.models import ConnectorCredentialPair
 from om.external_permissions.sharepoint.permission_utils import (
     get_sharepoint_external_groups,
 )
-from om.connectors.sharepoint.connector import SharepointConnector
-from om.db.models import ConnectorCredentialPair
 from om.utils.logger import setup_logger
 
 logger = setup_logger()

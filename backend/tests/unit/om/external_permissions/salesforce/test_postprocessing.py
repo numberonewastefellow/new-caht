@@ -1,12 +1,12 @@
 from datetime import datetime
 
+from om.configs.app_configs import BLURB_SIZE
+from om.configs.constants import DocumentSource
+from om.context.search.models import InferenceChunk
+from om.datasource.salesforce.utils import BASE_DATA_PATH
 from om.external_permissions.salesforce.postprocessing import (
     censor_salesforce_chunks,
 )
-from om.configs.app_configs import BLURB_SIZE
-from om.configs.constants import DocumentSource
-from om.connectors.salesforce.utils import BASE_DATA_PATH
-from om.context.search.models import InferenceChunk
 
 SQLITE_DIR = BASE_DATA_PATH
 

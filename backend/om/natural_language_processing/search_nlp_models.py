@@ -26,7 +26,7 @@ from om.configs.model_configs import BATCH_SIZE_ENCODE_CHUNKS
 from om.configs.model_configs import (
     BATCH_SIZE_ENCODE_CHUNKS_FOR_API_EMBEDDING_SERVICES,
 )
-from om.connectors.models import ConnectorStopSignal
+from om.datasource.models import ConnectorStopSignal
 from om.db.models import SearchSettings
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.natural_language_processing.constants import DEFAULT_COHERE_MODEL

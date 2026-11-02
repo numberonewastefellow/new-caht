@@ -4,6 +4,14 @@ from collections.abc import Generator
 from github import Github
 from github.Repository import Repository
 
+from om.access.models import DocExternalAccess
+from om.access.utils import build_ext_team_name_for_om
+from om.configs.constants import DocumentSource
+from om.datasource.github.connector import DocMetadata
+from om.datasource.github.connector import GithubConnector
+from om.db.models import ConnectorCredentialPair
+from om.db.utils import DocumentRow
+from om.db.utils import SortOrder
 from om.external_permissions.github.utils import fetch_repository_team_slugs
 from om.external_permissions.github.utils import form_collaborators_group_id
 from om.external_permissions.github.utils import form_organization_group_id
@@ -15,14 +23,6 @@ from om.external_permissions.github.utils import get_repository_visibility
 from om.external_permissions.github.utils import GitHubVisibility
 from om.external_permissions.perm_sync_types import FetchAllDocumentsFunction
 from om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunction
-from om.access.models import DocExternalAccess
-from om.access.utils import build_ext_team_name_for_om
-from om.configs.constants import DocumentSource
-from om.connectors.github.connector import DocMetadata
-from om.connectors.github.connector import GithubConnector
-from om.db.models import ConnectorCredentialPair
-from om.db.utils import DocumentRow
-from om.db.utils import SortOrder
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.utils.logger import setup_logger
 

@@ -26,8 +26,8 @@ from om.background.indexing.models import IndexAttemptErrorPydantic
 from om.configs.constants import OmCeleryPriority
 from om.configs.constants import OmCeleryTask
 from om.configs.constants import PUBLIC_API_TAGS
-from om.connectors.exceptions import ValidationError
-from om.connectors.factory import validate_ccpair_for_user
+from om.datasource.exceptions import ValidationError
+from om.datasource.factory import validate_ccpair_for_user
 from om.db.connector import delete_connector
 from om.db.connector_credential_pair import add_credential_to_connector
 from om.db.connector_credential_pair import (

@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.elements import ColumnElement
 
 from om.configs.constants import DocumentSource
-from om.connectors.models import HierarchyNode as PydanticHierarchyNode
+from om.datasource.models import HierarchyNode as PydanticHierarchyNode
 from om.db.enums import HierarchyNodeType
 from om.db.models import Document
 from om.db.models import HierarchyNode

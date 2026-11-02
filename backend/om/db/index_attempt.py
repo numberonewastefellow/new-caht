@@ -14,7 +14,7 @@ from sqlalchemy import update
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import Session
 
-from om.connectors.models import ConnectorFailure
+from om.datasource.models import ConnectorFailure
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import IndexingStatus

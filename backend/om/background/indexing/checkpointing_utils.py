@@ -7,9 +7,9 @@ from sqlalchemy.orm import Session
 
 from om.configs.constants import FileOrigin
 from om.configs.constants import NUM_DAYS_TO_KEEP_CHECKPOINTS
-from om.connectors.interfaces import BaseConnector
-from om.connectors.interfaces import CheckpointedConnector
-from om.connectors.models import ConnectorCheckpoint
+from om.datasource.interfaces import BaseConnector
+from om.datasource.interfaces import CheckpointedConnector
+from om.datasource.models import ConnectorCheckpoint
 from om.db.engine.time_utils import get_db_current_time
 from om.db.index_attempt import get_index_attempt
 from om.db.index_attempt import get_recent_completed_attempts_for_cc_pair

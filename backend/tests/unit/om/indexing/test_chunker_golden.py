@@ -16,10 +16,10 @@ from typing import Any
 import pytest
 
 from om.configs.constants import DocumentSource
-from om.connectors.models import Document
-from om.connectors.models import IndexingDocument
-from om.connectors.models import Section
-from om.connectors.models import TextSection
+from om.datasource.models import Document
+from om.datasource.models import IndexingDocument
+from om.datasource.models import Section
+from om.datasource.models import TextSection
 from om.indexing import chunker as chunker_module
 from om.indexing.chunker import Chunker
 from om.indexing.embedder import DefaultIndexingEmbedder

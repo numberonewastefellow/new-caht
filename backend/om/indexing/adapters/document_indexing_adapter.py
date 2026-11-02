@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 from om.access.access import get_access_for_documents
 from om.access.models import DocumentAccess
 from om.configs.constants import DEFAULT_BOOST
-from om.connectors.models import Document
-from om.connectors.models import IndexAttemptMetadata
+from om.datasource.models import Document
+from om.datasource.models import IndexAttemptMetadata
 from om.db.chunk import update_chunk_boost_components__no_commit
 from om.db.document import fetch_chunk_counts_for_documents
 from om.db.document import mark_document_as_indexed_for_cc_pair__no_commit

@@ -7,10 +7,10 @@ import httpx
 from sqlalchemy import select
 
 from om.configs.constants import DocumentSource
-from om.connectors.mock_connector.connector import EXTERNAL_USER_EMAILS
-from om.connectors.mock_connector.connector import EXTERNAL_TEAM_IDS
-from om.connectors.mock_connector.connector import MockConnectorCheckpoint
-from om.connectors.models import InputType
+from om.datasource.mock_connector.connector import EXTERNAL_TEAM_IDS
+from om.datasource.mock_connector.connector import EXTERNAL_USER_EMAILS
+from om.datasource.mock_connector.connector import MockConnectorCheckpoint
+from om.datasource.models import InputType
 from om.db.document import get_documents_by_ids
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.enums import AccessType

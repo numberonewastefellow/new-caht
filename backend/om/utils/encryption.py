@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher
 from cryptography.hazmat.primitives.ciphers import modes
 
 from om.configs.app_configs import ENCRYPTION_KEY_SECRET
-from om.connectors.google_utils.shared_constants import (
+from om.datasource.google_utils.shared_constants import (
     DB_CREDENTIALS_AUTHENTICATION_METHOD,
 )
 from om.utils.logger import setup_logger

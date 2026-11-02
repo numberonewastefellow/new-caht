@@ -1,10 +1,10 @@
 from slack_sdk import WebClient
 
 from om.access.models import ExternalAccess
-from om.connectors.models import BasicExpertInfo
-from om.connectors.slack.connector import ChannelType
-from om.connectors.slack.utils import expert_info_from_slack_id
-from om.connectors.slack.utils import make_paginated_slack_api_call
+from om.datasource.models import BasicExpertInfo
+from om.datasource.slack.connector import ChannelType
+from om.datasource.slack.utils import expert_info_from_slack_id
+from om.datasource.slack.utils import make_paginated_slack_api_call
 
 
 def get_channel_access(

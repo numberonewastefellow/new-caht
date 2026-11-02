@@ -19,8 +19,8 @@ from collections import Counter
 from sqlalchemy.orm import Session
 
 from om.access.models import default_public_access
-from om.connectors.models import Document
-from om.connectors.models import TextSection
+from om.datasource.models import Document
+from om.datasource.models import TextSection
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.search_settings import get_current_search_settings
 from om.document_index.factory import get_all_document_indices

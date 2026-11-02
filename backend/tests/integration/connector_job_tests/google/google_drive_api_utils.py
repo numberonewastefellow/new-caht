@@ -3,10 +3,10 @@ from uuid import uuid4
 
 from google.oauth2.service_account import Credentials
 
-from om.connectors.google_utils.resources import get_drive_service
-from om.connectors.google_utils.resources import get_google_docs_service
-from om.connectors.google_utils.resources import GoogleDocsService
-from om.connectors.google_utils.resources import GoogleDriveService
+from om.datasource.google_utils.resources import get_drive_service
+from om.datasource.google_utils.resources import get_google_docs_service
+from om.datasource.google_utils.resources import GoogleDocsService
+from om.datasource.google_utils.resources import GoogleDriveService
 
 
 GOOGLE_SCOPES = {

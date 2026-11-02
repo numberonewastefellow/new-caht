@@ -20,9 +20,9 @@ from om.configs.constants import OmCeleryPriority
 from om.configs.constants import OmCeleryQueues
 from om.configs.constants import OmCeleryTask
 from om.configs.constants import OmRedisLocks
-from om.connectors.file.connector import LocalFileConnector
-from om.connectors.models import Document
-from om.connectors.models import HierarchyNode
+from om.datasource.file.connector import LocalFileConnector
+from om.datasource.models import Document
+from om.datasource.models import HierarchyNode
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.enums import KnowledgeFileStatus
 from om.db.models import KnowledgeFile
@@ -31,8 +31,8 @@ from om.db.search_settings import get_active_search_settings_list
 from om.document_index.factory import get_all_document_indices
 from om.document_index.interfaces_new import MetadataUpdateRequest
 from om.file_store.file_store import get_default_file_store
-from om.file_store.utils import store_user_file_plaintext
 from om.file_store.utils import knowledge_file_id_to_plaintext_file_name
+from om.file_store.utils import store_user_file_plaintext
 from om.indexing.adapters.user_file_indexing_adapter import KnowledgeFileIndexingAdapter
 from om.indexing.embedder import DefaultIndexingEmbedder
 from om.indexing.indexing_pipeline import run_indexing_pipeline

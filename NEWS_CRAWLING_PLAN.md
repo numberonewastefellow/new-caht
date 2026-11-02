@@ -4,7 +4,7 @@
 
 | Component | File | What It Does |
 |-----------|------|-------------|
-| Web Connector | `backend/om/connectors/web/connector.py` | Playwright browser crawling. 4 modes: recursive, single, sitemap, upload. Bot evasion, retry, dedup. |
+| Web Connector | `backend/om/datasource/web/connector.py` | Playwright browser crawling. 4 modes: recursive, single, sitemap, upload. Bot evasion, retry, dedup. |
 | HTML Extraction | `backend/om/file_processing/html_utils.py` | BeautifulSoup cleanup + optional trafilatura (`PARSE_WITH_TRAFILATURA=true`) |
 | Sitemap Parser | `backend/om/utils/sitemap.py` | Extracts `<loc>` URLs from standard sitemaps. Does NOT parse `news:news` metadata. |
 | Frontend Config | `web/src/lib/connectors/connectors.tsx` (lines 149-183) | Web connector UI: base_url, scrape method, scroll checkbox |
@@ -74,7 +74,7 @@ Current `sitemap.py` only extracts `<loc>` URLs and throws away all `news:news` 
 
 ### Step 2: Wire News Metadata into Web Connector
 
-**File:** `backend/om/connectors/web/connector.py`
+**File:** `backend/om/datasource/web/connector.py`
 
 - In sitemap mode, call `list_pages_with_metadata()` instead of `extract_urls_from_sitemap()`
 - Store `SitemapEntry` metadata alongside URLs in `ScrapeSessionContext`
@@ -110,7 +110,7 @@ WEB_CONNECTOR_IGNORED_ELEMENTS=nav,footer,meta,script,style,symbol,aside,iframe
 | File | Changes |
 |------|---------|
 | `backend/om/utils/sitemap.py` | Add `SitemapEntry`, `list_pages_with_metadata()`, parse news namespace |
-| `backend/om/connectors/web/connector.py` | Use metadata-aware sitemap parser, populate Document fields |
+| `backend/om/datasource/web/connector.py` | Use metadata-aware sitemap parser, populate Document fields |
 | `backend/om/file_processing/html_utils.py` | Add `extract_article_metadata()` for JSON-LD / OG / meta |
 
 ## Verification
@@ -119,4 +119,4 @@ WEB_CONNECTOR_IGNORED_ELEMENTS=nav,footer,meta,script,style,symbol,aside,iframe
 2. Run connector in sitemap mode against `https://www.thehindu.com/sitemap/googlenews/all/all.xml`
 3. Verify documents have `doc_updated_at`, keywords, clean article text
 4. Verify `list_pages_for_site()` still works for non-news sitemaps
-5. Run `pytest backend/tests/daily/connectors/web/test_web_connector.py`
+5. Run `pytest backend/tests/daily/datasource/web/test_web_connector.py`

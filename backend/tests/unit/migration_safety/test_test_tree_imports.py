@@ -4,7 +4,7 @@ This closes a hole that stayed open for the whole rename. The Stage-1 rename rew
 module paths `onyx.*` -> `om.*` everywhere, and that swept up intra-test imports too:
 
     from tests.unit.onyx.connectors.utils import load_everything_from_checkpoint_connector
-                    ^^^^                     became      tests.unit.om.connectors.utils
+                    ^^^^                     became      tests.unit.om.datasource.utils
 
 ...but the test DIRECTORY was still `tests/unit/onyx/`. So 12 test modules imported a
 package that did not exist and died at COLLECTION. And a collection error is invisible in

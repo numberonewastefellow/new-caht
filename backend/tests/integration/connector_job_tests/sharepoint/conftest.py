@@ -6,8 +6,8 @@ from datetime import timezone
 import pytest
 
 from om.configs.constants import DocumentSource
-from om.connectors.models import InputType
-from om.connectors.sharepoint.connector import SharepointAuthMethod
+from om.datasource.models import InputType
+from om.datasource.sharepoint.connector import SharepointAuthMethod
 from om.db.enums import AccessType
 from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.connector import ConnectorManager

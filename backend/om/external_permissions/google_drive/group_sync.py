@@ -3,7 +3,13 @@ from collections.abc import Generator
 from googleapiclient.errors import HttpError  # type: ignore
 from pydantic import BaseModel
 
+from om.datasource.google_drive.connector import GoogleDriveConnector
+from om.datasource.google_utils.google_utils import execute_paginated_retrieval
+from om.datasource.google_utils.resources import AdminService
+from om.datasource.google_utils.resources import get_admin_service
+from om.datasource.google_utils.resources import get_drive_service
 from om.db.external_perm import ExternalUserGroup
+from om.db.models import ConnectorCredentialPair
 from om.external_permissions.google_drive.folder_retrieval import (
     get_folder_permissions_by_ids,
 )
@@ -12,12 +18,6 @@ from om.external_permissions.google_drive.folder_retrieval import (
 )
 from om.external_permissions.google_drive.models import GoogleDrivePermission
 from om.external_permissions.google_drive.models import PermissionType
-from om.connectors.google_drive.connector import GoogleDriveConnector
-from om.connectors.google_utils.google_utils import execute_paginated_retrieval
-from om.connectors.google_utils.resources import AdminService
-from om.connectors.google_utils.resources import get_admin_service
-from om.connectors.google_utils.resources import get_drive_service
-from om.db.models import ConnectorCredentialPair
 from om.utils.logger import setup_logger
 
 logger = setup_logger()

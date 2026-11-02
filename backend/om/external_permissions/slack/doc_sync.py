@@ -2,17 +2,17 @@ from collections.abc import Generator
 
 from slack_sdk import WebClient
 
+from om.access.models import DocExternalAccess
+from om.access.models import ExternalAccess
+from om.datasource.credentials_provider import OmDBCredentialsProvider
+from om.datasource.models import HierarchyNode
+from om.datasource.slack.connector import get_channels
+from om.datasource.slack.connector import make_paginated_slack_api_call
+from om.datasource.slack.connector import SlackConnector
+from om.db.models import ConnectorCredentialPair
 from om.external_permissions.perm_sync_types import FetchAllDocumentsFunction
 from om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunction
 from om.external_permissions.slack.utils import fetch_user_id_to_email_map
-from om.access.models import DocExternalAccess
-from om.access.models import ExternalAccess
-from om.connectors.credentials_provider import OmDBCredentialsProvider
-from om.connectors.models import HierarchyNode
-from om.connectors.slack.connector import get_channels
-from om.connectors.slack.connector import make_paginated_slack_api_call
-from om.connectors.slack.connector import SlackConnector
-from om.db.models import ConnectorCredentialPair
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.redis.redis_pool import get_redis_client
 from om.utils.logger import setup_logger

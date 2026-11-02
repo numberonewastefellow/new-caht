@@ -2,7 +2,7 @@ from io import BytesIO
 from typing import Tuple
 
 from om.configs.constants import FileOrigin
-from om.connectors.models import ImageSection
+from om.datasource.models import ImageSection
 from om.file_store.file_store import get_default_file_store
 from om.utils.logger import setup_logger
 

@@ -12,12 +12,12 @@ from om.configs.app_configs import USE_DOCUMENT_SUMMARY
 from om.configs.constants import DocumentSource
 from om.configs.constants import RETURN_SEPARATOR
 from om.configs.constants import SECTION_SEPARATOR
-from om.connectors.cross_connector_utils.miscellaneous_utils import (
+from om.datasource.cross_connector_utils.miscellaneous_utils import (
     get_metadata_keys_to_ignore,
 )
-from om.connectors.models import IndexingDocument
-from om.connectors.models import Section
-from om.connectors.models import TableSection
+from om.datasource.models import IndexingDocument
+from om.datasource.models import Section
+from om.datasource.models import TableSection
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.indexing.models import DocAwareChunk
 from om.indexing.table_chunking.table_chunker import TableChunker

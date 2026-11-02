@@ -22,7 +22,7 @@ from typing import Any
 from botocore.exceptions import ClientError
 from mypy_boto3_s3.client import S3Client
 
-from om.connectors.models import Document
+from om.datasource.models import Document
 from om.server.features.build.configs import PERSISTENT_DOCUMENT_STORAGE_PATH
 from om.server.features.build.configs import SANDBOX_BACKEND
 from om.server.features.build.configs import SANDBOX_S3_BUCKET

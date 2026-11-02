@@ -7,8 +7,8 @@ import httpx
 
 from om.configs.app_configs import POLL_CONNECTOR_OFFSET
 from om.configs.constants import DocumentSource
-from om.connectors.mock_connector.connector import MockConnectorCheckpoint
-from om.connectors.models import InputType
+from om.datasource.mock_connector.connector import MockConnectorCheckpoint
+from om.datasource.models import InputType
 from om.db.enums import IndexingStatus
 from tests.integration.common_utils.constants import MOCK_CONNECTOR_SERVER_HOST
 from tests.integration.common_utils.constants import MOCK_CONNECTOR_SERVER_PORT

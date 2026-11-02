@@ -16,8 +16,6 @@ from om.configs.app_configs import ENABLE_CONTEXTUAL_RAG
 from om.configs.app_configs import MAX_SLACK_THREAD_CONTEXT_MESSAGES
 from om.configs.app_configs import SLACK_THREAD_CONTEXT_BATCH_SIZE
 from om.configs.chat_configs import DOC_TIME_DECAY
-from om.connectors.models import IndexingDocument
-from om.connectors.models import TextSection
 from om.context.search.federated.models import ChannelMetadata
 from om.context.search.federated.models import SlackMessage
 from om.context.search.federated.slack_search_utils import ALL_CHANNEL_TYPES
@@ -31,6 +29,8 @@ from om.context.search.federated.slack_search_utils import is_recency_query
 from om.context.search.federated.slack_search_utils import should_include_message
 from om.context.search.models import ChunkIndexRequest
 from om.context.search.models import InferenceChunk
+from om.datasource.models import IndexingDocument
+from om.datasource.models import TextSection
 from om.db.document import DocumentSource
 from om.db.search_settings import get_current_search_settings
 from om.document_index.document_index_utils import (

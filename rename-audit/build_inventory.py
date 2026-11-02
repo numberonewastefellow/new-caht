@@ -14,7 +14,8 @@ import csv
 import re
 import subprocess
 import sys
-from collections import Counter, defaultdict
+from collections import Counter
+from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -102,7 +103,7 @@ ALLOWED_FILES = {
     "backend/tests/unit/om/file_processing/test_metadata_names.py",
     "backend/tests/unit/om/utils/test_optional_outbound.py",
     "backend/tests/unit/scripts/test_migrate_file_store_names.py",
-    "backend/tests/daily/connectors/salesforce/test_salesforce_data.json",  # recorded third-party data
+    "backend/tests/daily/datasource/salesforce/test_salesforce_data.json",  # recorded third-party data
 }
 ALLOWED_PREFIXES = (
     "deployment/",  # Phase 6

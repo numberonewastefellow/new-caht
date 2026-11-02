@@ -8,12 +8,12 @@ from pydantic import BaseModel
 from pydantic import Field
 
 from om.access.models import DocumentAccess
-from om.connectors.models import Document
+from om.datasource.models import Document
 from om.db.enums import EmbeddingPrecision
 from om.db.enums import SwitchoverType
 from om.utils.logger import setup_logger
-from shared_configs.enums import EmbeddingProvider
 from shared_configs.embedding_models import Embedding
+from shared_configs.enums import EmbeddingProvider
 
 if TYPE_CHECKING:
     from om.indexing.indexing_pipeline import DocumentBatchPrepareContext

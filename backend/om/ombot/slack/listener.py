@@ -31,7 +31,7 @@ from om.configs.app_configs import POD_NAMESPACE
 from om.configs.constants import MessageType
 from om.configs.constants import OmRedisLocks
 from om.configs.ombot_configs import NOTIFY_SLACKBOT_NO_ANSWER
-from om.connectors.slack.utils import expert_info_from_slack_id
+from om.datasource.slack.utils import expert_info_from_slack_id
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.engine.sql_engine import get_session_with_tenant
 from om.db.engine.sql_engine import SqlEngine

@@ -14,19 +14,19 @@ from om.configs.app_configs import MAX_TOKENS_FOR_FULL_INCLUSION
 from om.configs.app_configs import USE_CHUNK_SUMMARY
 from om.configs.app_configs import USE_DOCUMENT_SUMMARY
 from om.configs.llm_configs import get_image_extraction_and_analysis_enabled
-from om.connectors.cross_connector_utils.miscellaneous_utils import (
+from om.datasource.cross_connector_utils.miscellaneous_utils import (
     get_experts_stores_representations,
 )
-from om.connectors.models import ConnectorFailure
-from om.connectors.models import ConnectorStopSignal
-from om.connectors.models import Document
-from om.connectors.models import DocumentFailure
-from om.connectors.models import ImageSection
-from om.connectors.models import IndexAttemptMetadata
-from om.connectors.models import IndexingDocument
-from om.connectors.models import Section
-from om.connectors.models import TableSection
-from om.connectors.models import TextSection
+from om.datasource.models import ConnectorFailure
+from om.datasource.models import ConnectorStopSignal
+from om.datasource.models import Document
+from om.datasource.models import DocumentFailure
+from om.datasource.models import ImageSection
+from om.datasource.models import IndexAttemptMetadata
+from om.datasource.models import IndexingDocument
+from om.datasource.models import Section
+from om.datasource.models import TableSection
+from om.datasource.models import TextSection
 from om.db.document import get_documents_by_ids
 from om.db.document import upsert_document_by_connector_credential_pair
 from om.db.document import upsert_documents

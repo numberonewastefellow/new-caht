@@ -10,8 +10,8 @@ from om.auth.users import current_curator_or_admin_user
 from om.configs.constants import DEFAULT_CC_PAIR_ID
 from om.configs.constants import DocumentSource
 from om.configs.constants import PUBLIC_API_TAGS
-from om.connectors.models import Document
-from om.connectors.models import IndexAttemptMetadata
+from om.datasource.models import Document
+from om.datasource.models import IndexAttemptMetadata
 from om.db.connector_credential_pair import get_connector_credential_pair_from_id
 from om.db.document import delete_documents_complete__no_commit
 from om.db.document import get_document

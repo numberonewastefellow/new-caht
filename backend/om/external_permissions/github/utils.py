@@ -15,11 +15,11 @@ from github.Repository import Repository
 from github.Team import Team
 from pydantic import BaseModel
 
-from om.db.external_perm import ExternalUserGroup
 from om.access.models import ExternalAccess
 from om.access.utils import build_ext_team_name_for_om
 from om.configs.constants import DocumentSource
-from om.connectors.github.rate_limit_utils import sleep_after_rate_limit_exception
+from om.datasource.github.rate_limit_utils import sleep_after_rate_limit_exception
+from om.db.external_perm import ExternalUserGroup
 from om.utils.logger import setup_logger
 
 logger = setup_logger()

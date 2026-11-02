@@ -16,10 +16,10 @@ from uuid import uuid4
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-from om.connectors.slack.connector import default_msg_filter
-from om.connectors.slack.connector import get_channel_messages
-from om.connectors.slack.models import ChannelType
-from om.connectors.slack.utils import make_paginated_slack_api_call
+from om.datasource.slack.connector import default_msg_filter
+from om.datasource.slack.connector import get_channel_messages
+from om.datasource.slack.models import ChannelType
+from om.datasource.slack.utils import make_paginated_slack_api_call
 
 
 def _get_slack_channel_id(channel: ChannelType) -> str:

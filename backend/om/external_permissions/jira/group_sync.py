@@ -2,8 +2,8 @@ from collections.abc import Generator
 
 from jira import JIRA
 
+from om.datasource.jira.utils import build_jira_client
 from om.db.external_perm import ExternalUserGroup
-from om.connectors.jira.utils import build_jira_client
 from om.db.models import ConnectorCredentialPair
 from om.utils.logger import setup_logger
 

@@ -1,8 +1,8 @@
 from retry import retry
 
+from om.datasource.google_utils.google_utils import execute_paginated_retrieval
+from om.datasource.google_utils.resources import GoogleDriveService
 from om.external_permissions.google_drive.models import GoogleDrivePermission
-from om.connectors.google_utils.google_utils import execute_paginated_retrieval
-from om.connectors.google_utils.resources import GoogleDriveService
 from om.utils.logger import setup_logger
 
 logger = setup_logger()

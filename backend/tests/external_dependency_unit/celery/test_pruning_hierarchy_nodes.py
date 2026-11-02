@@ -18,11 +18,11 @@ from sqlalchemy.orm import Session
 from om.access.models import ExternalAccess
 from om.background.celery.celery_utils import extract_ids_from_runnable_connector
 from om.configs.constants import DocumentSource
-from om.connectors.interfaces import GenerateSlimDocumentOutput
-from om.connectors.interfaces import SecondsSinceUnixEpoch
-from om.connectors.interfaces import SlimConnectorWithPermSync
-from om.connectors.models import HierarchyNode as PydanticHierarchyNode
-from om.connectors.models import SlimDocument
+from om.datasource.interfaces import GenerateSlimDocumentOutput
+from om.datasource.interfaces import SecondsSinceUnixEpoch
+from om.datasource.interfaces import SlimConnectorWithPermSync
+from om.datasource.models import HierarchyNode as PydanticHierarchyNode
+from om.datasource.models import SlimDocument
 from om.db.enums import HierarchyNodeType
 from om.db.hierarchy import ensure_source_node_exists
 from om.db.hierarchy import get_all_hierarchy_nodes_for_source

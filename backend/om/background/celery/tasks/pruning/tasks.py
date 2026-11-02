@@ -35,8 +35,8 @@ from om.configs.constants import OmCeleryTask
 from om.configs.constants import OmRedisConstants
 from om.configs.constants import OmRedisLocks
 from om.configs.constants import OmRedisSignals
-from om.connectors.factory import instantiate_connector
-from om.connectors.models import InputType
+from om.datasource.factory import instantiate_connector
+from om.datasource.models import InputType
 from om.db.connector import mark_ccpair_as_pruned
 from om.db.connector_credential_pair import get_connector_credential_pair
 from om.db.connector_credential_pair import get_connector_credential_pair_from_id

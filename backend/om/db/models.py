@@ -85,7 +85,7 @@ from om.configs.constants import NotificationType
 from om.configs.constants import SearchFeedbackType
 from om.configs.constants import RateLimitScope
 from om.configs.constants import RateLimitAlgorithm
-from om.connectors.models import InputType
+from om.datasource.models import InputType
 from om.db.enums import ChatSessionSharedStatus
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import IndexingStatus

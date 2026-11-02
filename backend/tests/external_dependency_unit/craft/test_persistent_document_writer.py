@@ -18,8 +18,8 @@ import pytest
 from botocore.exceptions import ClientError
 
 from om.configs.constants import DocumentSource
-from om.connectors.models import Document
-from om.connectors.models import TextSection
+from om.datasource.models import Document
+from om.datasource.models import TextSection
 from om.server.features.build.configs import SANDBOX_S3_BUCKET
 from om.server.features.build.indexing.persistent_document_writer import (
     PersistentDocumentWriter,

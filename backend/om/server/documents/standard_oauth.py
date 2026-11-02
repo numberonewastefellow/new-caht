@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from om.auth.users import current_user
 from om.configs.app_configs import WEB_DOMAIN
 from om.configs.constants import DocumentSource
-from om.connectors.interfaces import OAuthConnector
+from om.datasource.interfaces import OAuthConnector
 from om.db.credentials import create_credential
 from om.db.engine.sql_engine import get_session
 from om.db.models import User
@@ -46,7 +46,7 @@ def _discover_oauth_connectors() -> dict[DocumentSource, type[OAuthConnector]]:
 
     # Import submodules using package-based discovery to avoid sys.path mutations
     oauth_connectors = find_all_subclasses_in_package(
-        cast(type[OAuthConnector], OAuthConnector), "om.connectors"
+        cast(type[OAuthConnector], OAuthConnector), "om.datasource"
     )
 
     _OAUTH_CONNECTORS = {cls.oauth_id(): cls for cls in oauth_connectors}

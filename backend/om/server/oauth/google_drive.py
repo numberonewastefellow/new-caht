@@ -11,25 +11,24 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from om.server.oauth.api_router import router
 from om.auth.users import current_admin_user
 from om.configs.app_configs import DEV_MODE
 from om.configs.app_configs import OAUTH_GOOGLE_DRIVE_CLIENT_ID
 from om.configs.app_configs import OAUTH_GOOGLE_DRIVE_CLIENT_SECRET
 from om.configs.app_configs import WEB_DOMAIN
 from om.configs.constants import DocumentSource
-from om.connectors.google_utils.google_auth import get_google_oauth_creds
-from om.connectors.google_utils.google_auth import sanitize_oauth_credentials
-from om.connectors.google_utils.shared_constants import (
+from om.datasource.google_utils.google_auth import get_google_oauth_creds
+from om.datasource.google_utils.google_auth import sanitize_oauth_credentials
+from om.datasource.google_utils.shared_constants import (
     DB_CREDENTIALS_AUTHENTICATION_METHOD,
 )
-from om.connectors.google_utils.shared_constants import (
+from om.datasource.google_utils.shared_constants import (
     DB_CREDENTIALS_DICT_TOKEN_KEY,
 )
-from om.connectors.google_utils.shared_constants import (
+from om.datasource.google_utils.shared_constants import (
     DB_CREDENTIALS_PRIMARY_ADMIN_KEY,
 )
-from om.connectors.google_utils.shared_constants import (
+from om.datasource.google_utils.shared_constants import (
     GoogleOAuthAuthenticationMethod,
 )
 from om.db.credentials import create_credential
@@ -37,6 +36,7 @@ from om.db.engine.sql_engine import get_session
 from om.db.models import User
 from om.redis.redis_pool import get_redis_client
 from om.server.documents.models import CredentialBase
+from om.server.oauth.api_router import router
 from shared_configs.contextvars import get_current_tenant_id
 
 

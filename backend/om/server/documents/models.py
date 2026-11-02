@@ -14,7 +14,7 @@ from pydantic import Field
 
 from om.configs.app_configs import MASK_CREDENTIAL_PREFIX
 from om.configs.constants import DocumentSource
-from om.connectors.models import InputType
+from om.datasource.models import InputType
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import PermissionSyncStatus

@@ -1,5 +1,5 @@
 from om.configs.constants import DocumentSource
-from om.connectors.models import InputType
+from om.datasource.models import InputType
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.models import Document
 from tests.integration.common_utils.document_index import DocumentIndexClient

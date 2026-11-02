@@ -10,8 +10,8 @@ from uuid import uuid4
 
 from sqlalchemy.orm import Session
 
-from om.connectors.models import ConnectorFailure
-from om.connectors.models import DocumentFailure
+from om.datasource.models import ConnectorFailure
+from om.datasource.models import DocumentFailure
 from om.db.engine.sql_engine import get_sqlalchemy_engine
 from om.db.enums import IndexingStatus
 from om.db.index_attempt import create_index_attempt
@@ -25,11 +25,11 @@ from tests.integration.common_utils.managers.api_key import APIKeyManager
 from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.document import DocumentManager
 from tests.integration.common_utils.managers.document_set import DocumentSetManager
-from tests.integration.common_utils.managers.user import UserManager
 from tests.integration.common_utils.managers.team import TeamManager
+from tests.integration.common_utils.managers.user import UserManager
 from tests.integration.common_utils.test_models import DATestAPIKey
-from tests.integration.common_utils.test_models import DATestUser
 from tests.integration.common_utils.test_models import DATestTeam
+from tests.integration.common_utils.test_models import DATestUser
 
 
 def test_connector_deletion(

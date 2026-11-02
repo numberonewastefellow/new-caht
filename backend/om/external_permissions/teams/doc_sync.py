@@ -1,12 +1,12 @@
 from collections.abc import Generator
 
+from om.access.models import ElementExternalAccess
+from om.configs.constants import DocumentSource
+from om.datasource.teams.connector import TeamsConnector
+from om.db.models import ConnectorCredentialPair
 from om.external_permissions.perm_sync_types import FetchAllDocumentsFunction
 from om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunction
 from om.external_permissions.utils import generic_doc_sync
-from om.access.models import ElementExternalAccess
-from om.configs.constants import DocumentSource
-from om.connectors.teams.connector import TeamsConnector
-from om.db.models import ConnectorCredentialPair
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.utils.logger import setup_logger
 

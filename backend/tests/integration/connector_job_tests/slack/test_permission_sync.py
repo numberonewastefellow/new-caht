@@ -2,9 +2,8 @@ import os
 from datetime import datetime
 from datetime import timezone
 
-
-from om.connectors.models import InputType
-from om.connectors.slack.models import ChannelType
+from om.datasource.models import InputType
+from om.datasource.slack.models import ChannelType
 from om.db.enums import AccessType
 from om.server.documents.models import DocumentSource
 from tests.integration.common_utils.document_index import DocumentIndexClient
@@ -15,8 +14,8 @@ from tests.integration.common_utils.managers.document_search import (
     DocumentSearchManager,
 )
 from tests.integration.common_utils.managers.llm_provider import LLMProviderManager
-from tests.integration.common_utils.managers.user import UserManager
 from tests.integration.common_utils.managers.team import TeamManager
+from tests.integration.common_utils.managers.user import UserManager
 from tests.integration.common_utils.test_models import DATestCCPair
 from tests.integration.common_utils.test_models import DATestConnector
 from tests.integration.common_utils.test_models import DATestCredential

@@ -164,17 +164,17 @@ FOLDER_CONNECTOR_MAX_FILE_SIZE_MB = int(os.environ.get("FOLDER_CONNECTOR_MAX_FIL
 
 ### 3. Extract shared utils from File Connector
 
-**New file**: `backend/om/connectors/file/utils.py`
+**New file**: `backend/om/datasource/file/utils.py`
 
-- Move `_process_file()` and `_create_image_section()` from `backend/om/connectors/file/connector.py`
-- Update imports in `file/connector.py` to use `from om.connectors.file.utils import _process_file, _create_image_section`
+- Move `_process_file()` and `_create_image_section()` from `backend/om/datasource/file/connector.py`
+- Update imports in `file/connector.py` to use `from om.datasource.file.utils import _process_file, _create_image_section`
 
 ### 4. Create Folder Connector
 
 **New files**:
 
-- `backend/om/connectors/folder/__init__.py` (empty)
-- `backend/om/connectors/folder/connector.py`
+- `backend/om/datasource/folder/__init__.py` (empty)
+- `backend/om/datasource/folder/connector.py`
 
 ```python
 class LocalFolderConnector(LoadConnector, PollConnector, SlimConnector):
@@ -216,18 +216,18 @@ class LocalFolderConnector(LoadConnector, PollConnector, SlimConnector):
 
 ### 5. Register connector
 
-**File**: `backend/om/connectors/registry.py`
+**File**: `backend/om/datasource/registry.py`
 
 ```python
 DocumentSource.FOLDER: ConnectorMapping(
-    module_path="om.connectors.folder.connector",
+    module_path="om.datasource.folder.connector",
     class_name="LocalFolderConnector",
 ),
 ```
 
 ### 6. Add SYNC config (EE — permission sync registration)
 
-**New file**: `backend/om/connectors/folder/doc_sync.py`
+**New file**: `backend/om/datasource/folder/doc_sync.py`
 
 ```python
 def folder_doc_sync(
@@ -254,8 +254,8 @@ DocumentSource.FOLDER: SyncConfig(
 
 ### Reference patterns
 
-- `backend/om/connectors/blob/connector.py` — `BlobStorageConnector` (Load + Poll with mtime)
-- `backend/om/connectors/google_drive/connector.py` — Permission syncing with `include_permissions` flag
+- `backend/om/datasource/blob/connector.py` — `BlobStorageConnector` (Load + Poll with mtime)
+- `backend/om/datasource/google_drive/connector.py` — Permission syncing with `include_permissions` flag
 - `backend/om/external_permissions/sync_params.py` — SyncConfig registration pattern
 
 ---
@@ -338,14 +338,14 @@ folder: null,  // dummy credential (same as file connector)
 
 | Action | File | What |
 | --- | --- | --- |
-| **Create** | `backend/om/connectors/folder/__init__.py` | Package init (empty) |
-| **Create** | `backend/om/connectors/folder/connector.py` | `LocalFolderConnector` (Load + Poll + Slim + Permissions) |
-| **Create** | `backend/om/connectors/folder/doc_sync.py` | Permission sync function for SYNC mode |
-| **Create** | `backend/om/connectors/file/utils.py` | Shared `_process_file` + `_create_image_section` |
-| **Modify** | `backend/om/connectors/file/connector.py` | Update imports to use `file/utils.py` |
+| **Create** | `backend/om/datasource/folder/__init__.py` | Package init (empty) |
+| **Create** | `backend/om/datasource/folder/connector.py` | `LocalFolderConnector` (Load + Poll + Slim + Permissions) |
+| **Create** | `backend/om/datasource/folder/doc_sync.py` | Permission sync function for SYNC mode |
+| **Create** | `backend/om/datasource/file/utils.py` | Shared `_process_file` + `_create_image_section` |
+| **Modify** | `backend/om/datasource/file/connector.py` | Update imports to use `file/utils.py` |
 | **Modify** | `backend/om/configs/constants.py` | Add `FOLDER` enum + `DocumentSourceDescription` + tenant context |
 | **Modify** | `backend/om/configs/app_configs.py` | Add 3 env vars |
-| **Modify** | `backend/om/connectors/registry.py` | Add FOLDER mapping |
+| **Modify** | `backend/om/datasource/registry.py` | Add FOLDER mapping |
 | **Modify** | `backend/om/external_permissions/sync_params.py` | Add FOLDER to `_SOURCE_TO_SYNC_CONFIG` |
 | **Modify** | `web/src/lib/types.ts` | Add `Folder` to `ValidSources` + `validAutoSyncSources` |
 | **Modify** | `web/src/lib/sources.ts` | Add folder source metadata |
@@ -636,7 +636,7 @@ Uses `get_document_ids_for_connector_credential_pair()` from `backend/om/db/docu
 
 #### Task 6: Backend — Surface Blocked Path Errors in Index Attempts
 
-**File**: `backend/om/connectors/folder/connector.py`
+**File**: `backend/om/datasource/folder/connector.py`
 
 Currently `_is_path_allowed()` silently returns False and `validate_connector_settings()` raises.
 But during `_walk_all_files()`, blocked paths may be silently skipped.
@@ -668,7 +668,7 @@ These warnings already flow into the indexing attempt error/log display in the a
 | **Create** | `web/src/app/admin/connector/[ccPairId]/InlineFolderManagement.tsx` | Folder path management component |
 | **Modify** | `web/src/app/admin/connector/[ccPairId]/page.tsx` | Wire in InlineFolderManagement + Prune button |
 | **Create** | `backend/om/server/documents/connector.py` (add endpoint) | `POST /admin/connector/folder/validate-paths` |
-| **Modify** | `backend/om/connectors/folder/connector.py` | Better warning logs for blocked/missing paths |
+| **Modify** | `backend/om/datasource/folder/connector.py` | Better warning logs for blocked/missing paths |
 | **Create** | `web/src/app/admin/connector/[ccPairId]/IndexedDocumentsList.tsx` | (Optional) Document browser |
 | **Create** | `backend/om/server/documents/cc_pair.py` (add endpoint) | (Optional) `GET /admin/cc-pair/{id}/documents` |
 

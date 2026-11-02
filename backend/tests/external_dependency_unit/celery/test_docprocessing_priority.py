@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 from om.background.indexing.run_docfetching import connector_document_extraction
 from om.configs.constants import DocumentSource
 from om.configs.constants import OmCeleryPriority
-from om.connectors.models import InputType
+from om.datasource.models import InputType
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import EmbeddingPrecision

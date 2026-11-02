@@ -5,14 +5,14 @@ https://confluence.atlassian.com/conf85/check-who-can-view-a-page-1283360557.htm
 
 from collections.abc import Generator
 
+from om.access.models import ElementExternalAccess
+from om.configs.constants import DocumentSource
+from om.datasource.confluence.connector import ConfluenceConnector
+from om.datasource.credentials_provider import OmDBCredentialsProvider
+from om.db.models import ConnectorCredentialPair
 from om.external_permissions.perm_sync_types import FetchAllDocumentsFunction
 from om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunction
 from om.external_permissions.utils import generic_doc_sync
-from om.access.models import ElementExternalAccess
-from om.configs.constants import DocumentSource
-from om.connectors.confluence.connector import ConfluenceConnector
-from om.connectors.credentials_provider import OmDBCredentialsProvider
-from om.db.models import ConnectorCredentialPair
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.utils.logger import setup_logger
 from shared_configs.contextvars import get_current_tenant_id

@@ -32,9 +32,9 @@ No migration, no model change, no UI change.
 ## 3. Regression scope
 | Area | Risk | How it's tested |
 |---|---|---|
-| Web connector and Highspot (Playwright) | B1: anything that needs the headed browser | Our launch sites use `headless=True` (`om/connectors/web/connector.py`, `om/connectors/highspot/utils.py`). Grep for `channel=`. Manual: index one web connector page |
+| Web connector and Highspot (Playwright) | B1: anything that needs the headed browser | Our launch sites use `headless=True` (`om/datasource/web/connector.py`, `om/datasource/highspot/utils.py`). Grep for `channel=`. Manual: index one web connector page |
 | All backend processes | B2: a jemalloc load failure | `docker logs` for `ld.so` errors; compare `docker stats` RSS before and after |
-| Imports of `mypy_boto3_s3` | B5: ImportError at runtime | `om/file_store/file_store.py`, `om/connectors/blob/connector.py`, `om/server/features/build/indexing/persistent_document_writer.py`, `om/server/features/build/s3/s3_client.py`. Move each under `TYPE_CHECKING` and use string annotations; then the unit suite plus file upload and a blob connector |
+| Imports of `mypy_boto3_s3` | B5: ImportError at runtime | `om/file_store/file_store.py`, `om/datasource/blob/connector.py`, `om/server/features/build/indexing/persistent_document_writer.py`, `om/server/features/build/s3/s3_client.py`. Move each under `TYPE_CHECKING` and use string annotations; then the unit suite plus file upload and a blob connector |
 | Scripts that use `psql`/`curl` inside the container | B6 | Grep `backend/scripts`, `supervisord.conf` and the entrypoints (none found 2026-10-30). Compose healthchecks use `python -c` |
 | Dependency set | B3/B4/B7 | `pip check` in the image; full unit suite; `python -c "import om.main"` |
 | Startup ordering | B8 | `docker compose up -d --wait` on a **scratch project**; nginx starts only after the api is healthy |

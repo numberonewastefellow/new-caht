@@ -12,7 +12,7 @@ from functools import partial
 from om.configs.app_configs import TABLE_FULL_ROWS_MAX_CHUNKS
 from om.configs.app_configs import TABLE_MAX_CHUNKS_PER_FILE
 from om.configs.app_configs import TABLE_VALUE_CHUNKS_PER_SHEET
-from om.connectors.models import TableSection
+from om.datasource.models import TableSection
 from om.indexing.table_chunking.chunk_builder import build_table_file_chunks
 from om.indexing.table_chunking.sheet_summary import SheetRows
 from om.natural_language_processing.utils import BaseTokenizer

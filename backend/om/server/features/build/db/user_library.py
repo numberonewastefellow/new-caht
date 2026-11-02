@@ -14,7 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from om.configs.constants import DocumentSource
-from om.connectors.models import InputType
+from om.datasource.models import InputType
 from om.db.connector import create_connector
 from om.db.connector import fetch_connectors
 from om.db.connector_credential_pair import add_credential_to_connector

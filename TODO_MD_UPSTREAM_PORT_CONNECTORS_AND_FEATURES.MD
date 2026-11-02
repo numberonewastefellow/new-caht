@@ -148,27 +148,27 @@ Reference example: `TODO_MD_PORT_PDFIUM.MD`.
 
 **Fork state:**
 - 53 connectors are shared.
-- Ours only: `om/connectors/folder/`, `om/connectors/requesttracker/` and the `EventConnector` interface.
+- Ours only: `om/datasource/folder/`, `om/datasource/requesttracker/` and the `EventConnector` interface.
 - Federated search (Slack only) is identical in both.
 
 ### 2.1 Shared connector infrastructure (prerequisite)
 | Pri | Feature | Source | Target |
 |---|---|---|---|
-| [ ] P1 | Section model upgrade (TabularSection, SectionType) + Resolver (re-fetch failed docs by id) | `UP:om/connectors/models.py`, `interfaces.py`, `exceptions.py`, `factory.py`, `registry.py` | same files in `backend/om/connectors/` |
-| [ ] P1 | Cross-connector utilities | `UP:om/connectors/cross_connector_utils/` (`download.py`, `grouped_row_store.py`, `section_utils.py`, `server_wait.py`, `tabular_section_utils.py`) | `backend/om/connectors/cross_connector_utils/` |
-| [ ] P1 | Shared Microsoft Graph / Entra / SharePoint REST layer (needed by onedrive, outlook, teams, sharepoint) | `UP:om/connectors/microsoft_utils/` | `backend/om/connectors/microsoft_utils/` (new) |
-| [ ] P1 | Credential families (one Atlassian / Google / Microsoft credential shared across connectors) | `UP:om/connectors/credential_families.py`, `credential_family_base.py`, `atlassian_credential.py`, `google_credential.py`, `microsoft_credential.py` | `backend/om/connectors/` |
+| [ ] P1 | Section model upgrade (TabularSection, SectionType) + Resolver (re-fetch failed docs by id) | `UP:om/connectors/models.py`, `interfaces.py`, `exceptions.py`, `factory.py`, `registry.py` | same files in `backend/om/datasource/` |
+| [ ] P1 | Cross-connector utilities | `UP:om/connectors/cross_connector_utils/` (`download.py`, `grouped_row_store.py`, `section_utils.py`, `server_wait.py`, `tabular_section_utils.py`) | `backend/om/datasource/cross_connector_utils/` |
+| [ ] P1 | Shared Microsoft Graph / Entra / SharePoint REST layer (needed by onedrive, outlook, teams, sharepoint) | `UP:om/connectors/microsoft_utils/` | `backend/om/datasource/microsoft_utils/` (new) |
+| [ ] P1 | Credential families (one Atlassian / Google / Microsoft credential shared across connectors) | `UP:om/connectors/credential_families.py`, `credential_family_base.py`, `atlassian_credential.py`, `google_credential.py`, `microsoft_credential.py` | `backend/om/datasource/` |
 | [ ] P1 | Document `created_at` from connectors + UTC unification | connectors-wide | connectors-wide |
 | [ ] P2 | Capability checks: named checks, draft-credential runs, run history, indexing hold until checks pass | `UP:om/connectors/capability_checks/`, `UP:om/background/celery/tasks/capability_checks/`, `UP:om/server/documents/capability_check_runs.py`, `credential_capabilities.py`, `draft_credentials.py`, `UP:web/src/lib/connectors/checks/` | same paths in our tree |
 | [ ] P2 | Edit existing connectors (config diff, config hash, field policy, edit plans) | `UP:om/connectors/edit_plan/`, `config_diff.py`, `config_hash.py`, `connector_config.py`, `field_policy.py`, `UP:om/server/documents/connector_edit*.py`, `UP:web/src/lib/connectors/edit/` | same paths in our tree |
-| [ ] P3 | Source-operations gateway | `UP:om/connectors/source_operations.py`, `capabilities.py`, `pairing_access.py`, `planning_rule*.py` | `backend/om/connectors/` |
+| [ ] P3 | Source-operations gateway | `UP:om/connectors/source_operations.py`, `capabilities.py`, `pairing_access.py`, `planning_rule*.py` | `backend/om/datasource/` |
 | [ ] P3 | Admin ops: targeted re-index, index monitoring, throughput, runs feed, hierarchy breakdown, file staging | `UP:om/server/documents/` (`targeted_reindex.py`, `index_monitoring.py`, `cc_pair_throughput.py`, `cc_pair_runs_feed.py`, `hierarchy_breakdown.py`, `file_connector_staging.py`) | `backend/om/server/documents/` |
 | [ ] P3 | OAuth with PKCE for connectors | `UP:om/oauth/` | `backend/om/server/oauth/` (our existing OAuth folder) |
 | [ ] P3 | Celery tasks: `cc_pair_ids_backfill`, `index_reclaim`, `connector_edit` | `UP:om/background/celery/tasks/` | `backend/om/background/celery/tasks/` |
 
 ### 2.2 New connectors (upstream only)
 Each new connector needs:
-- `backend/om/connectors/<x>/`
+- `backend/om/datasource/<x>/`
 - a `DocumentSource` entry in `backend/om/configs/constants.py`
 - a `ValidSources` entry in `web/src/lib/types.ts`
 - UI config in `web/src/lib/connectors/connectors.tsx`
@@ -187,7 +187,7 @@ Each new connector needs:
 | [ ] P3 | braintrust | Braintrust eval platform | `UP:om/connectors/braintrust/` | 3 / 0.6k | — |
 
 ### 2.3 Upgrades to connectors we already have (largest drift first)
-Targets are our existing `backend/om/connectors/<x>/`. "UP vs OURS" counts lines of `.py` code.
+Targets are our existing `backend/om/datasource/<x>/`. "UP vs OURS" counts lines of `.py` code.
 
 | Pri | Connector | UP vs OURS | Main upstream gains |
 |---|---|---|---|

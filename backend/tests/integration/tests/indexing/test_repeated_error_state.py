@@ -7,8 +7,8 @@ from om.background.celery.tasks.docprocessing.utils import (
     NUM_REPEAT_ERRORS_BEFORE_REPEATED_ERROR_STATE,
 )
 from om.configs.constants import DocumentSource
-from om.connectors.mock_connector.connector import MockConnectorCheckpoint
-from om.connectors.models import InputType
+from om.datasource.mock_connector.connector import MockConnectorCheckpoint
+from om.datasource.models import InputType
 from om.db.connector_credential_pair import get_connector_credential_pair_from_id
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.enums import IndexingStatus

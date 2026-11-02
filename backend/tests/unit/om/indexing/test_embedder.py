@@ -5,8 +5,8 @@ from unittest.mock import patch
 import pytest
 
 from om.configs.constants import DocumentSource
-from om.connectors.models import Document
-from om.connectors.models import TextSection
+from om.datasource.models import Document
+from om.datasource.models import TextSection
 from om.indexing.embedder import DefaultIndexingEmbedder
 from om.indexing.models import ChunkEmbedding
 from om.indexing.models import DocAwareChunk

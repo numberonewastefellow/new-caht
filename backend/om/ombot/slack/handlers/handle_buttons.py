@@ -8,14 +8,14 @@ from slack_sdk.models.views import View
 from slack_sdk.socket_mode.request import SocketModeRequest
 from slack_sdk.webhook import WebhookClient
 
-from om.chat.models import ChatBasicResponse
 from om.chat.message_handler import remove_answer_citations
+from om.chat.models import ChatBasicResponse
 from om.configs.constants import MessageType
 from om.configs.constants import SearchFeedbackType
 from om.configs.ombot_configs import OM_BOT_FOLLOWUP_EMOJI
-from om.connectors.slack.utils import expert_info_from_slack_id
 from om.context.search.models import SavedSearchDoc
 from om.context.search.models import SearchDoc
+from om.datasource.slack.utils import expert_info_from_slack_id
 from om.db.chat import get_chat_message
 from om.db.chat import translate_db_message_to_chat_message_detail
 from om.db.engine.sql_engine import get_session_with_current_tenant

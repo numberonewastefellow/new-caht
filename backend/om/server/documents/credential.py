@@ -13,7 +13,7 @@ from om.auth.users import current_admin_user
 from om.auth.users import current_curator_or_admin_user
 from om.auth.users import current_user
 from om.configs.constants import PUBLIC_API_TAGS
-from om.connectors.factory import validate_ccpair_for_user
+from om.datasource.factory import validate_ccpair_for_user
 from om.db.credentials import alter_credential
 from om.db.credentials import cleanup_gmail_credentials
 from om.db.credentials import create_credential

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from om.connectors.models import DocumentBase
+from om.datasource.models import DocumentBase
 
 
 class IngestionDocument(BaseModel):

@@ -51,9 +51,9 @@ from om.configs.constants import OmCeleryTask
 from om.configs.constants import OmRedisConstants
 from om.configs.constants import OmRedisLocks
 from om.configs.constants import OmRedisSignals
-from om.connectors.models import ConnectorFailure
-from om.connectors.models import Document
-from om.connectors.models import IndexAttemptMetadata
+from om.datasource.models import ConnectorFailure
+from om.datasource.models import Document
+from om.datasource.models import IndexAttemptMetadata
 from om.db.connector import mark_ccpair_with_indexing_trigger
 from om.db.connector_credential_pair import (
     fetch_indexable_standard_connector_credential_pair_ids,

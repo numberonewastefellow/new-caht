@@ -23,15 +23,15 @@ from sqlalchemy.orm import Session
 
 from om.background.celery.apps.app_base import task_logger
 from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
-from om.configs.constants import OM_REDIS_FUNCTION_LOCK_PREFIX
 from om.configs.constants import DocumentSource
+from om.configs.constants import OM_REDIS_FUNCTION_LOCK_PREFIX
 from om.configs.constants import OmCeleryPriority
 from om.configs.constants import OmCeleryQueues
 from om.configs.constants import OmCeleryTask
 from om.configs.constants import OmRedisLocks
-from om.connectors.factory import instantiate_connector
-from om.connectors.interfaces import HierarchyConnector
-from om.connectors.models import HierarchyNode as PydanticHierarchyNode
+from om.datasource.factory import instantiate_connector
+from om.datasource.interfaces import HierarchyConnector
+from om.datasource.models import HierarchyNode as PydanticHierarchyNode
 from om.db.connector import mark_cc_pair_as_hierarchy_fetched
 from om.db.connector_credential_pair import (
     fetch_indexable_standard_connector_credential_pair_ids,
