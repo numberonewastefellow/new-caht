@@ -10,9 +10,9 @@ from sqlalchemy.orm import Session
 from om.configs.constants import FederatedConnectorSource
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.models import DocumentSet
-from om.db.models import FederatedConnector
-from om.db.models import FederatedConnector__DocumentSet
-from om.db.models import FederatedConnectorOAuthToken
+from om.db.models import FederatedDatasource
+from om.db.models import FederatedDatasource__DocumentSet
+from om.db.models import FederatedDatasourceOAuthToken
 from om.federated_connectors.factory import get_federated_connector
 from om.utils.logger import setup_logger
 
@@ -21,26 +21,26 @@ logger = setup_logger()
 
 def fetch_federated_connector_by_id(
     federated_connector_id: int, db_session: Session
-) -> FederatedConnector | None:
+) -> FederatedDatasource | None:
     """Fetch a federated connector by its ID."""
-    stmt = select(FederatedConnector).where(
-        FederatedConnector.id == federated_connector_id
+    stmt = select(FederatedDatasource).where(
+        FederatedDatasource.id == federated_connector_id
     )
     result = db_session.execute(stmt)
     return result.scalar_one_or_none()
 
 
-def fetch_all_federated_connectors(db_session: Session) -> list[FederatedConnector]:
+def fetch_all_federated_connectors(db_session: Session) -> list[FederatedDatasource]:
     """Fetch all federated connectors with their OAuth tokens and document sets."""
-    stmt = select(FederatedConnector).options(
-        selectinload(FederatedConnector.oauth_tokens),
-        selectinload(FederatedConnector.document_sets),
+    stmt = select(FederatedDatasource).options(
+        selectinload(FederatedDatasource.oauth_tokens),
+        selectinload(FederatedDatasource.document_sets),
     )
     result = db_session.execute(stmt)
     return list(result.scalars().all())
 
 
-def fetch_all_federated_connectors_parallel() -> list[FederatedConnector]:
+def fetch_all_federated_connectors_parallel() -> list[FederatedDatasource]:
     with get_session_with_current_tenant() as db_session:
         return fetch_all_federated_connectors(db_session)
 
@@ -64,7 +64,7 @@ def create_federated_connector(
     source: FederatedConnectorSource,
     credentials: dict[str, Any],
     config: dict[str, Any] | None = None,
-) -> FederatedConnector:
+) -> FederatedDatasource:
     """Create a new federated connector with credential and config validation."""
     # Validate credentials before creating
     if not validate_federated_connector_credentials(source, credentials):
@@ -84,7 +84,7 @@ def create_federated_connector(
         except Exception as e:
             raise ValueError(f"Config validation failed for {source}: {str(e)}")
 
-    federated_connector = FederatedConnector(
+    federated_connector = FederatedDatasource(
         source=source,
         credentials=credentials,
         config=config or {},
@@ -100,12 +100,12 @@ def update_federated_connector_oauth_token(
     user_id: UUID,
     token: str,
     expires_at: datetime | None = None,
-) -> FederatedConnectorOAuthToken:
+) -> FederatedDatasourceOAuthToken:
     """Update or create OAuth token for a federated connector and user."""
     # First, try to find existing token for this user and connector
-    stmt = select(FederatedConnectorOAuthToken).where(
-        FederatedConnectorOAuthToken.federated_connector_id == federated_connector_id,
-        FederatedConnectorOAuthToken.user_id == user_id,
+    stmt = select(FederatedDatasourceOAuthToken).where(
+        FederatedDatasourceOAuthToken.federated_datasource_id == federated_connector_id,
+        FederatedDatasourceOAuthToken.user_id == user_id,
     )
     existing_token = db_session.execute(stmt).scalar_one_or_none()
 
@@ -117,8 +117,8 @@ def update_federated_connector_oauth_token(
         return existing_token
     else:
         # Create new token
-        oauth_token = FederatedConnectorOAuthToken(
-            federated_connector_id=federated_connector_id,
+        oauth_token = FederatedDatasourceOAuthToken(
+            federated_datasource_id=federated_connector_id,
             user_id=user_id,
             token=token,
             expires_at=expires_at,
@@ -132,11 +132,11 @@ def get_federated_connector_oauth_token(
     db_session: Session,
     federated_connector_id: int,
     user_id: UUID,
-) -> FederatedConnectorOAuthToken | None:
+) -> FederatedDatasourceOAuthToken | None:
     """Get OAuth token for a federated connector and user."""
-    stmt = select(FederatedConnectorOAuthToken).where(
-        FederatedConnectorOAuthToken.federated_connector_id == federated_connector_id,
-        FederatedConnectorOAuthToken.user_id == user_id,
+    stmt = select(FederatedDatasourceOAuthToken).where(
+        FederatedDatasourceOAuthToken.federated_datasource_id == federated_connector_id,
+        FederatedDatasourceOAuthToken.user_id == user_id,
     )
     result = db_session.execute(stmt)
     return result.scalar_one_or_none()
@@ -145,15 +145,15 @@ def get_federated_connector_oauth_token(
 def list_federated_connector_oauth_tokens(
     db_session: Session,
     user_id: UUID,
-) -> list[FederatedConnectorOAuthToken]:
+) -> list[FederatedDatasourceOAuthToken]:
     """List all OAuth tokens for all federated connectors."""
     stmt = (
-        select(FederatedConnectorOAuthToken)
+        select(FederatedDatasourceOAuthToken)
         .where(
-            FederatedConnectorOAuthToken.user_id == user_id,
+            FederatedDatasourceOAuthToken.user_id == user_id,
         )
         .options(
-            joinedload(FederatedConnectorOAuthToken.federated_connector),
+            joinedload(FederatedDatasourceOAuthToken.federated_datasource),
         )
     )
     result = db_session.scalars(stmt)
@@ -165,10 +165,10 @@ def create_federated_connector_document_set_mapping(
     federated_connector_id: int,
     document_set_id: int,
     entities: dict[str, Any],
-) -> FederatedConnector__DocumentSet:
+) -> FederatedDatasource__DocumentSet:
     """Create a mapping between federated connector and document set with entities."""
-    mapping = FederatedConnector__DocumentSet(
-        federated_connector_id=federated_connector_id,
+    mapping = FederatedDatasource__DocumentSet(
+        federated_datasource_id=federated_connector_id,
         document_set_id=document_set_id,
         entities=entities,
     )
@@ -182,12 +182,12 @@ def update_federated_connector_document_set_entities(
     federated_connector_id: int,
     document_set_id: int,
     entities: dict[str, Any],
-) -> FederatedConnector__DocumentSet | None:
+) -> FederatedDatasource__DocumentSet | None:
     """Update entities for a federated connector document set mapping."""
-    stmt = select(FederatedConnector__DocumentSet).where(
-        FederatedConnector__DocumentSet.federated_connector_id
+    stmt = select(FederatedDatasource__DocumentSet).where(
+        FederatedDatasource__DocumentSet.federated_datasource_id
         == federated_connector_id,
-        FederatedConnector__DocumentSet.document_set_id == document_set_id,
+        FederatedDatasource__DocumentSet.document_set_id == document_set_id,
     )
     mapping = db_session.execute(stmt).scalar_one_or_none()
 
@@ -202,10 +202,10 @@ def update_federated_connector_document_set_entities(
 def get_federated_connector_document_set_mappings(
     db_session: Session,
     federated_connector_id: int,
-) -> list[FederatedConnector__DocumentSet]:
+) -> list[FederatedDatasource__DocumentSet]:
     """Get all document set mappings for a federated connector."""
-    stmt = select(FederatedConnector__DocumentSet).where(
-        FederatedConnector__DocumentSet.federated_connector_id == federated_connector_id
+    stmt = select(FederatedDatasource__DocumentSet).where(
+        FederatedDatasource__DocumentSet.federated_datasource_id == federated_connector_id
     )
     result = db_session.execute(stmt)
     return list(result.scalars().all())
@@ -217,10 +217,10 @@ def delete_federated_connector_document_set_mapping(
     document_set_id: int,
 ) -> bool:
     """Delete a federated connector document set mapping."""
-    stmt = select(FederatedConnector__DocumentSet).where(
-        FederatedConnector__DocumentSet.federated_connector_id
+    stmt = select(FederatedDatasource__DocumentSet).where(
+        FederatedDatasource__DocumentSet.federated_datasource_id
         == federated_connector_id,
-        FederatedConnector__DocumentSet.document_set_id == document_set_id,
+        FederatedDatasource__DocumentSet.document_set_id == document_set_id,
     )
     mapping = db_session.execute(stmt).scalar_one_or_none()
 
@@ -235,15 +235,15 @@ def delete_federated_connector_document_set_mapping(
 def get_federated_connector_document_set_mappings_by_document_set_names(
     db_session: Session,
     document_set_names: list[str],
-) -> list[FederatedConnector__DocumentSet]:
+) -> list[FederatedDatasource__DocumentSet]:
     """Get all document set mappings for a federated connector by document set names."""
     stmt = (
-        select(FederatedConnector__DocumentSet)
+        select(FederatedDatasource__DocumentSet)
         .join(
             DocumentSet,
-            FederatedConnector__DocumentSet.document_set_id == DocumentSet.id,
+            FederatedDatasource__DocumentSet.document_set_id == DocumentSet.id,
         )
-        .options(joinedload(FederatedConnector__DocumentSet.federated_connector))
+        .options(joinedload(FederatedDatasource__DocumentSet.federated_datasource))
         .where(DocumentSet.name.in_(document_set_names))
     )
     result = db_session.scalars(stmt)
@@ -256,7 +256,7 @@ def update_federated_connector(
     federated_connector_id: int,
     credentials: dict[str, Any] | None = None,
     config: dict[str, Any] | None = None,
-) -> FederatedConnector | None:
+) -> FederatedDatasource | None:
     """Update a federated connector with credential and config validation."""
     federated_connector = fetch_federated_connector_by_id(
         federated_connector_id, db_session

@@ -19,9 +19,9 @@ from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import PermissionSyncStatus
 from om.db.enums import ProcessingMode
-from om.db.models import Connector
-from om.db.models import ConnectorCredentialPair
 from om.db.models import Credential
+from om.db.models import Datasource
+from om.db.models import DatasourceCredentialPair
 from om.db.models import DocPermissionSyncAttempt
 from om.db.models import Document as DbDocument
 from om.db.models import IndexAttempt
@@ -93,14 +93,14 @@ class ConnectorSnapshot(ConnectorBase):
 
     @classmethod
     def from_connector_db_model(
-        cls, connector: Connector, credential_ids: list[int] | None = None
+        cls, connector: Datasource, credential_ids: list[int] | None = None
     ) -> "ConnectorSnapshot":
         return ConnectorSnapshot(
             id=connector.id,
             name=connector.name,
             source=connector.source,
             input_type=connector.input_type,
-            connector_specific_config=connector.connector_specific_config,
+            connector_specific_config=connector.datasource_specific_config,
             refresh_freq=connector.refresh_freq,
             prune_freq=connector.prune_freq,
             credential_ids=(
@@ -283,7 +283,7 @@ class CCPairFullInfo(BaseModel):
 
     @classmethod
     def _get_last_full_permission_sync(
-        cls, cc_pair_model: ConnectorCredentialPair
+        cls, cc_pair_model: DatasourceCredentialPair
     ) -> datetime | None:
         from om.external_permissions.sync_params import source_requires_doc_sync as _impl_source_requires_doc_sync
         from om.external_permissions.sync_params import (
@@ -293,10 +293,10 @@ class CCPairFullInfo(BaseModel):
         check_if_source_requires_doc_sync = _impl_source_requires_doc_sync
 
         needs_group_sync = check_if_source_requires_external_group_sync(
-            cc_pair_model.connector.source
+            cc_pair_model.datasource.source
         )
         needs_doc_sync = check_if_source_requires_doc_sync(
-            cc_pair_model.connector.source
+            cc_pair_model.datasource.source
         )
 
         last_group_sync = (
@@ -318,7 +318,7 @@ class CCPairFullInfo(BaseModel):
     @classmethod
     def from_models(
         cls,
-        cc_pair_model: ConnectorCredentialPair,
+        cc_pair_model: DatasourceCredentialPair,
         latest_deletion_attempt: DeletionAttemptSnapshot | None,
         number_of_index_attempts: int,
         last_index_attempt: IndexAttempt | None,
@@ -348,7 +348,7 @@ class CCPairFullInfo(BaseModel):
 
         overall_indexing_speed = num_docs_indexed / (
             (
-                datetime.now(tz=timezone.utc) - cc_pair_model.connector.time_created
+                datetime.now(tz=timezone.utc) - cc_pair_model.datasource.time_created
             ).total_seconds()
             / 60
         )
@@ -360,7 +360,7 @@ class CCPairFullInfo(BaseModel):
             in_repeated_error_state=cc_pair_model.in_repeated_error_state,
             num_docs_indexed=num_docs_indexed,
             connector=ConnectorSnapshot.from_connector_db_model(
-                cc_pair_model.connector
+                cc_pair_model.datasource
             ),
             credential=CredentialSnapshot.from_credential_db_model(
                 cc_pair_model.credential

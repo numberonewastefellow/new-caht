@@ -58,7 +58,7 @@ from om.db.enums import SyncType
 from om.db.hierarchy import (
     update_hierarchy_node_permissions as db_update_hierarchy_node_permissions,
 )
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.permission_sync_attempt import complete_doc_permission_sync_attempt
 from om.db.permission_sync_attempt import create_doc_permission_sync_attempt
 from om.db.permission_sync_attempt import mark_doc_permission_sync_attempt_failed
@@ -131,7 +131,7 @@ def _fail_doc_permission_sync_attempt(attempt_id: int, error_msg: str) -> None:
         )
 
 
-def _is_external_doc_permissions_sync_due(cc_pair: ConnectorCredentialPair) -> bool:
+def _is_external_doc_permissions_sync_due(cc_pair: DatasourceCredentialPair) -> bool:
     """Returns boolean indicating if external doc permissions sync is due."""
 
     if cc_pair.access_type != AccessType.SYNC:
@@ -141,13 +141,13 @@ def _is_external_doc_permissions_sync_due(cc_pair: ConnectorCredentialPair) -> b
     if cc_pair.status != ConnectorCredentialPairStatus.ACTIVE:
         return False
 
-    sync_config = get_source_perm_sync_config(cc_pair.connector.source)
+    sync_config = get_source_perm_sync_config(cc_pair.datasource.source)
     if sync_config is None:
-        logger.error(f"No sync config found for {cc_pair.connector.source}")
+        logger.error(f"No sync config found for {cc_pair.datasource.source}")
         return False
 
     if sync_config.doc_sync_config is None:
-        logger.error(f"No doc sync config found for {cc_pair.connector.source}")
+        logger.error(f"No doc sync config found for {cc_pair.datasource.source}")
         return False
 
     # if indexing also does perm sync, don't start running doc_sync until at
@@ -485,7 +485,7 @@ def connector_permission_sync_generator_task(
 
             try:
                 created = validate_ccpair_for_user(
-                    cc_pair.connector.id,
+                    cc_pair.datasource.id,
                     cc_pair.credential.id,
                     cc_pair.access_type,
                     db_session,
@@ -502,7 +502,7 @@ def connector_permission_sync_generator_task(
                 # TODO: add some notification to the admins here
                 raise
 
-            source_type = cc_pair.connector.source
+            source_type = cc_pair.datasource.source
             sync_config = get_source_perm_sync_config(source_type)
             if sync_config is None:
                 error_msg = f"No sync config found for {source_type}"
@@ -549,7 +549,7 @@ def connector_permission_sync_generator_task(
             ) -> list[DocumentRow]:
                 result = get_documents_for_connector_credential_pair_limited_columns(
                     db_session=db_session,
-                    connector_id=cc_pair.connector.id,
+                    connector_id=cc_pair.datasource.id,
                     credential_id=cc_pair.credential.id,
                     sort_order=sort_order,
                 )
@@ -558,7 +558,7 @@ def connector_permission_sync_generator_task(
             def fetch_all_existing_docs_ids_fn() -> list[str]:
                 result = get_document_ids_for_connector_credential_pair(
                     db_session=db_session,
-                    connector_id=cc_pair.connector.id,
+                    connector_id=cc_pair.datasource.id,
                     credential_id=cc_pair.credential.id,
                 )
                 return result
@@ -589,7 +589,7 @@ def connector_permission_sync_generator_task(
                     lock=lock,
                     new_permissions=[doc_external_access],
                     source_string=source_type,
-                    connector_id=cc_pair.connector.id,
+                    connector_id=cc_pair.datasource.id,
                     credential_id=cc_pair.credential.id,
                     task_logger=task_logger,
                 )

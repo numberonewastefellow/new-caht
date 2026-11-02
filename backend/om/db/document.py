@@ -37,11 +37,11 @@ from om.db.entities import delete_from_kg_entities_extraction_staging__no_commit
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.feedback import delete_document_feedback_for_documents__no_commit
-from om.db.models import Connector
-from om.db.models import ConnectorCredentialPair
 from om.db.models import Credential
+from om.db.models import Datasource
+from om.db.models import DatasourceCredentialPair
 from om.db.models import Document as DbDocument
-from om.db.models import DocumentByConnectorCredentialPair
+from om.db.models import DocumentByDatasourceCredentialPair
 from om.db.models import KGEntity
 from om.db.models import KGRelationship
 from om.db.models import User
@@ -112,10 +112,10 @@ def construct_document_id_select_by_needs_sync() -> Select:
 def construct_document_id_select_for_connector_credential_pair(
     connector_id: int, credential_id: int | None = None
 ) -> Select:
-    initial_doc_ids_stmt = select(DocumentByConnectorCredentialPair.id).where(
+    initial_doc_ids_stmt = select(DocumentByDatasourceCredentialPair.id).where(
         and_(
-            DocumentByConnectorCredentialPair.connector_id == connector_id,
-            DocumentByConnectorCredentialPair.credential_id == credential_id,
+            DocumentByDatasourceCredentialPair.datasource_id == connector_id,
+            DocumentByDatasourceCredentialPair.credential_id == credential_id,
         )
     )
     stmt = (
@@ -127,10 +127,10 @@ def construct_document_id_select_for_connector_credential_pair(
 def construct_document_select_for_connector_credential_pair(
     connector_id: int, credential_id: int | None = None
 ) -> Select:
-    initial_doc_ids_stmt = select(DocumentByConnectorCredentialPair.id).where(
+    initial_doc_ids_stmt = select(DocumentByDatasourceCredentialPair.id).where(
         and_(
-            DocumentByConnectorCredentialPair.connector_id == connector_id,
-            DocumentByConnectorCredentialPair.credential_id == credential_id,
+            DocumentByDatasourceCredentialPair.datasource_id == connector_id,
+            DocumentByDatasourceCredentialPair.credential_id == credential_id,
         )
     )
     stmt = select(DbDocument).where(DbDocument.id.in_(initial_doc_ids_stmt)).distinct()
@@ -148,7 +148,7 @@ def get_documents_for_cc_pair(
     if not cc_pair:
         raise ValueError(f"No CC pair found with ID: {cc_pair_id}")
     stmt = construct_document_select_for_connector_credential_pair(
-        connector_id=cc_pair.connector_id, credential_id=cc_pair.credential_id
+        connector_id=cc_pair.datasource_id, credential_id=cc_pair.credential_id
     )
     return list(db_session.scalars(stmt).all())
 
@@ -156,10 +156,10 @@ def get_documents_for_cc_pair(
 def get_document_ids_for_connector_credential_pair(
     db_session: Session, connector_id: int, credential_id: int
 ) -> list[str]:
-    doc_ids_stmt = select(DocumentByConnectorCredentialPair.id).where(
+    doc_ids_stmt = select(DocumentByDatasourceCredentialPair.id).where(
         and_(
-            DocumentByConnectorCredentialPair.connector_id == connector_id,
-            DocumentByConnectorCredentialPair.credential_id == credential_id,
+            DocumentByDatasourceCredentialPair.datasource_id == connector_id,
+            DocumentByDatasourceCredentialPair.credential_id == credential_id,
         )
     )
     return list(db_session.execute(doc_ids_stmt).scalars().all())
@@ -172,14 +172,14 @@ def get_documents_for_connector_credential_pair_limited_columns(
     sort_order: SortOrder | None = None,
 ) -> Sequence[DocumentRow]:
 
-    doc_ids_subquery = select(DocumentByConnectorCredentialPair.id).where(
+    doc_ids_subquery = select(DocumentByDatasourceCredentialPair.id).where(
         and_(
-            DocumentByConnectorCredentialPair.connector_id == connector_id,
-            DocumentByConnectorCredentialPair.credential_id == credential_id,
+            DocumentByDatasourceCredentialPair.datasource_id == connector_id,
+            DocumentByDatasourceCredentialPair.credential_id == credential_id,
         )
     )
     doc_ids_subquery = doc_ids_subquery.join(
-        DbDocument, DocumentByConnectorCredentialPair.id == DbDocument.id
+        DbDocument, DocumentByDatasourceCredentialPair.id == DbDocument.id
     )
 
     stmt = select(
@@ -209,10 +209,10 @@ def get_documents_for_connector_credential_pair_limited_columns(
 def get_documents_for_connector_credential_pair(
     db_session: Session, connector_id: int, credential_id: int, limit: int | None = None
 ) -> Sequence[DbDocument]:
-    initial_doc_ids_stmt = select(DocumentByConnectorCredentialPair.id).where(
+    initial_doc_ids_stmt = select(DocumentByDatasourceCredentialPair.id).where(
         and_(
-            DocumentByConnectorCredentialPair.connector_id == connector_id,
-            DocumentByConnectorCredentialPair.credential_id == credential_id,
+            DocumentByDatasourceCredentialPair.datasource_id == connector_id,
+            DocumentByDatasourceCredentialPair.credential_id == credential_id,
         )
     )
     stmt = select(DbDocument).where(DbDocument.id.in_(initial_doc_ids_stmt)).distinct()
@@ -249,26 +249,26 @@ def get_documents_by_source(
     stmt = (
         select(DbDocument)
         .join(
-            DocumentByConnectorCredentialPair,
-            DbDocument.id == DocumentByConnectorCredentialPair.id,
+            DocumentByDatasourceCredentialPair,
+            DbDocument.id == DocumentByDatasourceCredentialPair.id,
         )
         .join(
-            ConnectorCredentialPair,
+            DatasourceCredentialPair,
             and_(
-                DocumentByConnectorCredentialPair.connector_id
-                == ConnectorCredentialPair.connector_id,
-                DocumentByConnectorCredentialPair.credential_id
-                == ConnectorCredentialPair.credential_id,
+                DocumentByDatasourceCredentialPair.datasource_id
+                == DatasourceCredentialPair.datasource_id,
+                DocumentByDatasourceCredentialPair.credential_id
+                == DatasourceCredentialPair.credential_id,
             ),
         )
         .join(
-            Connector,
-            ConnectorCredentialPair.connector_id == Connector.id,
+            Datasource,
+            DatasourceCredentialPair.datasource_id == Datasource.id,
         )
-        .where(Connector.source == source)
+        .where(Datasource.source == source)
     )
     if creator_id is not None:
-        stmt = stmt.where(ConnectorCredentialPair.creator_id == creator_id)
+        stmt = stmt.where(DatasourceCredentialPair.creator_id == creator_id)
     stmt = stmt.distinct()
     documents = db_session.execute(stmt).scalars().all()
     return list(documents)
@@ -496,11 +496,11 @@ def get_document_connector_counts(
 ) -> Sequence[tuple[str, int]]:
     stmt = (
         select(
-            DocumentByConnectorCredentialPair.id,
+            DocumentByDatasourceCredentialPair.id,
             func.count(),
         )
-        .where(DocumentByConnectorCredentialPair.id.in_(document_ids))
-        .group_by(DocumentByConnectorCredentialPair.id)
+        .where(DocumentByDatasourceCredentialPair.id.in_(document_ids))
+        .group_by(DocumentByDatasourceCredentialPair.id)
     )
     return db_session.execute(stmt).all()  # type: ignore
 
@@ -525,22 +525,22 @@ def get_document_counts_for_cc_pairs(
 
         stmt = (
             select(
-                DocumentByConnectorCredentialPair.connector_id,
-                DocumentByConnectorCredentialPair.credential_id,
+                DocumentByDatasourceCredentialPair.datasource_id,
+                DocumentByDatasourceCredentialPair.credential_id,
                 func.count(),
             )
             .where(
                 and_(
                     tuple_(
-                        DocumentByConnectorCredentialPair.connector_id,
-                        DocumentByConnectorCredentialPair.credential_id,
+                        DocumentByDatasourceCredentialPair.datasource_id,
+                        DocumentByDatasourceCredentialPair.credential_id,
                     ).in_(batch),
-                    DocumentByConnectorCredentialPair.has_been_indexed.is_(True),
+                    DocumentByDatasourceCredentialPair.has_been_indexed.is_(True),
                 )
             )
             .group_by(
-                DocumentByConnectorCredentialPair.connector_id,
-                DocumentByConnectorCredentialPair.credential_id,
+                DocumentByDatasourceCredentialPair.datasource_id,
+                DocumentByDatasourceCredentialPair.credential_id,
             )
         )
 
@@ -564,14 +564,14 @@ def get_document_counts_for_all_cc_pairs(
     """
     stmt = (
         select(
-            DocumentByConnectorCredentialPair.connector_id,
-            DocumentByConnectorCredentialPair.credential_id,
+            DocumentByDatasourceCredentialPair.datasource_id,
+            DocumentByDatasourceCredentialPair.credential_id,
             func.count(),
         )
-        .where(DocumentByConnectorCredentialPair.has_been_indexed.is_(True))
+        .where(DocumentByDatasourceCredentialPair.has_been_indexed.is_(True))
         .group_by(
-            DocumentByConnectorCredentialPair.connector_id,
-            DocumentByConnectorCredentialPair.credential_id,
+            DocumentByDatasourceCredentialPair.datasource_id,
+            DocumentByDatasourceCredentialPair.credential_id,
         )
     )
     return db_session.execute(stmt).all()  # type: ignore
@@ -612,38 +612,38 @@ def get_access_info_for_documents(
       automatic permission sync step)
     """
     stmt = select(
-        DocumentByConnectorCredentialPair.id,
+        DocumentByDatasourceCredentialPair.id,
         func.array_agg(func.coalesce(User.email, null())).label("user_emails"),
-        func.bool_or(ConnectorCredentialPair.access_type == AccessType.PUBLIC).label(
+        func.bool_or(DatasourceCredentialPair.access_type == AccessType.PUBLIC).label(
             "public_doc"
         ),
-    ).where(DocumentByConnectorCredentialPair.id.in_(document_ids))
+    ).where(DocumentByDatasourceCredentialPair.id.in_(document_ids))
 
     stmt = (
         stmt.join(
             Credential,
-            DocumentByConnectorCredentialPair.credential_id == Credential.id,
+            DocumentByDatasourceCredentialPair.credential_id == Credential.id,
         )
         .join(
-            ConnectorCredentialPair,
+            DatasourceCredentialPair,
             and_(
-                DocumentByConnectorCredentialPair.connector_id
-                == ConnectorCredentialPair.connector_id,
-                DocumentByConnectorCredentialPair.credential_id
-                == ConnectorCredentialPair.credential_id,
+                DocumentByDatasourceCredentialPair.datasource_id
+                == DatasourceCredentialPair.datasource_id,
+                DocumentByDatasourceCredentialPair.credential_id
+                == DatasourceCredentialPair.credential_id,
             ),
         )
         .outerjoin(
             User,
             and_(
                 Credential.user_id == User.id,
-                ConnectorCredentialPair.access_type != AccessType.SYNC,
+                DatasourceCredentialPair.access_type != AccessType.SYNC,
             ),
         )
         # don't include CC pairs that are being deleted
         # NOTE: CC pairs can never go from DELETING to any other state -> it's safe to ignore them
-        .where(ConnectorCredentialPair.status != ConnectorCredentialPairStatus.DELETING)
-        .group_by(DocumentByConnectorCredentialPair.id)
+        .where(DatasourceCredentialPair.status != ConnectorCredentialPairStatus.DELETING)
+        .group_by(DocumentByDatasourceCredentialPair.id)
     )
     return db_session.execute(stmt).all()  # type: ignore
 
@@ -750,12 +750,12 @@ def upsert_document_by_connector_credential_pair(
         logger.info("`document_ids` is empty. Skipping.")
         return
 
-    insert_stmt = insert(DocumentByConnectorCredentialPair).values(
+    insert_stmt = insert(DocumentByDatasourceCredentialPair).values(
         [
             model_to_dict(
-                DocumentByConnectorCredentialPair(
+                DocumentByDatasourceCredentialPair(
                     id=doc_id,
-                    connector_id=connector_id,
+                    datasource_id=connector_id,
                     credential_id=credential_id,
                     has_been_indexed=False,
                 )
@@ -779,12 +779,12 @@ def mark_document_as_indexed_for_cc_pair__no_commit(
 ) -> None:
     """Should be called only after a successful index operation for a batch."""
     db_session.execute(
-        update(DocumentByConnectorCredentialPair)
+        update(DocumentByDatasourceCredentialPair)
         .where(
             and_(
-                DocumentByConnectorCredentialPair.connector_id == connector_id,
-                DocumentByConnectorCredentialPair.credential_id == credential_id,
-                DocumentByConnectorCredentialPair.id.in_(document_ids),
+                DocumentByDatasourceCredentialPair.datasource_id == connector_id,
+                DocumentByDatasourceCredentialPair.credential_id == credential_id,
+                DocumentByDatasourceCredentialPair.id.in_(document_ids),
             )
         )
         .values(has_been_indexed=True)
@@ -885,15 +885,15 @@ def delete_documents_by_connector_credential_pair__no_commit(
     The implicit assumption is that the document itself still has other cc_pair
     references and needs to continue existing.
     """
-    stmt = delete(DocumentByConnectorCredentialPair).where(
-        DocumentByConnectorCredentialPair.id.in_(document_ids)
+    stmt = delete(DocumentByDatasourceCredentialPair).where(
+        DocumentByDatasourceCredentialPair.id.in_(document_ids)
     )
     if connector_credential_pair_identifier:
         stmt = stmt.where(
             and_(
-                DocumentByConnectorCredentialPair.connector_id
+                DocumentByDatasourceCredentialPair.datasource_id
                 == connector_credential_pair_identifier.connector_id,
-                DocumentByConnectorCredentialPair.credential_id
+                DocumentByDatasourceCredentialPair.credential_id
                 == connector_credential_pair_identifier.credential_id,
             )
         )
@@ -913,10 +913,10 @@ def delete_all_documents_by_connector_credential_pair__no_commit(
 
     NOTE: Does not commit the transaction, this must be done by the caller.
     """
-    stmt = delete(DocumentByConnectorCredentialPair).where(
+    stmt = delete(DocumentByDatasourceCredentialPair).where(
         and_(
-            DocumentByConnectorCredentialPair.connector_id == connector_id,
-            DocumentByConnectorCredentialPair.credential_id == credential_id,
+            DocumentByDatasourceCredentialPair.datasource_id == connector_id,
+            DocumentByDatasourceCredentialPair.credential_id == credential_id,
         )
     )
     db_session.execute(stmt)
@@ -988,10 +988,10 @@ def delete_all_documents_for_connector_credential_pair(
     while True:
         # Get document IDs in batches
         stmt = (
-            select(DocumentByConnectorCredentialPair.id)
+            select(DocumentByDatasourceCredentialPair.id)
             .where(
-                DocumentByConnectorCredentialPair.connector_id == connector_id,
-                DocumentByConnectorCredentialPair.credential_id == credential_id,
+                DocumentByDatasourceCredentialPair.datasource_id == connector_id,
+                DocumentByDatasourceCredentialPair.credential_id == credential_id,
             )
             .limit(batch_size)
         )
@@ -1094,19 +1094,19 @@ def get_documents_by_cc_pair(
     return (
         db_session.query(DbDocument)
         .join(
-            DocumentByConnectorCredentialPair,
-            DbDocument.id == DocumentByConnectorCredentialPair.id,
+            DocumentByDatasourceCredentialPair,
+            DbDocument.id == DocumentByDatasourceCredentialPair.id,
         )
         .join(
-            ConnectorCredentialPair,
+            DatasourceCredentialPair,
             and_(
-                DocumentByConnectorCredentialPair.connector_id
-                == ConnectorCredentialPair.connector_id,
-                DocumentByConnectorCredentialPair.credential_id
-                == ConnectorCredentialPair.credential_id,
+                DocumentByDatasourceCredentialPair.datasource_id
+                == DatasourceCredentialPair.datasource_id,
+                DocumentByDatasourceCredentialPair.credential_id
+                == DatasourceCredentialPair.credential_id,
             ),
         )
-        .filter(ConnectorCredentialPair.id == cc_pair_id)
+        .filter(DatasourceCredentialPair.id == cc_pair_id)
         .all()
     )
 
@@ -1123,19 +1123,19 @@ def get_document(
 def get_cc_pairs_for_document(
     db_session: Session,
     document_id: str,
-) -> list[ConnectorCredentialPair]:
+) -> list[DatasourceCredentialPair]:
     stmt = (
-        select(ConnectorCredentialPair)
+        select(DatasourceCredentialPair)
         .join(
-            DocumentByConnectorCredentialPair,
+            DocumentByDatasourceCredentialPair,
             and_(
-                DocumentByConnectorCredentialPair.connector_id
-                == ConnectorCredentialPair.connector_id,
-                DocumentByConnectorCredentialPair.credential_id
-                == ConnectorCredentialPair.credential_id,
+                DocumentByDatasourceCredentialPair.datasource_id
+                == DatasourceCredentialPair.datasource_id,
+                DocumentByDatasourceCredentialPair.credential_id
+                == DatasourceCredentialPair.credential_id,
             ),
         )
-        .where(DocumentByConnectorCredentialPair.id == document_id)
+        .where(DocumentByDatasourceCredentialPair.id == document_id)
     )
     return list(db_session.execute(stmt).scalars().all())
 
@@ -1150,23 +1150,23 @@ def get_document_sources(
     """
     stmt = (
         select(
-            DocumentByConnectorCredentialPair.id,
-            Connector.source,
+            DocumentByDatasourceCredentialPair.id,
+            Datasource.source,
         )
         .join(
-            ConnectorCredentialPair,
+            DatasourceCredentialPair,
             and_(
-                DocumentByConnectorCredentialPair.connector_id
-                == ConnectorCredentialPair.connector_id,
-                DocumentByConnectorCredentialPair.credential_id
-                == ConnectorCredentialPair.credential_id,
+                DocumentByDatasourceCredentialPair.datasource_id
+                == DatasourceCredentialPair.datasource_id,
+                DocumentByDatasourceCredentialPair.credential_id
+                == DatasourceCredentialPair.credential_id,
             ),
         )
         .join(
-            Connector,
-            ConnectorCredentialPair.connector_id == Connector.id,
+            Datasource,
+            DatasourceCredentialPair.datasource_id == Datasource.id,
         )
-        .where(DocumentByConnectorCredentialPair.id.in_(document_ids))
+        .where(DocumentByDatasourceCredentialPair.id.in_(document_ids))
         .distinct()
     )
 
@@ -1225,12 +1225,12 @@ def get_unprocessed_kg_document_batch_for_connector(
     stmt = (
         select(DbDocument)
         .join(
-            DocumentByConnectorCredentialPair,
-            DbDocument.id == DocumentByConnectorCredentialPair.id,
+            DocumentByDatasourceCredentialPair,
+            DbDocument.id == DocumentByDatasourceCredentialPair.id,
         )
         .where(
             and_(
-                DocumentByConnectorCredentialPair.connector_id == connector_id,
+                DocumentByDatasourceCredentialPair.datasource_id == connector_id,
                 DbDocument.doc_updated_at
                 >= max(
                     kg_coverage_start,
@@ -1465,16 +1465,16 @@ def check_for_documents_needing_kg_processing(
         select(1)
         .select_from(DbDocument)
         .join(
-            DocumentByConnectorCredentialPair,
-            DbDocument.id == DocumentByConnectorCredentialPair.id,
+            DocumentByDatasourceCredentialPair,
+            DbDocument.id == DocumentByDatasourceCredentialPair.id,
         )
         .join(
-            Connector,
-            DocumentByConnectorCredentialPair.connector_id == Connector.id,
+            Datasource,
+            DocumentByDatasourceCredentialPair.datasource_id == Datasource.id,
         )
         .where(
             and_(
-                Connector.kg_processing_enabled.is_(True),
+                Datasource.kg_processing_enabled.is_(True),
                 DbDocument.doc_updated_at
                 >= max(
                     kg_coverage_start,
@@ -1512,26 +1512,26 @@ def check_for_documents_needing_kg_clustering(db_session: Session) -> bool:
         select(1)
         .select_from(DbDocument)
         .join(
-            DocumentByConnectorCredentialPair,
-            DbDocument.id == DocumentByConnectorCredentialPair.id,
+            DocumentByDatasourceCredentialPair,
+            DbDocument.id == DocumentByDatasourceCredentialPair.id,
         )
         .join(
-            ConnectorCredentialPair,
+            DatasourceCredentialPair,
             and_(
-                DocumentByConnectorCredentialPair.connector_id
-                == ConnectorCredentialPair.connector_id,
-                DocumentByConnectorCredentialPair.credential_id
-                == ConnectorCredentialPair.credential_id,
+                DocumentByDatasourceCredentialPair.datasource_id
+                == DatasourceCredentialPair.datasource_id,
+                DocumentByDatasourceCredentialPair.credential_id
+                == DatasourceCredentialPair.credential_id,
             ),
         )
         .join(
-            Connector,
-            ConnectorCredentialPair.connector_id == Connector.id,
+            Datasource,
+            DatasourceCredentialPair.datasource_id == Datasource.id,
         )
         .where(
             and_(
-                Connector.kg_processing_enabled.is_(True),
-                ConnectorCredentialPair.status
+                Datasource.kg_processing_enabled.is_(True),
+                DatasourceCredentialPair.status
                 != ConnectorCredentialPairStatus.DELETING,
                 or_(
                     DbDocument.kg_stage == KGStage.EXTRACTED,

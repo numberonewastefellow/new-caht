@@ -54,7 +54,7 @@ class IndexingCoordination:
             existing_attempt = db_session.execute(
                 select(IndexAttempt)
                 .where(
-                    IndexAttempt.connector_credential_pair_id == cc_pair_id,
+                    IndexAttempt.datasource_credential_pair_id == cc_pair_id,
                     IndexAttempt.search_settings_id == search_settings_id,
                     IndexAttempt.status.in_(
                         [IndexingStatus.NOT_STARTED, IndexingStatus.IN_PROGRESS]

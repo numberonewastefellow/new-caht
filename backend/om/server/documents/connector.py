@@ -108,8 +108,8 @@ from om.db.federated import fetch_all_federated_connectors_parallel
 from om.db.index_attempt import get_index_attempts_for_cc_pair
 from om.db.index_attempt import get_latest_index_attempts_by_status
 from om.db.index_attempt import get_latest_index_attempts_parallel
-from om.db.models import ConnectorCredentialPair
-from om.db.models import FederatedConnector
+from om.db.models import DatasourceCredentialPair
+from om.db.models import FederatedDatasource
 from om.db.models import IndexAttempt
 from om.db.models import IndexingStatus
 from om.db.models import User
@@ -595,8 +595,8 @@ def list_connector_files(
             status_code=400, detail="This endpoint only works with file connectors"
         )
 
-    file_locations = connector.connector_specific_config.get("file_locations", [])
-    file_names = connector.connector_specific_config.get("file_names", [])
+    file_locations = connector.datasource_specific_config.get("file_locations", [])
+    file_names = connector.datasource_specific_config.get("file_names", [])
 
     # Normalize file_names for backwards compatibility with legacy data
     file_names = _normalize_file_names_for_backwards_compatibility(
@@ -682,7 +682,7 @@ def update_connector_files(
         )
 
     # Get current connector config
-    current_config = connector.connector_specific_config
+    current_config = connector.datasource_specific_config
     current_file_locations = current_config.get("file_locations", [])
     current_file_names = current_config.get("file_names", [])
     current_zip_metadata_file_id = current_config.get("zip_metadata_file_id")
@@ -922,8 +922,8 @@ def get_currently_failed_indexing_status(
         failed_attempt
         for failed_attempt in latest_failed_indexing_attempts
         if not any(
-            success_attempt.connector_credential_pair_id
-            == failed_attempt.connector_credential_pair_id
+            success_attempt.datasource_credential_pair_id
+            == failed_attempt.datasource_credential_pair_id
             and success_attempt.time_updated > failed_attempt.time_updated
             for success_attempt in latest_successful_indexing_attempts
         )
@@ -934,14 +934,14 @@ def get_currently_failed_indexing_status(
         cc_pair
         for cc_pair in cc_pairs
         if any(
-            attempt.connector_credential_pair == cc_pair
+            attempt.datasource_credential_pair == cc_pair
             for attempt in filtered_failed_attempts
         )
     ]
 
     # Create a mapping of cc_pair_id to its latest failed index attempt
     cc_pair_to_latest_index_attempt = {
-        attempt.connector_credential_pair_id: attempt
+        attempt.datasource_credential_pair_id: attempt
         for attempt in filtered_failed_attempts
     }
 
@@ -961,7 +961,7 @@ def get_currently_failed_indexing_status(
                 error_msg=(
                     latest_index_attempt.error_msg if latest_index_attempt else None
                 ),
-                connector_id=cc_pair.connector_id,
+                connector_id=cc_pair.datasource_id,
                 credential_id=cc_pair.credential_id,
                 is_deletable=check_deletion_attempt_is_allowed(
                     connector_credential_pair=cc_pair,
@@ -996,7 +996,7 @@ def get_connector_status(
     )
     group_cc_pair_relationships_dict: dict[int, list[int]] = {}
     for relationship in group_cc_pair_relationships:
-        group_cc_pair_relationships_dict.setdefault(relationship.cc_pair_id, []).append(
+        group_cc_pair_relationships_dict.setdefault(relationship.datasource_credential_pair_id, []).append(
             relationship.team_id
         )
 
@@ -1004,13 +1004,13 @@ def get_connector_status(
         ConnectorStatus(
             cc_pair_id=cc_pair.id,
             name=cc_pair.name,
-            connector=ConnectorSnapshot.from_connector_db_model(cc_pair.connector),
+            connector=ConnectorSnapshot.from_connector_db_model(cc_pair.datasource),
             credential=CredentialSnapshot.from_credential_db_model(cc_pair.credential),
             access_type=cc_pair.access_type,
             groups=group_cc_pair_relationships_dict.get(cc_pair.id, []),
         )
         for cc_pair in cc_pairs
-        if cc_pair.name != "DefaultCCPair" and cc_pair.connector and cc_pair.credential
+        if cc_pair.name != "DefaultCCPair" and cc_pair.datasource and cc_pair.credential
     ]
 
 
@@ -1098,9 +1098,9 @@ def get_connector_indexing_status(
         ) = run_functions_tuples_in_parallel(parallel_functions)
 
     # Cast results to proper types
-    non_editable_cc_pairs = cast(list[ConnectorCredentialPair], non_editable_cc_pairs)
-    editable_cc_pairs = cast(list[ConnectorCredentialPair], editable_cc_pairs)
-    federated_connectors = cast(list[FederatedConnector], federated_connectors)
+    non_editable_cc_pairs = cast(list[DatasourceCredentialPair], non_editable_cc_pairs)
+    editable_cc_pairs = cast(list[DatasourceCredentialPair], editable_cc_pairs)
+    federated_connectors = cast(list[FederatedDatasource], federated_connectors)
     latest_index_attempts = cast(list[IndexAttempt], latest_index_attempts)
     latest_finished_index_attempts = cast(
         list[IndexAttempt], latest_finished_index_attempts
@@ -1116,22 +1116,22 @@ def get_connector_indexing_status(
 
     cc_pair_to_latest_index_attempt: dict[tuple[int, int], IndexAttempt] = {
         (
-            attempt.connector_credential_pair.connector_id,
-            attempt.connector_credential_pair.credential_id,
+            attempt.datasource_credential_pair.datasource_id,
+            attempt.datasource_credential_pair.credential_id,
         ): attempt
         for attempt in latest_index_attempts
     }
 
     cc_pair_to_latest_finished_index_attempt: dict[tuple[int, int], IndexAttempt] = {
         (
-            attempt.connector_credential_pair.connector_id,
-            attempt.connector_credential_pair.credential_id,
+            attempt.datasource_credential_pair.datasource_id,
+            attempt.datasource_credential_pair.credential_id,
         ): attempt
         for attempt in latest_finished_index_attempts
     }
 
     def build_connector_indexing_status(
-        cc_pair: ConnectorCredentialPair,
+        cc_pair: DatasourceCredentialPair,
         is_editable: bool,
     ) -> ConnectorIndexingStatusLite | None:
         # TODO remove this to enable ingestion API
@@ -1139,13 +1139,13 @@ def get_connector_indexing_status(
             return None
 
         latest_attempt = cc_pair_to_latest_index_attempt.get(
-            (cc_pair.connector_id, cc_pair.credential_id)
+            (cc_pair.datasource_id, cc_pair.credential_id)
         )
         latest_finished_attempt = cc_pair_to_latest_finished_index_attempt.get(
-            (cc_pair.connector_id, cc_pair.credential_id)
+            (cc_pair.datasource_id, cc_pair.credential_id)
         )
         doc_count = cc_pair_to_document_cnt.get(
-            (cc_pair.connector_id, cc_pair.credential_id), 0
+            (cc_pair.datasource_id, cc_pair.credential_id), 0
         )
 
         return _get_connector_indexing_status_lite(
@@ -1307,7 +1307,7 @@ def get_connector_indexing_status(
 
 
 def _get_connector_indexing_status_lite(
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     latest_index_attempt: IndexAttempt | None,
     latest_finished_index_attempt: IndexAttempt | None,
     is_editable: bool,
@@ -1317,7 +1317,7 @@ def _get_connector_indexing_status_lite(
     if cc_pair.name == "DefaultCCPair":
         return None
 
-    connector = cc_pair.connector
+    connector = cc_pair.datasource
     credential = cc_pair.credential
     if not connector or not credential:
         # This may happen if background deletion is happening
@@ -1331,7 +1331,7 @@ def _get_connector_indexing_status_lite(
     return ConnectorIndexingStatusLite(
         cc_pair_id=cc_pair.id,
         name=cc_pair.name,
-        source=cc_pair.connector.source,
+        source=cc_pair.datasource.source,
         access_type=cc_pair.access_type,
         cc_pair_status=cc_pair.status,
         is_editable=is_editable,
@@ -1586,7 +1586,7 @@ def update_connector_from_model(
         name=updated_connector.name,
         source=updated_connector.source,
         input_type=updated_connector.input_type,
-        connector_specific_config=updated_connector.connector_specific_config,
+        connector_specific_config=updated_connector.datasource_specific_config,
         refresh_freq=updated_connector.refresh_freq,
         prune_freq=updated_connector.prune_freq,
         credential_ids=[
@@ -1859,7 +1859,7 @@ def get_connector_by_id(
         source=connector.source,
         indexing_start=connector.indexing_start,
         input_type=connector.input_type,
-        connector_specific_config=connector.connector_specific_config,
+        connector_specific_config=connector.datasource_specific_config,
         refresh_freq=connector.refresh_freq,
         prune_freq=connector.prune_freq,
         credential_ids=[
@@ -1969,10 +1969,10 @@ def get_basic_connector_indexing_status(
     return [
         BasicCCPairInfo(
             has_successful_run=cc_pair.last_successful_index_time is not None,
-            source=cc_pair.connector.source,
+            source=cc_pair.datasource.source,
         )
         for cc_pair in cc_pairs
-        if cc_pair.connector.source != DocumentSource.INGESTION_API
+        if cc_pair.datasource.source != DocumentSource.INGESTION_API
     ]
 
 

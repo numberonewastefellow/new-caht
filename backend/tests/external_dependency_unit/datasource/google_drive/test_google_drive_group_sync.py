@@ -14,9 +14,9 @@ from om.datasource.models import InputType
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.external_perm import ExternalUserGroup
-from om.db.models import Connector
-from om.db.models import ConnectorCredentialPair
 from om.db.models import Credential
+from om.db.models import Datasource
+from om.db.models import DatasourceCredentialPair
 from om.db.models import PublicExternalTeam
 from om.db.models import User__ExternalTeamId
 from tests.external_dependency_unit.conftest import create_test_user
@@ -25,7 +25,7 @@ from tests.external_dependency_unit.constants import TEST_TENANT_ID
 
 def _create_test_connector_credential_pair(
     db_session: Session, source: DocumentSource = DocumentSource.GOOGLE_DRIVE
-) -> ConnectorCredentialPair:
+) -> DatasourceCredentialPair:
     """Helper to create a test connector credential pair"""
     # For Google Drive, we need to include required config parameters
     connector_config = {}
@@ -34,11 +34,11 @@ def _create_test_connector_credential_pair(
             "include_shared_drives": True,  # At least one of these is required
         }
 
-    connector = Connector(
+    connector = Datasource(
         name="Test Connector",
         source=source,
         input_type=InputType.POLL,
-        connector_specific_config=connector_config,
+        datasource_specific_config=connector_config,
         refresh_freq=None,
         prune_freq=None,
         indexing_start=None,
@@ -56,8 +56,8 @@ def _create_test_connector_credential_pair(
     # Expire the credential so it reloads from DB with SensitiveValue wrapper
     db_session.expire(credential)
 
-    cc_pair = ConnectorCredentialPair(
-        connector_id=connector.id,
+    cc_pair = DatasourceCredentialPair(
+        datasource_id=connector.id,
         credential_id=credential.id,
         name="Test CC Pair",
         status=ConnectorCredentialPairStatus.ACTIVE,
@@ -75,7 +75,7 @@ def _get_user_external_groups(
 ) -> list[User__ExternalTeamId]:
     """Helper to get user external groups from database"""
     query = select(User__ExternalTeamId).where(
-        User__ExternalTeamId.cc_pair_id == cc_pair_id
+        User__ExternalTeamId.datasource_credential_pair_id == cc_pair_id
     )
     if not include_stale:
         query = query.where(User__ExternalTeamId.stale.is_(False))
@@ -88,7 +88,7 @@ def _get_public_external_groups(
 ) -> list[PublicExternalTeam]:
     """Helper to get public external groups from database"""
     query = select(PublicExternalTeam).where(
-        PublicExternalTeam.cc_pair_id == cc_pair_id
+        PublicExternalTeam.datasource_credential_pair_id == cc_pair_id
     )
     if not include_stale:
         query = query.where(PublicExternalTeam.stale.is_(False))
@@ -116,7 +116,7 @@ class TestPerformExternalGroupSync:
         ]
 
         def mock_group_sync_func(
-            tenant_id: str, cc_pair: ConnectorCredentialPair  # noqa: ARG001
+            tenant_id: str, cc_pair: DatasourceCredentialPair  # noqa: ARG001
         ) -> Generator[ExternalUserGroup, None, None]:
             for group in mock_groups:
                 yield group
@@ -182,7 +182,7 @@ class TestPerformExternalGroupSync:
 
         # Initial sync with original groups
         def initial_group_sync_func(
-            tenant_id: str, cc_pair: ConnectorCredentialPair  # noqa: ARG001
+            tenant_id: str, cc_pair: DatasourceCredentialPair  # noqa: ARG001
         ) -> Generator[ExternalUserGroup, None, None]:
             yield ExternalUserGroup(id="group1", user_emails=[user1.email, user2.email])
             yield ExternalUserGroup(id="group2", user_emails=[user2.email])
@@ -213,7 +213,7 @@ class TestPerformExternalGroupSync:
 
             # Updated sync with modified groups
             def updated_group_sync_func(
-                tenant_id: str, cc_pair: ConnectorCredentialPair  # noqa: ARG001
+                tenant_id: str, cc_pair: DatasourceCredentialPair  # noqa: ARG001
             ) -> Generator[ExternalUserGroup, None, None]:
                 # group1 now has user1 and user3 (user2 removed, user3 added)
                 yield ExternalUserGroup(
@@ -276,7 +276,7 @@ class TestPerformExternalGroupSync:
 
         # Initial sync with multiple groups
         def initial_group_sync_func(
-            tenant_id: str, cc_pair: ConnectorCredentialPair  # noqa: ARG001
+            tenant_id: str, cc_pair: DatasourceCredentialPair  # noqa: ARG001
         ) -> Generator[ExternalUserGroup, None, None]:
             yield ExternalUserGroup(id="group1", user_emails=[user1.email, user2.email])
             yield ExternalUserGroup(id="group2", user_emails=[user1.email])
@@ -312,7 +312,7 @@ class TestPerformExternalGroupSync:
 
             # Updated sync with only one group remaining
             def updated_group_sync_func(
-                tenant_id: str, cc_pair: ConnectorCredentialPair  # noqa: ARG001
+                tenant_id: str, cc_pair: DatasourceCredentialPair  # noqa: ARG001
             ) -> Generator[ExternalUserGroup, None, None]:
                 # Only group1 remains, group2 and public_group are removed
                 yield ExternalUserGroup(
@@ -358,7 +358,7 @@ class TestPerformExternalGroupSync:
 
         # Initial sync with groups
         def initial_group_sync_func(
-            tenant_id: str, cc_pair: ConnectorCredentialPair  # noqa: ARG001
+            tenant_id: str, cc_pair: DatasourceCredentialPair  # noqa: ARG001
         ) -> Generator[ExternalUserGroup, None, None]:
             yield ExternalUserGroup(id="group1", user_emails=[user1.email])
 
@@ -383,7 +383,7 @@ class TestPerformExternalGroupSync:
 
             # Updated sync with no groups
             def empty_group_sync_func(
-                tenant_id: str, cc_pair: ConnectorCredentialPair  # noqa: ARG001
+                tenant_id: str, cc_pair: DatasourceCredentialPair  # noqa: ARG001
             ) -> Generator[ExternalUserGroup, None, None]:
                 # No groups yielded
                 return
@@ -413,7 +413,7 @@ class TestPerformExternalGroupSync:
 
         # Create a large group with many users
         def large_group_sync_func(
-            tenant_id: str, cc_pair: ConnectorCredentialPair  # noqa: ARG001
+            tenant_id: str, cc_pair: DatasourceCredentialPair  # noqa: ARG001
         ) -> Generator[ExternalUserGroup, None, None]:
             yield ExternalUserGroup(
                 id="large_group", user_emails=[user.email for user in users]
@@ -450,7 +450,7 @@ class TestPerformExternalGroupSync:
         cc_pair = _create_test_connector_credential_pair(db_session)
 
         def mixed_group_sync_func(
-            tenant_id: str, cc_pair: ConnectorCredentialPair  # noqa: ARG001
+            tenant_id: str, cc_pair: DatasourceCredentialPair  # noqa: ARG001
         ) -> Generator[ExternalUserGroup, None, None]:
             yield ExternalUserGroup(
                 id="regular_group", user_emails=[user1.email, user2.email]

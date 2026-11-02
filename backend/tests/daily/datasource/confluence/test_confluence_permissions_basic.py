@@ -10,7 +10,7 @@ from om.configs.constants import DocumentSource
 from om.datasource.confluence.connector import ConfluenceConnector
 from om.datasource.credentials_provider import OmStaticCredentialsProvider
 from om.datasource.models import HierarchyNode
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.utils import DocumentRow
 from om.db.utils import SortOrder
 from om.external_permissions.confluence.doc_sync import confluence_doc_sync
@@ -110,10 +110,10 @@ def test_confluence_connector_restriction_handling(
     mock_db_provider_class.return_value = mock_provider_instance
 
     # Mock the cc_pair to pass to the function
-    mock_cc_pair = MagicMock(spec=ConnectorCredentialPair)
+    mock_cc_pair = MagicMock(spec=DatasourceCredentialPair)
     # Mock the nested connector attribute and its config
-    mock_cc_pair.connector = MagicMock()
-    mock_cc_pair.connector.connector_specific_config = {
+    mock_cc_pair.datasource = MagicMock()
+    mock_cc_pair.datasource.datasource_specific_config = {
         "wiki_base": "https://virtualai.atlassian.net",
         "is_cloud": True,
         "space": test_space_key,

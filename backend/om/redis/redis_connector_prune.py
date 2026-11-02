@@ -192,7 +192,7 @@ class RedisConnectorPrune:
                 OmCeleryTask.DOCUMENT_BY_CC_PAIR_CLEANUP_TASK,
                 kwargs=dict(
                     document_id=doc_id,
-                    connector_id=cc_pair.connector_id,
+                    connector_id=cc_pair.datasource_id,
                     credential_id=cc_pair.credential_id,
                     tenant_id=self.tenant_id,
                 ),

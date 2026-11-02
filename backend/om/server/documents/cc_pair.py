@@ -178,7 +178,7 @@ def get_cc_pair_full_info(
             db_session=db_session,
             cc_pairs=[
                 ConnectorCredentialPairIdentifier(
-                    connector_id=cc_pair.connector_id,
+                    connector_id=cc_pair.datasource_id,
                     credential_id=cc_pair.credential_id,
                 )
             ],
@@ -213,7 +213,7 @@ def get_cc_pair_full_info(
         ),
         last_index_attempt=latest_attempt,
         latest_deletion_attempt=get_deletion_attempt_snapshot(
-            connector_id=cc_pair.connector_id,
+            connector_id=cc_pair.datasource_id,
             credential_id=cc_pair.credential_id,
             db_session=db_session,
             tenant_id=tenant_id,
@@ -282,7 +282,7 @@ def update_cc_pair_status(
         active_attempts = (
             db_session.execute(
                 select(IndexAttempt).where(
-                    IndexAttempt.connector_credential_pair_id == cc_pair_id,
+                    IndexAttempt.datasource_credential_pair_id == cc_pair_id,
                     IndexAttempt.status.in_(
                         [IndexingStatus.NOT_STARTED, IndexingStatus.IN_PROGRESS]
                     ),
@@ -380,14 +380,14 @@ def update_cc_pair_property(
     # Can we centralize logic for updating connector properties
     # so that we don't need to manually validate everywhere?
     if update_request.name == "refresh_frequency":
-        cc_pair.connector.refresh_freq = int(update_request.value)
-        cc_pair.connector.validate_refresh_freq()
+        cc_pair.datasource.refresh_freq = int(update_request.value)
+        cc_pair.datasource.validate_refresh_freq()
         db_session.commit()
 
         msg = "Refresh frequency updated successfully"
     elif update_request.name == "pruning_frequency":
-        cc_pair.connector.prune_freq = int(update_request.value)
-        cc_pair.connector.validate_prune_freq()
+        cc_pair.datasource.prune_freq = int(update_request.value)
+        cc_pair.datasource.validate_prune_freq()
         db_session.commit()
 
         msg = "Pruning frequency updated successfully"
@@ -452,9 +452,9 @@ def prune_cc_pair(
 
     logger.info(
         f"Pruning cc_pair: cc_pair={cc_pair_id} "
-        f"connector={cc_pair.connector_id} "
+        f"connector={cc_pair.datasource_id} "
         f"credential={cc_pair.credential_id} "
-        f"{cc_pair.connector.name} connector."
+        f"{cc_pair.datasource.name} connector."
     )
     payload_id = try_creating_prune_generator_task(
         client_app, cc_pair, db_session, r, tenant_id
@@ -675,9 +675,9 @@ def sync_cc_pair(
 
     logger.info(
         f"Permissions sync cc_pair={cc_pair_id} "
-        f"connector_id={cc_pair.connector_id} "
+        f"connector_id={cc_pair.datasource_id} "
         f"credential_id={cc_pair.credential_id} "
-        f"{cc_pair.connector.name} connector."
+        f"{cc_pair.datasource.name} connector."
     )
     payload_id = try_creating_permissions_sync_task(
         client_app, cc_pair_id, r, tenant_id
@@ -749,9 +749,9 @@ def sync_cc_pair_groups(
 
     logger.info(
         f"External group sync cc_pair={cc_pair_id} "
-        f"connector_id={cc_pair.connector_id} "
+        f"connector_id={cc_pair.datasource_id} "
         f"credential_id={cc_pair.credential_id} "
-        f"{cc_pair.connector.name} connector."
+        f"{cc_pair.datasource.name} connector."
     )
     payload_id = try_creating_external_group_sync_task(
         client_app, cc_pair_id, r, tenant_id

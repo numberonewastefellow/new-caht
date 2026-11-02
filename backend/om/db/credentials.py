@@ -14,10 +14,10 @@ from om.datasource.google_utils.shared_constants import (
     DB_CREDENTIALS_DICT_SERVICE_ACCOUNT_KEY,
 )
 from om.db.enums import ConnectorCredentialPairStatus
-from om.db.models import ConnectorCredentialPair
 from om.db.models import Credential
 from om.db.models import Credential__Team
-from om.db.models import DocumentByConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
+from om.db.models import DocumentByDatasourceCredentialPair
 from om.db.models import User
 from om.db.models import User__Team
 from om.server.documents.models import CredentialBase
@@ -192,7 +192,7 @@ def fetch_credentials_by_source(
 
 def swap_credentials_connector(
     new_credential_id: int, connector_id: int, user: User, db_session: Session
-) -> ConnectorCredentialPair:
+) -> DatasourceCredentialPair:
     # Check if the user has permission to use the new credential
     new_credential = fetch_credential_by_id_for_user(
         new_credential_id, user, db_session
@@ -204,8 +204,8 @@ def swap_credentials_connector(
 
     # Existing pair
     existing_pair = db_session.execute(
-        select(ConnectorCredentialPair).where(
-            ConnectorCredentialPair.connector_id == connector_id
+        select(DatasourceCredentialPair).where(
+            DatasourceCredentialPair.datasource_id == connector_id
         )
     ).scalar_one_or_none()
 
@@ -215,17 +215,17 @@ def swap_credentials_connector(
         )
 
     # Check if the new credential is compatible with the connector
-    if new_credential.source != existing_pair.connector.source:
+    if new_credential.source != existing_pair.datasource.source:
         raise ValueError(
-            f"New credential source {new_credential.source} does not match connector source {existing_pair.connector.source}"
+            f"New credential source {new_credential.source} does not match connector source {existing_pair.datasource.source}"
         )
 
     db_session.execute(
-        update(DocumentByConnectorCredentialPair)
+        update(DocumentByDatasourceCredentialPair)
         .where(
             and_(
-                DocumentByConnectorCredentialPair.connector_id == connector_id,
-                DocumentByConnectorCredentialPair.credential_id
+                DocumentByDatasourceCredentialPair.datasource_id == connector_id,
+                DocumentByDatasourceCredentialPair.credential_id
                 == existing_pair.credential_id,
             )
         )
@@ -371,14 +371,14 @@ def _delete_credential_internal(
 ) -> None:
     """Internal utility function to handle the actual deletion of a credential"""
     associated_connectors = (
-        db_session.query(ConnectorCredentialPair)
-        .filter(ConnectorCredentialPair.credential_id == credential_id)
+        db_session.query(DatasourceCredentialPair)
+        .filter(DatasourceCredentialPair.credential_id == credential_id)
         .all()
     )
 
     associated_doc_cc_pairs = (
-        db_session.query(DocumentByConnectorCredentialPair)
-        .filter(DocumentByConnectorCredentialPair.credential_id == credential_id)
+        db_session.query(DocumentByDatasourceCredentialPair)
+        .filter(DocumentByDatasourceCredentialPair.credential_id == credential_id)
         .all()
     )
 

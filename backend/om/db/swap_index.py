@@ -17,7 +17,7 @@ from om.db.index_attempt import (
 from om.db.index_attempt import count_unique_cc_pairs_with_successful_index_attempts
 from om.db.llm import update_default_contextual_model
 from om.db.llm import update_no_default_contextual_rag_provider
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.models import SearchSettings
 from om.db.search_settings import get_current_search_settings
 from om.db.search_settings import get_secondary_search_settings
@@ -33,7 +33,7 @@ logger = setup_logger()
 def _perform_index_swap(
     db_session: Session,
     new_search_settings: SearchSettings,
-    all_cc_pairs: list[ConnectorCredentialPair],
+    all_cc_pairs: list[DatasourceCredentialPair],
     cleanup_documents: bool = False,
 ) -> SearchSettings | None:
     """Swap the indices and expire the old one.
@@ -66,7 +66,7 @@ def _perform_index_swap(
             for cc_pair in all_cc_pairs:
                 delete_all_documents_for_connector_credential_pair(
                     db_session=db_session,
-                    connector_id=cc_pair.connector_id,
+                    connector_id=cc_pair.datasource_id,
                     credential_id=cc_pair.credential_id,
                 )
 

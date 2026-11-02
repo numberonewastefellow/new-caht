@@ -73,7 +73,7 @@
 #     ),
 #     user_owned_and_public_docs AS (
 #         SELECT d.id as allowed_doc_id
-#         FROM "{tenant_id}".document_by_connector_credential_pair d
+#         FROM "{tenant_id}".document_by_datasource_credential_pair d
 #         JOIN "{tenant_id}".credential c ON d.credential_id = c.id
 #         JOIN "{tenant_id}".connector_credential_pair ccp ON
 #             d.connector_id = ccp.connector_id AND
@@ -86,11 +86,11 @@
 #     ),
 #     team_accessible_docs AS (
 #         SELECT d.id as allowed_doc_id
-#         FROM "{tenant_id}".document_by_connector_credential_pair d
+#         FROM "{tenant_id}".document_by_datasource_credential_pair d
 #         JOIN "{tenant_id}".connector_credential_pair ccp ON
 #             d.connector_id = ccp.connector_id AND
 #             d.credential_id = ccp.credential_id
-#         JOIN "{tenant_id}".team__connector_credential_pair ugccp ON
+#         JOIN "{tenant_id}".team__datasource_credential_pair ugccp ON
 #             ccp.id = ugccp.cc_pair_id
 #         JOIN "{tenant_id}".user__team uug ON
 #             uug.team_id = ugccp.team_id

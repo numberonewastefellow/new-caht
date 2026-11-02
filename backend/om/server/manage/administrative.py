@@ -204,8 +204,8 @@ def create_deletion_attempt_for_connector_id(
         f"cc_pair={cc_pair.id}"
     )
 
-    if cc_pair.connector.source == DocumentSource.FILE:
-        connector = cc_pair.connector
+    if cc_pair.datasource.source == DocumentSource.FILE:
+        connector = cc_pair.datasource
         file_store = get_default_file_store()
-        for file_id in connector.connector_specific_config.get("file_locations", []):
+        for file_id in connector.datasource_specific_config.get("file_locations", []):
             file_store.delete_file(file_id)

@@ -12,7 +12,7 @@ from typing import Any
 from om.access.models import DocExternalAccess
 from om.access.models import ExternalAccess
 from om.datasource.folder.connector import _get_file_external_access
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.utils.logger import setup_logger
 
@@ -21,7 +21,7 @@ logger = setup_logger()
 
 
 def folder_doc_sync(
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     fetch_all_existing_docs_fn: Any,  # noqa: ARG001
     fetch_all_existing_docs_ids_fn: Any,  # noqa: ARG001
     callback: IndexingHeartbeatInterface | None,
@@ -35,7 +35,7 @@ def folder_doc_sync(
     Called by the permission sync infrastructure for FOLDER connectors
     with access_type=SYNC. Yields DocExternalAccess for each file.
     """
-    config: dict[str, Any] = cc_pair.connector.connector_specific_config or {}
+    config: dict[str, Any] = cc_pair.datasource.datasource_specific_config or {}
     folder_paths: list[str] = config.get("folder_paths", [])
     recursive: bool = config.get("recursive", True)
 

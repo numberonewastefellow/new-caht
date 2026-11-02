@@ -34,7 +34,7 @@ from om.db.engine.time_utils import get_db_current_time
 from om.db.enums import IndexingStatus
 from om.db.enums import SyncStatus
 from om.db.enums import SyncType
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.models import DocumentSet
 from om.db.models import IndexAttempt
 from om.db.models import SyncRecord
@@ -181,7 +181,7 @@ def _collect_queue_metrics(redis_celery: Redis) -> list[Metric]:
 
 
 def _build_connector_start_latency_metric(
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     recent_attempt: IndexAttempt,
     second_most_recent_attempt: IndexAttempt | None,
     redis_std: Redis,
@@ -196,7 +196,7 @@ def _build_connector_start_latency_metric(
     )
     if _has_metric_been_emitted(redis_std, metric_key):
         task_logger.info(
-            f"Skipping metric for connector {cc_pair.connector.id} "
+            f"Skipping metric for connector {cc_pair.datasource.id} "
             f"index attempt {recent_attempt.id} because it has already been "
             "emitted"
         )
@@ -205,9 +205,9 @@ def _build_connector_start_latency_metric(
     # Connector start latency
     # first run case - we should start as soon as it's created
     if not second_most_recent_attempt:
-        desired_start_time = cc_pair.connector.time_created
+        desired_start_time = cc_pair.datasource.time_created
     else:
-        if not cc_pair.connector.refresh_freq:
+        if not cc_pair.datasource.refresh_freq:
             task_logger.debug(
                 "Connector has no refresh_freq and this is a non-initial index attempt. "
                 "Assuming user manually triggered indexing, so we'll skip start latency metric."
@@ -215,7 +215,7 @@ def _build_connector_start_latency_metric(
             return None
 
         desired_start_time = second_most_recent_attempt.time_updated + timedelta(
-            seconds=cc_pair.connector.refresh_freq
+            seconds=cc_pair.datasource.refresh_freq
         )
 
     start_latency = (recent_attempt.time_started - desired_start_time).total_seconds()
@@ -233,14 +233,14 @@ def _build_connector_start_latency_metric(
         value=start_latency,
         tags={
             "job_id": job_id,
-            "connector_id": str(cc_pair.connector.id),
-            "source": str(cc_pair.connector.source),
+            "connector_id": str(cc_pair.datasource.id),
+            "source": str(cc_pair.datasource.source),
         },
     )
 
 
 def _build_connector_final_metrics(
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     recent_attempts: list[IndexAttempt],
     redis_std: Redis,
 ) -> list[Metric]:
@@ -259,7 +259,7 @@ def _build_connector_final_metrics(
         )
         if _has_metric_been_emitted(redis_std, metric_key):
             task_logger.info(
-                f"Skipping final metrics for connector {cc_pair.connector.id} "
+                f"Skipping final metrics for connector {cc_pair.datasource.id} "
                 f"index attempt {attempt.id}, already emitted."
             )
             continue
@@ -282,8 +282,8 @@ def _build_connector_final_metrics(
                 value=success,
                 tags={
                     "job_id": job_id,
-                    "connector_id": str(cc_pair.connector.id),
-                    "source": str(cc_pair.connector.source),
+                    "connector_id": str(cc_pair.datasource.id),
+                    "source": str(cc_pair.datasource.source),
                     "status": attempt.status.value,
                 },
             )
@@ -302,8 +302,8 @@ def _build_connector_final_metrics(
                         value=duration_seconds,
                         tags={
                             "job_id": job_id,
-                            "connector_id": str(cc_pair.connector.id),
-                            "source": str(cc_pair.connector.source),
+                            "connector_id": str(cc_pair.datasource.id),
+                            "source": str(cc_pair.datasource.source),
                         },
                     )
                 )
@@ -322,8 +322,8 @@ def _build_connector_final_metrics(
                     value=doc_count,
                     tags={
                         "job_id": job_id,
-                        "connector_id": str(cc_pair.connector.id),
-                        "source": str(cc_pair.connector.source),
+                        "connector_id": str(cc_pair.datasource.id),
+                        "source": str(cc_pair.datasource.source),
                     },
                 )
             )
@@ -336,7 +336,7 @@ def _collect_connector_metrics(db_session: Session, redis_std: Redis) -> list[Me
     one_hour_ago = get_db_current_time(db_session) - timedelta(hours=1)
 
     # Get all connector credential pairs
-    cc_pairs = db_session.scalars(select(ConnectorCredentialPair)).all()
+    cc_pairs = db_session.scalars(select(DatasourceCredentialPair)).all()
     # Might be more than one search setting, or just one
     active_search_settings_list = get_active_search_settings_list(db_session)
 
@@ -348,7 +348,7 @@ def _collect_connector_metrics(db_session: Session, redis_std: Redis) -> list[Me
             recent_attempts = (
                 db_session.query(IndexAttempt)
                 .filter(
-                    IndexAttempt.connector_credential_pair_id == cc_pair.id,
+                    IndexAttempt.datasource_credential_pair_id == cc_pair.id,
                     IndexAttempt.search_settings_id == search_settings.id,
                 )
                 .order_by(IndexAttempt.time_created.desc())
@@ -385,8 +385,8 @@ def _collect_connector_metrics(db_session: Session, redis_std: Redis) -> list[Me
                         value=most_recent_attempt.time_started.timestamp(),
                         tags={
                             "job_id": job_id,
-                            "connector_id": str(cc_pair.connector.id),
-                            "source": str(cc_pair.connector.source),
+                            "connector_id": str(cc_pair.datasource.id),
+                            "source": str(cc_pair.datasource.source),
                         },
                     )
                 )
@@ -407,8 +407,8 @@ def _collect_connector_metrics(db_session: Session, redis_std: Redis) -> list[Me
                         value=most_recent_attempt.time_updated.timestamp(),
                         tags={
                             "job_id": job_id,
-                            "connector_id": str(cc_pair.connector.id),
-                            "source": str(cc_pair.connector.source),
+                            "connector_id": str(cc_pair.datasource.id),
+                            "source": str(cc_pair.datasource.source),
                         },
                     )
                 )

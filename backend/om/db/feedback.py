@@ -18,13 +18,13 @@ from om.configs.constants import SearchFeedbackType
 from om.db.chat import get_chat_message
 from om.db.enums import AccessType
 from om.db.models import ChatMessageFeedback
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.models import Document as DbDocument
-from om.db.models import DocumentByConnectorCredentialPair
+from om.db.models import DocumentByDatasourceCredentialPair
 from om.db.models import DocumentRetrievalFeedback
+from om.db.models import Team__DatasourceCredentialPair
 from om.db.models import User
 from om.db.models import User__Team
-from om.db.models import Team__ConnectorCredentialPair
 from om.db.models import UserRole
 from om.utils.logger import setup_logger
 
@@ -47,9 +47,9 @@ def _add_user_filters(stmt: Select, user: User, get_editable: bool = True) -> Se
         return stmt
 
     stmt = stmt.distinct()
-    DocByCC = aliased(DocumentByConnectorCredentialPair)
-    CCPair = aliased(ConnectorCredentialPair)
-    UG__CCpair = aliased(Team__ConnectorCredentialPair)
+    DocByCC = aliased(DocumentByDatasourceCredentialPair)
+    CCPair = aliased(DatasourceCredentialPair)
+    UG__CCpair = aliased(Team__DatasourceCredentialPair)
     User__UG = aliased(User__Team)
 
     """
@@ -62,11 +62,11 @@ def _add_user_filters(stmt: Select, user: User, get_editable: bool = True) -> Se
         .outerjoin(
             CCPair,
             and_(
-                CCPair.connector_id == DocByCC.connector_id,
+                CCPair.datasource_id == DocByCC.datasource_id,
                 CCPair.credential_id == DocByCC.credential_id,
             ),
         )
-        .outerjoin(UG__CCpair, UG__CCpair.cc_pair_id == CCPair.id)
+        .outerjoin(UG__CCpair, UG__CCpair.datasource_credential_pair_id == CCPair.id)
         .outerjoin(User__UG, User__UG.team_id == UG__CCpair.team_id)
     )
 
@@ -93,7 +93,7 @@ def _add_user_filters(stmt: Select, user: User, get_editable: bool = True) -> Se
         teams = select(User__UG.team_id).where(User__UG.user_id == user.id)
         where_clause &= (
             ~exists()
-            .where(UG__CCpair.cc_pair_id == CCPair.id)
+            .where(UG__CCpair.datasource_credential_pair_id == CCPair.id)
             .where(~UG__CCpair.team_id.in_(teams))
             .correlate(CCPair)
         )

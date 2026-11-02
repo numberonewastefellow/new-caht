@@ -95,21 +95,21 @@ def _get_connector_runner(
     of type LOAD_STATE, the list will be considered complete and otherwise incomplete.
     """
 
-    task = attempt.connector_credential_pair.connector.input_type
+    task = attempt.datasource_credential_pair.datasource.input_type
 
     try:
         runnable_connector = instantiate_connector(
             db_session=db_session,
-            source=attempt.connector_credential_pair.connector.source,
+            source=attempt.datasource_credential_pair.datasource.source,
             input_type=task,
-            connector_specific_config=attempt.connector_credential_pair.connector.connector_specific_config,
-            credential=attempt.connector_credential_pair.credential,
+            connector_specific_config=attempt.datasource_credential_pair.datasource.datasource_specific_config,
+            credential=attempt.datasource_credential_pair.credential,
         )
 
         # validate the connector settings
         if not INTEGRATION_TESTS_MODE:
             runnable_connector.validate_connector_settings()
-            if attempt.connector_credential_pair.access_type == AccessType.SYNC:
+            if attempt.datasource_credential_pair.access_type == AccessType.SYNC:
                 runnable_connector.validate_perm_sync()
 
     except UnexpectedValidationError as e:
@@ -130,13 +130,13 @@ def _get_connector_runner(
         if not leave_connector_active:
             cc_pair = get_connector_credential_pair_from_id(
                 db_session=db_session,
-                cc_pair_id=attempt.connector_credential_pair.id,
+                cc_pair_id=attempt.datasource_credential_pair.id,
             )
             if cc_pair and cc_pair.status == ConnectorCredentialPairStatus.ACTIVE:
                 update_connector_credential_pair(
                     db_session=db_session,
-                    connector_id=attempt.connector_credential_pair.connector.id,
-                    credential_id=attempt.connector_credential_pair.credential.id,
+                    connector_id=attempt.datasource_credential_pair.datasource.id,
+                    credential_id=attempt.datasource_credential_pair.credential.id,
                     status=ConnectorCredentialPairStatus.PAUSED,
                 )
         raise e
@@ -289,11 +289,11 @@ def run_docfetching_entrypoint(
         if MULTI_TENANT:
             tenant_str = f" for tenant {tenant_id}"
 
-        connector_name = attempt.connector_credential_pair.connector.name
+        connector_name = attempt.datasource_credential_pair.datasource.name
         connector_config = (
-            attempt.connector_credential_pair.connector.connector_specific_config
+            attempt.datasource_credential_pair.datasource.datasource_specific_config
         )
-        credential_id = attempt.connector_credential_pair.credential_id
+        credential_id = attempt.datasource_credential_pair.credential_id
 
     logger.info(
         f"Docfetching starting{tenant_str}: "
@@ -305,7 +305,7 @@ def run_docfetching_entrypoint(
     connector_document_extraction(
         app,
         index_attempt_id,
-        attempt.connector_credential_pair_id,
+        attempt.datasource_credential_pair_id,
         attempt.search_settings_id,
         tenant_id,
         callback,
@@ -370,27 +370,27 @@ def connector_document_extraction(
             raise ValueError("Search settings must be set for indexing")
 
         # Clear the indexing trigger if it was set, to prevent duplicate indexing attempts
-        if index_attempt.connector_credential_pair.indexing_trigger is not None:
+        if index_attempt.datasource_credential_pair.indexing_trigger is not None:
             logger.info(
                 "Clearing indexing trigger: "
-                f"cc_pair={index_attempt.connector_credential_pair.id} "
-                f"trigger={index_attempt.connector_credential_pair.indexing_trigger}"
+                f"cc_pair={index_attempt.datasource_credential_pair.id} "
+                f"trigger={index_attempt.datasource_credential_pair.indexing_trigger}"
             )
             mark_ccpair_with_indexing_trigger(
-                index_attempt.connector_credential_pair.id, None, db_session
+                index_attempt.datasource_credential_pair.id, None, db_session
             )
 
-        db_connector = index_attempt.connector_credential_pair.connector
-        db_credential = index_attempt.connector_credential_pair.credential
-        processing_mode = index_attempt.connector_credential_pair.processing_mode
+        db_connector = index_attempt.datasource_credential_pair.datasource
+        db_credential = index_attempt.datasource_credential_pair.credential
+        processing_mode = index_attempt.datasource_credential_pair.processing_mode
         is_primary = index_attempt.search_settings.status == IndexModelStatus.PRESENT
         is_connector_public = (
-            index_attempt.connector_credential_pair.access_type == AccessType.PUBLIC
+            index_attempt.datasource_credential_pair.access_type == AccessType.PUBLIC
         )
 
         from_beginning = index_attempt.from_beginning
         has_successful_attempt = (
-            index_attempt.connector_credential_pair.last_successful_index_time
+            index_attempt.datasource_credential_pair.last_successful_index_time
             is not None
         )
         # Use higher priority for first-time indexing to ensure new connectors
@@ -407,7 +407,7 @@ def connector_document_extraction(
             else 0
         )
         should_fetch_permissions_during_indexing = (
-            index_attempt.connector_credential_pair.access_type == AccessType.SYNC
+            index_attempt.datasource_credential_pair.access_type == AccessType.SYNC
             and source_should_fetch_permissions_during_indexing(db_connector.source)
             and is_primary
             # if we've already successfully indexed, let the doc_sync job
@@ -685,10 +685,10 @@ def connector_document_extraction(
 
                     # Write documents to persistent file system
                     # Use creator_id for user-segregated storage paths (sandbox isolation)
-                    creator_id = index_attempt.connector_credential_pair.creator_id
+                    creator_id = index_attempt.datasource_credential_pair.creator_id
                     if creator_id is None:
                         raise ValueError(
-                            f"ConnectorCredentialPair {index_attempt.connector_credential_pair.id} "
+                            f"ConnectorCredentialPair {index_attempt.datasource_credential_pair.id} "
                             "must have a creator_id for persistent document storage"
                         )
                     user_id_str: str = str(creator_id)
@@ -814,7 +814,7 @@ def connector_document_extraction(
         # Trigger file sync to user's sandbox (if running) - only for FILE_SYSTEM mode
         # This syncs the newly written documents from S3 to any running sandbox pod
         if processing_mode == ProcessingMode.FILE_SYSTEM:
-            creator_id = index_attempt.connector_credential_pair.creator_id
+            creator_id = index_attempt.datasource_credential_pair.creator_id
             if creator_id:
                 source_value = db_connector.source.value
                 app.send_task(

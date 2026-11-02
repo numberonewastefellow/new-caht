@@ -4,7 +4,7 @@ from jira import JIRA
 
 from om.datasource.jira.utils import build_jira_client
 from om.db.external_perm import ExternalUserGroup
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.utils.logger import setup_logger
 
 logger = setup_logger()
@@ -103,7 +103,7 @@ def _build_group_member_email_map(
 
 def jira_group_sync(
     tenant_id: str,  # noqa: ARG001
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
 ) -> Generator[ExternalUserGroup, None, None]:
     """
     Sync Jira groups and their members.
@@ -111,8 +111,8 @@ def jira_group_sync(
     This function fetches all groups from Jira and yields ExternalUserGroup
     objects containing the group ID and member emails.
     """
-    jira_base_url = cc_pair.connector.connector_specific_config.get("jira_base_url", "")
-    scoped_token = cc_pair.connector.connector_specific_config.get(
+    jira_base_url = cc_pair.datasource.datasource_specific_config.get("jira_base_url", "")
+    scoped_token = cc_pair.datasource.datasource_specific_config.get(
         "scoped_token", False
     )
 

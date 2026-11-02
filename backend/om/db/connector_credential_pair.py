@@ -22,15 +22,15 @@ from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import ProcessingMode
-from om.db.models import Connector
-from om.db.models import ConnectorCredentialPair
 from om.db.models import Credential
+from om.db.models import Datasource
+from om.db.models import DatasourceCredentialPair
 from om.db.models import IndexAttempt
 from om.db.models import IndexingStatus
 from om.db.models import SearchSettings
+from om.db.models import Team__DatasourceCredentialPair
 from om.db.models import User
 from om.db.models import User__Team
-from om.db.models import Team__ConnectorCredentialPair
 from om.db.models import UserRole
 from om.server.models import StatusResponse
 from om.utils.logger import setup_logger
@@ -53,11 +53,11 @@ def _add_user_filters(
 
     # If anonymous user, only show public cc_pairs
     if user.is_anonymous:
-        where_clause = ConnectorCredentialPair.access_type == AccessType.PUBLIC
+        where_clause = DatasourceCredentialPair.access_type == AccessType.PUBLIC
         return stmt.where(where_clause)
 
     stmt = stmt.distinct()
-    UG__CCpair = aliased(Team__ConnectorCredentialPair)
+    UG__CCpair = aliased(Team__DatasourceCredentialPair)
     User__UG = aliased(User__Team)
 
     """
@@ -92,14 +92,14 @@ def _add_user_filters(
             )
         where_clause &= (
             ~exists()
-            .where(UG__CCpair.cc_pair_id == ConnectorCredentialPair.id)
+            .where(UG__CCpair.datasource_credential_pair_id == DatasourceCredentialPair.id)
             .where(~UG__CCpair.team_id.in_(teams))
-            .correlate(ConnectorCredentialPair)
+            .correlate(DatasourceCredentialPair)
         )
-        where_clause |= ConnectorCredentialPair.creator_id == user.id
+        where_clause |= DatasourceCredentialPair.creator_id == user.id
     else:
-        where_clause |= ConnectorCredentialPair.access_type == AccessType.PUBLIC
-        where_clause |= ConnectorCredentialPair.access_type == AccessType.SYNC
+        where_clause |= DatasourceCredentialPair.access_type == AccessType.PUBLIC
+        where_clause |= DatasourceCredentialPair.access_type == AccessType.SYNC
 
     return stmt.where(where_clause)
 
@@ -115,7 +115,7 @@ def get_connector_credential_pairs_for_user(
     order_by_desc: bool = False,
     source: DocumentSource | None = None,
     processing_mode: ProcessingMode | None = ProcessingMode.REGULAR,
-) -> list[ConnectorCredentialPair]:
+) -> list[DatasourceCredentialPair]:
     """Get connector credential pairs for a user.
 
     Args:
@@ -126,13 +126,13 @@ def get_connector_credential_pairs_for_user(
         assert (
             eager_load_credential
         ), "eager_load_credential must be True if eager_load_user is True"
-    stmt = select(ConnectorCredentialPair).distinct()
+    stmt = select(DatasourceCredentialPair).distinct()
 
     if eager_load_connector:
-        stmt = stmt.options(selectinload(ConnectorCredentialPair.connector))
+        stmt = stmt.options(selectinload(DatasourceCredentialPair.datasource))
 
     if eager_load_credential:
-        load_opts = selectinload(ConnectorCredentialPair.credential)
+        load_opts = selectinload(DatasourceCredentialPair.credential)
         if eager_load_user:
             load_opts = load_opts.joinedload(Credential.user)
         stmt = stmt.options(load_opts)
@@ -140,18 +140,18 @@ def get_connector_credential_pairs_for_user(
     stmt = _add_user_filters(stmt, user, get_editable)
 
     if source:
-        stmt = stmt.join(ConnectorCredentialPair.connector).where(
-            Connector.source == source.value
+        stmt = stmt.join(DatasourceCredentialPair.datasource).where(
+            Datasource.source == source.value
         )
 
     if ids:
-        stmt = stmt.where(ConnectorCredentialPair.id.in_(ids))
+        stmt = stmt.where(DatasourceCredentialPair.id.in_(ids))
 
     if processing_mode is not None:
-        stmt = stmt.where(ConnectorCredentialPair.processing_mode == processing_mode)
+        stmt = stmt.where(DatasourceCredentialPair.processing_mode == processing_mode)
 
     if order_by_desc:
-        stmt = stmt.order_by(desc(ConnectorCredentialPair.id))
+        stmt = stmt.order_by(desc(DatasourceCredentialPair.id))
 
     return list(db_session.scalars(stmt).unique().all())
 
@@ -169,7 +169,7 @@ def get_connector_credential_pairs_for_user_parallel(
     order_by_desc: bool = False,
     source: DocumentSource | None = None,
     processing_mode: ProcessingMode | None = ProcessingMode.REGULAR,
-) -> list[ConnectorCredentialPair]:
+) -> list[DatasourceCredentialPair]:
     with get_session_with_current_tenant() as db_session:
         return get_connector_credential_pairs_for_user(
             db_session=db_session,
@@ -187,11 +187,11 @@ def get_connector_credential_pairs_for_user_parallel(
 
 def get_connector_credential_pairs(
     db_session: Session, ids: list[int] | None = None
-) -> list[ConnectorCredentialPair]:
-    stmt = select(ConnectorCredentialPair).distinct()
+) -> list[DatasourceCredentialPair]:
+    stmt = select(DatasourceCredentialPair).distinct()
 
     if ids:
-        stmt = stmt.where(ConnectorCredentialPair.id.in_(ids))
+        stmt = stmt.where(DatasourceCredentialPair.id.in_(ids))
 
     return list(db_session.scalars(stmt).all())
 
@@ -214,13 +214,13 @@ def add_deletion_failure_message(
 def get_cc_pair_groups_for_ids(
     db_session: Session,
     cc_pair_ids: list[int],
-) -> list[Team__ConnectorCredentialPair]:
-    stmt = select(Team__ConnectorCredentialPair).distinct()
+) -> list[Team__DatasourceCredentialPair]:
+    stmt = select(Team__DatasourceCredentialPair).distinct()
     stmt = stmt.outerjoin(
-        ConnectorCredentialPair,
-        Team__ConnectorCredentialPair.cc_pair_id == ConnectorCredentialPair.id,
+        DatasourceCredentialPair,
+        Team__DatasourceCredentialPair.datasource_credential_pair_id == DatasourceCredentialPair.id,
     )
-    stmt = stmt.where(Team__ConnectorCredentialPair.cc_pair_id.in_(cc_pair_ids))
+    stmt = stmt.where(Team__DatasourceCredentialPair.datasource_credential_pair_id.in_(cc_pair_ids))
     return list(db_session.scalars(stmt).all())
 
 
@@ -229,7 +229,7 @@ def get_cc_pair_groups_for_ids(
 # after this function to allow lazy loading.
 def get_cc_pair_groups_for_ids_parallel(
     cc_pair_ids: list[int],
-) -> list[Team__ConnectorCredentialPair]:
+) -> list[Team__DatasourceCredentialPair]:
     with get_session_with_current_tenant() as db_session:
         return get_cc_pair_groups_for_ids(db_session, cc_pair_ids)
 
@@ -240,11 +240,11 @@ def get_connector_credential_pair_for_user(
     credential_id: int,
     user: User,
     get_editable: bool = True,
-) -> ConnectorCredentialPair | None:
-    stmt = select(ConnectorCredentialPair)
+) -> DatasourceCredentialPair | None:
+    stmt = select(DatasourceCredentialPair)
     stmt = _add_user_filters(stmt, user, get_editable)
-    stmt = stmt.where(ConnectorCredentialPair.connector_id == connector_id)
-    stmt = stmt.where(ConnectorCredentialPair.credential_id == credential_id)
+    stmt = stmt.where(DatasourceCredentialPair.datasource_id == connector_id)
+    stmt = stmt.where(DatasourceCredentialPair.credential_id == credential_id)
     result = db_session.execute(stmt)
     return result.scalar_one_or_none()
 
@@ -253,10 +253,10 @@ def get_connector_credential_pair(
     db_session: Session,
     connector_id: int,
     credential_id: int,
-) -> ConnectorCredentialPair | None:
-    stmt = select(ConnectorCredentialPair)
-    stmt = stmt.where(ConnectorCredentialPair.connector_id == connector_id)
-    stmt = stmt.where(ConnectorCredentialPair.credential_id == credential_id)
+) -> DatasourceCredentialPair | None:
+    stmt = select(DatasourceCredentialPair)
+    stmt = stmt.where(DatasourceCredentialPair.datasource_id == connector_id)
+    stmt = stmt.where(DatasourceCredentialPair.credential_id == credential_id)
     result = db_session.execute(stmt)
     return result.scalar_one_or_none()
 
@@ -266,10 +266,10 @@ def get_connector_credential_pair_from_id_for_user(
     db_session: Session,
     user: User,
     get_editable: bool = True,
-) -> ConnectorCredentialPair | None:
-    stmt = select(ConnectorCredentialPair).distinct()
+) -> DatasourceCredentialPair | None:
+    stmt = select(DatasourceCredentialPair).distinct()
     stmt = _add_user_filters(stmt, user, get_editable)
-    stmt = stmt.where(ConnectorCredentialPair.id == cc_pair_id)
+    stmt = stmt.where(DatasourceCredentialPair.id == cc_pair_id)
     result = db_session.execute(stmt)
     return result.scalar_one_or_none()
 
@@ -280,9 +280,9 @@ def verify_user_has_access_to_cc_pair(
     user: User,
     get_editable: bool = True,
 ) -> bool:
-    stmt = select(ConnectorCredentialPair.id)
+    stmt = select(DatasourceCredentialPair.id)
     stmt = _add_user_filters(stmt, user, get_editable)
-    stmt = stmt.where(ConnectorCredentialPair.id == cc_pair_id)
+    stmt = stmt.where(DatasourceCredentialPair.id == cc_pair_id)
     result = db_session.execute(stmt)
     return result.scalars().first() is not None
 
@@ -292,14 +292,14 @@ def get_connector_credential_pair_from_id(
     cc_pair_id: int,
     eager_load_connector: bool = False,
     eager_load_credential: bool = False,
-) -> ConnectorCredentialPair | None:
-    stmt = select(ConnectorCredentialPair).distinct()
-    stmt = stmt.where(ConnectorCredentialPair.id == cc_pair_id)
+) -> DatasourceCredentialPair | None:
+    stmt = select(DatasourceCredentialPair).distinct()
+    stmt = stmt.where(DatasourceCredentialPair.id == cc_pair_id)
 
     if eager_load_credential:
-        stmt = stmt.options(joinedload(ConnectorCredentialPair.credential))
+        stmt = stmt.options(joinedload(DatasourceCredentialPair.credential))
     if eager_load_connector:
-        stmt = stmt.options(joinedload(ConnectorCredentialPair.connector))
+        stmt = stmt.options(joinedload(DatasourceCredentialPair.datasource))
 
     result = db_session.execute(stmt)
     return result.scalar_one_or_none()
@@ -308,11 +308,11 @@ def get_connector_credential_pair_from_id(
 def get_connector_credential_pairs_for_source(
     db_session: Session,
     source: DocumentSource,
-) -> list[ConnectorCredentialPair]:
+) -> list[DatasourceCredentialPair]:
     stmt = (
-        select(ConnectorCredentialPair)
-        .join(ConnectorCredentialPair.connector)
-        .where(Connector.source == source)
+        select(DatasourceCredentialPair)
+        .join(DatasourceCredentialPair.datasource)
+        .where(Datasource.source == source)
     )
     return list(db_session.scalars(stmt).unique().all())
 
@@ -333,11 +333,11 @@ def get_last_successful_attempt_poll_range_end(
     latest_successful_index_attempt = (
         db_session.query(IndexAttempt)
         .join(
-            ConnectorCredentialPair,
-            IndexAttempt.connector_credential_pair_id == ConnectorCredentialPair.id,
+            DatasourceCredentialPair,
+            IndexAttempt.datasource_credential_pair_id == DatasourceCredentialPair.id,
         )
         .filter(
-            ConnectorCredentialPair.id == cc_pair_id,
+            DatasourceCredentialPair.id == cc_pair_id,
             IndexAttempt.search_settings_id == search_settings.id,
             IndexAttempt.status == IndexingStatus.SUCCESS,
         )
@@ -358,7 +358,7 @@ def get_last_successful_attempt_poll_range_end(
 
 def _update_connector_credential_pair(
     db_session: Session,
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     status: ConnectorCredentialPairStatus | None = None,
     net_docs: int | None = None,
     run_dt: datetime | None = None,
@@ -437,8 +437,8 @@ def set_cc_pair_repeated_error_state(
     in_repeated_error_state: bool,
 ) -> None:
     stmt = (
-        update(ConnectorCredentialPair)
-        .where(ConnectorCredentialPair.id == cc_pair_id)
+        update(DatasourceCredentialPair)
+        .where(DatasourceCredentialPair.id == cc_pair_id)
         .values(in_repeated_error_state=in_repeated_error_state)
     )
     db_session.execute(stmt)
@@ -450,19 +450,19 @@ def delete_connector_credential_pair__no_commit(
     connector_id: int,
     credential_id: int,
 ) -> None:
-    stmt = delete(ConnectorCredentialPair).where(
-        ConnectorCredentialPair.connector_id == connector_id,
-        ConnectorCredentialPair.credential_id == credential_id,
+    stmt = delete(DatasourceCredentialPair).where(
+        DatasourceCredentialPair.datasource_id == connector_id,
+        DatasourceCredentialPair.credential_id == credential_id,
     )
     db_session.execute(stmt)
 
 
 def associate_default_cc_pair(db_session: Session) -> None:
     existing_association = (
-        db_session.query(ConnectorCredentialPair)
+        db_session.query(DatasourceCredentialPair)
         .filter(
-            ConnectorCredentialPair.connector_id == 0,
-            ConnectorCredentialPair.credential_id == 0,
+            DatasourceCredentialPair.datasource_id == 0,
+            DatasourceCredentialPair.credential_id == 0,
         )
         .one_or_none()
     )
@@ -472,8 +472,8 @@ def associate_default_cc_pair(db_session: Session) -> None:
     # DefaultCCPair has id 1 since it is the first CC pair created
     # It is DEFAULT_CC_PAIR_ID, but can't set it explicitly because it messed with the
     # auto-incrementing id
-    association = ConnectorCredentialPair(
-        connector_id=0,
+    association = DatasourceCredentialPair(
+        datasource_id=0,
         credential_id=0,
         access_type=AccessType.PUBLIC,
         name="DefaultCCPair",
@@ -493,8 +493,8 @@ def _relate_groups_to_cc_pair__no_commit(
 
     for group_id in team_ids:
         db_session.add(
-            Team__ConnectorCredentialPair(
-                team_id=group_id, cc_pair_id=cc_pair_id
+            Team__DatasourceCredentialPair(
+                team_id=group_id, datasource_credential_pair_id=cc_pair_id
             )
         )
 
@@ -551,10 +551,10 @@ def add_credential_to_connector(
         )
 
     existing_association = (
-        db_session.query(ConnectorCredentialPair)
+        db_session.query(DatasourceCredentialPair)
         .filter(
-            ConnectorCredentialPair.connector_id == connector_id,
-            ConnectorCredentialPair.credential_id == credential_id,
+            DatasourceCredentialPair.datasource_id == connector_id,
+            DatasourceCredentialPair.credential_id == credential_id,
         )
         .one_or_none()
     )
@@ -565,9 +565,9 @@ def add_credential_to_connector(
             data=connector_id,
         )
 
-    association = ConnectorCredentialPair(
+    association = DatasourceCredentialPair(
         creator_id=user.id,
-        connector_id=connector_id,
+        datasource_id=connector_id,
         credential_id=credential_id,
         name=cc_pair_name,
         status=initial_status,
@@ -654,19 +654,19 @@ def fetch_indexable_standard_connector_credential_pair_ids(
     active_cc_pairs_only: bool = True,
     limit: int | None = None,
 ) -> list[int]:
-    stmt = select(ConnectorCredentialPair.id)
+    stmt = select(DatasourceCredentialPair.id)
 
     # For regular indexing checks
     if active_cc_pairs_only:
         stmt = stmt.where(
-            ConnectorCredentialPair.status.in_(
+            DatasourceCredentialPair.status.in_(
                 ConnectorCredentialPairStatus.active_statuses()
             )
         )
     else:
         # For embedding swap checks, include PAUSED and exclude DELETING or INVALID
         stmt = stmt.where(
-            ConnectorCredentialPair.status.in_(
+            DatasourceCredentialPair.status.in_(
                 ConnectorCredentialPairStatus.indexable_statuses()
             )
         )
@@ -680,15 +680,15 @@ def fetch_indexable_standard_connector_credential_pair_ids(
 def fetch_connector_credential_pair_for_connector(
     db_session: Session,
     connector_id: int,
-) -> ConnectorCredentialPair | None:
-    stmt = select(ConnectorCredentialPair).where(
-        ConnectorCredentialPair.connector_id == connector_id,
+) -> DatasourceCredentialPair | None:
+    stmt = select(DatasourceCredentialPair).where(
+        DatasourceCredentialPair.datasource_id == connector_id,
     )
     return db_session.scalar(stmt)
 
 
 def resync_cc_pair(
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     search_settings_id: int,
     db_session: Session,
 ) -> None:
@@ -711,12 +711,12 @@ def resync_cc_pair(
         query = (
             db_session.query(IndexAttempt)
             .join(
-                ConnectorCredentialPair,
-                IndexAttempt.connector_credential_pair_id == ConnectorCredentialPair.id,
+                DatasourceCredentialPair,
+                IndexAttempt.datasource_credential_pair_id == DatasourceCredentialPair.id,
             )
             .filter(
-                ConnectorCredentialPair.connector_id == connector_id,
-                ConnectorCredentialPair.credential_id == credential_id,
+                DatasourceCredentialPair.datasource_id == connector_id,
+                DatasourceCredentialPair.credential_id == credential_id,
                 IndexAttempt.search_settings_id == search_settings_id,
             )
         )
@@ -729,7 +729,7 @@ def resync_cc_pair(
         return latest_index_attempt
 
     last_success = find_latest_index_attempt(
-        connector_id=cc_pair.connector_id,
+        connector_id=cc_pair.datasource_id,
         credential_id=cc_pair.credential_id,
         only_include_success=True,
         db_session=db_session,
@@ -756,8 +756,8 @@ def _delete_connector_credential_pair_teams_relationship__no_commit(
             f"and credential_id: {credential_id} not found"
         )
 
-    stmt = delete(Team__ConnectorCredentialPair).where(
-        Team__ConnectorCredentialPair.cc_pair_id == cc_pair.id,
+    stmt = delete(Team__DatasourceCredentialPair).where(
+        Team__DatasourceCredentialPair.datasource_credential_pair_id == cc_pair.id,
     )
     db_session.execute(stmt)
 
@@ -767,23 +767,23 @@ def get_cc_pairs_by_source(
     source_type: DocumentSource,
     access_type: AccessType | None = None,
     status: ConnectorCredentialPairStatus | None = None,
-) -> list[ConnectorCredentialPair]:
+) -> list[DatasourceCredentialPair]:
     """
     Get all cc_pairs for a given source type with optional filtering by access_type and status
     result is sorted by cc_pair id
     """
     query = (
-        db_session.query(ConnectorCredentialPair)
-        .join(ConnectorCredentialPair.connector)
-        .filter(Connector.source == source_type)
-        .order_by(ConnectorCredentialPair.id)
+        db_session.query(DatasourceCredentialPair)
+        .join(DatasourceCredentialPair.datasource)
+        .filter(Datasource.source == source_type)
+        .order_by(DatasourceCredentialPair.id)
     )
 
     if access_type is not None:
-        query = query.filter(ConnectorCredentialPair.access_type == access_type)
+        query = query.filter(DatasourceCredentialPair.access_type == access_type)
 
     if status is not None:
-        query = query.filter(ConnectorCredentialPair.status == status)
+        query = query.filter(DatasourceCredentialPair.status == status)
 
     cc_pairs = query.all()
     return cc_pairs
@@ -791,11 +791,11 @@ def get_cc_pairs_by_source(
 
 def get_all_auto_sync_cc_pairs(
     db_session: Session,
-) -> list[ConnectorCredentialPair]:
+) -> list[DatasourceCredentialPair]:
     return (
-        db_session.query(ConnectorCredentialPair)
+        db_session.query(DatasourceCredentialPair)
         .where(
-            ConnectorCredentialPair.access_type == AccessType.SYNC,
+            DatasourceCredentialPair.access_type == AccessType.SYNC,
         )
         .all()
     )

@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from pydantic import Field
 
 from om.db.models import DocumentSet as DocumentSetDBModel
-from om.db.models import FederatedConnector__DocumentSet
+from om.db.models import FederatedDatasource__DocumentSet
 from om.server.documents.models import CCPairSummary
 from om.server.documents.models import ConnectorCredentialPairDescriptor
 from om.server.documents.models import ConnectorSnapshot
@@ -30,19 +30,19 @@ class FederatedConnectorDescriptor(BaseModel):
 
     @classmethod
     def from_federated_connector_mapping(
-        cls, fc_mapping: "FederatedConnector__DocumentSet"
+        cls, fc_mapping: "FederatedDatasource__DocumentSet"
     ) -> "FederatedConnectorDescriptor":
         """Create a descriptor from a federated connector mapping"""
         return cls(
-            id=fc_mapping.federated_connector_id,
+            id=fc_mapping.federated_datasource_id,
             name=(
-                f"{fc_mapping.federated_connector.source.replace('_', ' ').title()}"
-                if fc_mapping.federated_connector
+                f"{fc_mapping.federated_datasource.source.replace('_', ' ').title()}"
+                if fc_mapping.federated_datasource
                 else "Unknown"
             ),
             source=(
-                fc_mapping.federated_connector.source
-                if fc_mapping.federated_connector
+                fc_mapping.federated_datasource.source
+                if fc_mapping.federated_datasource
                 else "unknown"
             ),
             entities=fc_mapping.entities,
@@ -111,14 +111,14 @@ class DocumentSet(BaseModel):
                     id=cc_pair.id,
                     name=cc_pair.name,
                     connector=ConnectorSnapshot.from_connector_db_model(
-                        cc_pair.connector
+                        cc_pair.datasource
                     ),
                     credential=CredentialSnapshot.from_credential_db_model(
                         cc_pair.credential
                     ),
                     access_type=cc_pair.access_type,
                 )
-                for cc_pair in document_set_model.connector_credential_pairs
+                for cc_pair in document_set_model.datasource_credential_pairs
             ],
             is_up_to_date=document_set_model.is_up_to_date,
             is_public=document_set_model.is_public,
@@ -128,7 +128,7 @@ class DocumentSet(BaseModel):
                 FederatedConnectorDescriptor.from_federated_connector_mapping(
                     fc_mapping
                 )
-                for fc_mapping in document_set_model.federated_connectors
+                for fc_mapping in document_set_model.federated_datasources
             ],
         )
 
@@ -159,10 +159,10 @@ class DocumentSetSummary(BaseModel):
                 CCPairSummary(
                     id=cc_pair.id,
                     name=cc_pair.name,
-                    source=cc_pair.connector.source,
+                    source=cc_pair.datasource.source,
                     access_type=cc_pair.access_type,
                 )
-                for cc_pair in document_set.connector_credential_pairs
+                for cc_pair in document_set.datasource_credential_pairs
             ],
             is_up_to_date=document_set.is_up_to_date,
             is_public=document_set.is_public,
@@ -170,12 +170,12 @@ class DocumentSetSummary(BaseModel):
             groups=[group.id for group in document_set.groups],
             federated_connector_summaries=[
                 FederatedConnectorSummary(
-                    id=fc_mapping.federated_connector_id,
-                    name=f"{fc_mapping.federated_connector.source.replace('_', ' ').title()}",
-                    source=fc_mapping.federated_connector.source,
+                    id=fc_mapping.federated_datasource_id,
+                    name=f"{fc_mapping.federated_datasource.source.replace('_', ' ').title()}",
+                    source=fc_mapping.federated_datasource.source,
                     entities=fc_mapping.entities,
                 )
-                for fc_mapping in document_set.federated_connectors
-                if fc_mapping.federated_connector is not None
+                for fc_mapping in document_set.federated_datasources
+                if fc_mapping.federated_datasource is not None
             ],
         )

@@ -418,7 +418,7 @@ def monitor_connector_deletion_taskset(
 
         try:
             doc_ids = get_document_ids_for_connector_credential_pair(
-                db_session, cc_pair.connector_id, cc_pair.credential_id
+                db_session, cc_pair.datasource_id, cc_pair.credential_id
             )
             if len(doc_ids) > 0:
                 # NOTE(rkuo): if this happens, documents somehow got added while
@@ -459,7 +459,7 @@ def monitor_connector_deletion_taskset(
             # document sets
             delete_document_set_cc_pair_relationship__no_commit(
                 db_session=db_session,
-                connector_id=cc_pair.connector_id,
+                connector_id=cc_pair.datasource_id,
                 credential_id=cc_pair.credential_id,
             )
 
@@ -474,7 +474,7 @@ def monitor_connector_deletion_taskset(
             delete_orphan_tags__no_commit(db_session)
 
             # Store IDs before potentially expiring cc_pair
-            connector_id_to_delete = cc_pair.connector_id
+            connector_id_to_delete = cc_pair.datasource_id
             credential_id_to_delete = cc_pair.credential_id
 
             # Explicitly delete document by connector credential pair records before deleting the connector

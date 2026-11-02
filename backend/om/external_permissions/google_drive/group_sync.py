@@ -9,7 +9,7 @@ from om.datasource.google_utils.resources import AdminService
 from om.datasource.google_utils.resources import get_admin_service
 from om.datasource.google_utils.resources import get_drive_service
 from om.db.external_perm import ExternalUserGroup
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.external_permissions.google_drive.folder_retrieval import (
     get_folder_permissions_by_ids,
 )
@@ -385,11 +385,11 @@ def _build_om_groups(
 
 def gdrive_group_sync(
     tenant_id: str,  # noqa: ARG001
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
 ) -> Generator[ExternalUserGroup, None, None]:
     # Initialize connector and build credential/service objects
     google_drive_connector = GoogleDriveConnector(
-        **cc_pair.connector.connector_specific_config
+        **cc_pair.datasource.datasource_specific_config
     )
     credential_json = (
         cc_pair.credential.credential_json.get_value(apply_mask=False)

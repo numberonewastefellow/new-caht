@@ -62,8 +62,8 @@ def _setup_common_patches(monkeypatch: Any, document_set: Any) -> dict[str, bool
 
 def test_monitor_preserves_federated_only_document_set(monkeypatch: Any) -> None:
     document_set = SimpleNamespace(
-        connector_credential_pairs=[],
-        federated_connectors=[object()],
+        datasource_credential_pairs=[],
+        federated_datasources=[object()],
     )
 
     calls = _setup_common_patches(monkeypatch, document_set)
@@ -81,8 +81,8 @@ def test_monitor_preserves_federated_only_document_set(monkeypatch: Any) -> None
 
 def test_monitor_deletes_document_set_with_no_connectors(monkeypatch: Any) -> None:
     document_set = SimpleNamespace(
-        connector_credential_pairs=[],
-        federated_connectors=[],
+        datasource_credential_pairs=[],
+        federated_datasources=[],
     )
 
     calls = _setup_common_patches(monkeypatch, document_set)

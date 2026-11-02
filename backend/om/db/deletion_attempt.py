@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session
 
 from om.db.index_attempt import get_last_attempt
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.models import IndexingStatus
 from om.db.search_settings import get_current_search_settings
 
 
 def check_deletion_attempt_is_allowed(
-    connector_credential_pair: ConnectorCredentialPair,
+    connector_credential_pair: DatasourceCredentialPair,
     db_session: Session,
     allow_scheduled: bool = False,
 ) -> str | None:
@@ -19,14 +19,14 @@ def check_deletion_attempt_is_allowed(
     Returns an error message if the deletion attempt is not allowed, otherwise None.
     """
     base_error_msg = (
-        f"Connector with ID '{connector_credential_pair.connector_id}' and credential ID "
+        f"Connector with ID '{connector_credential_pair.datasource_id}' and credential ID "
         f"'{connector_credential_pair.credential_id}' is not deletable."
     )
 
     if connector_credential_pair.status.is_active():
         return base_error_msg + " Connector must be paused."
 
-    connector_id = connector_credential_pair.connector_id
+    connector_id = connector_credential_pair.datasource_id
     credential_id = connector_credential_pair.credential_id
     search_settings = get_current_search_settings(db_session)
 

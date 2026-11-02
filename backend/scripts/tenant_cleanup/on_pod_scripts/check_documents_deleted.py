@@ -18,7 +18,7 @@ from sqlalchemy import select
 
 from om.db.engine.sql_engine import get_session_with_tenant
 from om.db.engine.sql_engine import SqlEngine
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.models import Document
 
 
@@ -41,7 +41,7 @@ def check_documents_deleted(tenant_id: str) -> dict:
         with get_session_with_tenant(tenant_id=tenant_id) as db_session:
             # Count ConnectorCredentialPairs
             cc_count = db_session.scalar(
-                select(func.count()).select_from(ConnectorCredentialPair)
+                select(func.count()).select_from(DatasourceCredentialPair)
             )
 
             # Count Documents

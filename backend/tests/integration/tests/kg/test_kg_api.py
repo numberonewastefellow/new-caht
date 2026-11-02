@@ -11,7 +11,7 @@ from om.db.connector import create_connector
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.kg_config import get_kg_config_settings
 from om.db.kg_config import set_kg_config_settings
-from om.db.models import Connector
+from om.db.models import Datasource
 from om.server.documents.models import ConnectorBase
 from om.server.kg.models import DisableKGConfigRequest
 from om.server.kg.models import EnableKGConfigRequest
@@ -198,8 +198,8 @@ def test_update_kg_entity_types(connectors: None) -> None:  # noqa: ARG001
     # Check connector kg_processing is enabled
     with get_session_with_current_tenant() as db_session:
         connector = (
-            db_session.query(Connector)
-            .filter(Connector.name == "Salesforce Test")
+            db_session.query(Datasource)
+            .filter(Datasource.name == "Salesforce Test")
             .scalar()
         )
         assert connector.kg_processing_enabled

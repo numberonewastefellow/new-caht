@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from om.db.connector import fetch_unique_document_sources
 from om.db.document import DocumentSource
-from om.db.models import Connector
+from om.db.models import Datasource
 from om.db.models import KGEntityType
 from om.kg.models import KGAttributeEntityOption
 from om.server.kg.models import EntityType
@@ -120,9 +120,9 @@ def update_entity_types_and_related_connectors__commit(
 
     # Update connectors that should be enabled
     db_session.execute(
-        update(Connector)
+        update(Datasource)
         .where(
-            Connector.source.in_(
+            Datasource.source.in_(
                 [
                     source
                     for source in DocumentSource
@@ -130,15 +130,15 @@ def update_entity_types_and_related_connectors__commit(
                 ]
             )
         )
-        .where(~Connector.kg_processing_enabled)
+        .where(~Datasource.kg_processing_enabled)
         .values(kg_processing_enabled=True)
     )
 
     # Update connectors that should be disabled
     db_session.execute(
-        update(Connector)
+        update(Datasource)
         .where(
-            Connector.source.in_(
+            Datasource.source.in_(
                 [
                     source
                     for source in DocumentSource
@@ -146,7 +146,7 @@ def update_entity_types_and_related_connectors__commit(
                 ]
             )
         )
-        .where(Connector.kg_processing_enabled)
+        .where(Datasource.kg_processing_enabled)
         .values(kg_processing_enabled=False)
     )
 

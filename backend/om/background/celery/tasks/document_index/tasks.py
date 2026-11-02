@@ -16,10 +16,6 @@ from tenacity import RetryError
 
 from om.access.access import get_access_for_document
 from om.background.celery.apps.app_base import task_logger
-from om.background.celery.tasks.shared.RetryDocumentIndex import RetryDocumentIndex
-from om.background.celery.tasks.shared.tasks import LIGHT_SOFT_TIME_LIMIT
-from om.background.celery.tasks.shared.tasks import LIGHT_TIME_LIMIT
-from om.background.celery.tasks.shared.tasks import OmCeleryTaskCompletionStatus
 from om.background.celery.tasks.document_index.document_sync import DOCUMENT_SYNC_FENCE_KEY
 from om.background.celery.tasks.document_index.document_sync import get_document_sync_payload
 from om.background.celery.tasks.document_index.document_sync import get_document_sync_remaining
@@ -27,8 +23,12 @@ from om.background.celery.tasks.document_index.document_sync import reset_docume
 from om.background.celery.tasks.document_index.document_sync import (
     try_generate_stale_document_sync_tasks,
 )
-from om.configs.app_configs import JOB_TIMEOUT
+from om.background.celery.tasks.shared.RetryDocumentIndex import RetryDocumentIndex
+from om.background.celery.tasks.shared.tasks import LIGHT_SOFT_TIME_LIMIT
+from om.background.celery.tasks.shared.tasks import LIGHT_TIME_LIMIT
+from om.background.celery.tasks.shared.tasks import OmCeleryTaskCompletionStatus
 from om.configs.app_configs import DOC_INDEX_SYNC_MAX_TASKS
+from om.configs.app_configs import JOB_TIMEOUT
 from om.configs.constants import CELERY_DOC_INDEX_SYNC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import OmCeleryTask
 from om.configs.constants import OmRedisConstants
@@ -407,10 +407,10 @@ def monitor_document_set_taskset(
         get_document_set_by_id(db_session=db_session, document_set_id=document_set_id),
     )  # casting since we "know" a document set with this ID exists
     if document_set:
-        has_connector_pairs = bool(document_set.connector_credential_pairs)
+        has_connector_pairs = bool(document_set.datasource_credential_pairs)
         # Federated connectors should keep a document set alive even without cc pairs.
         has_federated_connectors = bool(
-            getattr(document_set, "federated_connectors", [])
+            getattr(document_set, "federated_datasources", [])
         )
 
         if not has_connector_pairs and not has_federated_connectors:

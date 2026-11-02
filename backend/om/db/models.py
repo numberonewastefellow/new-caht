@@ -312,10 +312,10 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     notifications: Mapped[list["Notification"]] = relationship(
         "Notification", back_populates="user"
     )
-    cc_pairs: Mapped[list["ConnectorCredentialPair"]] = relationship(
-        "ConnectorCredentialPair",
+    datasource_credential_pairs: Mapped[list["DatasourceCredentialPair"]] = relationship(
+        "DatasourceCredentialPair",
         back_populates="creator",
-        primaryjoin="User.id == foreign(ConnectorCredentialPair.creator_id)",
+        primaryjoin="User.id == foreign(DatasourceCredentialPair.creator_id)",
     )
     workspaces: Mapped[list["Workspace"]] = relationship(
         "Workspace", back_populates="user"
@@ -518,14 +518,14 @@ class DocumentSet__User(Base):
     )
 
 
-class DocumentSet__ConnectorCredentialPair(Base):
-    __tablename__ = "document_set__connector_credential_pair"
+class DocumentSet__DatasourceCredentialPair(Base):
+    __tablename__ = "document_set__datasource_credential_pair"
 
     document_set_id: Mapped[int] = mapped_column(
         ForeignKey("document_set.id"), primary_key=True
     )
-    connector_credential_pair_id: Mapped[int] = mapped_column(
-        ForeignKey("connector_credential_pair.id"), primary_key=True
+    datasource_credential_pair_id: Mapped[int] = mapped_column(
+        ForeignKey("datasource_credential_pair.id"), primary_key=True
     )
     # if `True`, then is part of the current state of the document set
     # if `False`, then is a part of the prior state of the document set
@@ -646,18 +646,18 @@ Documents/Indexing Tables
 """
 
 
-class ConnectorCredentialPair(Base):
+class DatasourceCredentialPair(Base):
     """Connectors and Credentials can have a many-to-many relationship
     I.e. A Confluence Connector may have multiple admin users who can run it with their own credentials
     I.e. An admin user may use the same credential to index multiple Confluence Spaces
     """
 
-    __tablename__ = "connector_credential_pair"
+    __tablename__ = "datasource_credential_pair"
     # NOTE: this `id` column has to use `Sequence` instead of `autoincrement=True`
     # due to some SQLAlchemy quirks + this not being a primary key column
     id: Mapped[int] = mapped_column(
         Integer,
-        Sequence("connector_credential_pair_id_seq"),
+        Sequence("datasource_credential_pair_id_seq"),
         unique=True,
         nullable=False,
     )
@@ -668,8 +668,8 @@ class ConnectorCredentialPair(Base):
     # this is separate from the `status` above, since a connector can be `INITIAL_INDEXING`, `ACTIVE`,
     # or `PAUSED` and still be in a repeated error state.
     in_repeated_error_state: Mapped[bool] = mapped_column(Boolean, default=False)
-    connector_id: Mapped[int] = mapped_column(
-        ForeignKey("connector.id"), primary_key=True
+    datasource_id: Mapped[int] = mapped_column(
+        ForeignKey("datasource.id"), primary_key=True
     )
 
     deletion_failure_message: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -729,36 +729,36 @@ class ConnectorCredentialPair(Base):
         server_default="REGULAR",
     )
 
-    connector: Mapped["Connector"] = relationship(
-        "Connector", back_populates="credentials"
+    datasource: Mapped["Datasource"] = relationship(
+        "Datasource", back_populates="credentials"
     )
     credential: Mapped["Credential"] = relationship(
-        "Credential", back_populates="connectors"
+        "Credential", back_populates="datasources"
     )
     document_sets: Mapped[list["DocumentSet"]] = relationship(
         "DocumentSet",
-        secondary=DocumentSet__ConnectorCredentialPair.__table__,
+        secondary=DocumentSet__DatasourceCredentialPair.__table__,
         primaryjoin=(
-            (DocumentSet__ConnectorCredentialPair.connector_credential_pair_id == id)
-            & (DocumentSet__ConnectorCredentialPair.is_current.is_(True))
+            (DocumentSet__DatasourceCredentialPair.datasource_credential_pair_id == id)
+            & (DocumentSet__DatasourceCredentialPair.is_current.is_(True))
         ),
-        back_populates="connector_credential_pairs",
+        back_populates="datasource_credential_pairs",
         overlaps="document_set",
     )
     index_attempts: Mapped[list["IndexAttempt"]] = relationship(
-        "IndexAttempt", back_populates="connector_credential_pair"
+        "IndexAttempt", back_populates="datasource_credential_pair"
     )
 
     # the user id of the user that created this cc pair
     creator_id: Mapped[UUID | None] = mapped_column(nullable=True)
     creator: Mapped["User"] = relationship(
         "User",
-        back_populates="cc_pairs",
-        primaryjoin="foreign(ConnectorCredentialPair.creator_id) == remote(User.id)",
+        back_populates="datasource_credential_pairs",
+        primaryjoin="foreign(DatasourceCredentialPair.creator_id) == remote(User.id)",
     )
 
     background_errors: Mapped[list["BackgroundError"]] = relationship(
-        "BackgroundError", back_populates="cc_pair", cascade="all, delete-orphan"
+        "BackgroundError", back_populates="datasource_credential_pair", cascade="all, delete-orphan"
     )
 
 
@@ -1673,8 +1673,8 @@ class Tag(Base):
     )
 
 
-class Connector(Base):
-    __tablename__ = "connector"
+class Datasource(Base):
+    __tablename__ = "datasource"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String)
@@ -1682,7 +1682,7 @@ class Connector(Base):
         Enum(DocumentSource, native_enum=False)
     )
     input_type = mapped_column(Enum(InputType, native_enum=False))
-    connector_specific_config: Mapped[dict[str, Any]] = mapped_column(
+    datasource_specific_config: Mapped[dict[str, Any]] = mapped_column(
         postgresql.JSONB()
     )
     indexing_start: Mapped[datetime.datetime | None] = mapped_column(
@@ -1707,15 +1707,15 @@ class Connector(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
-    credentials: Mapped[list["ConnectorCredentialPair"]] = relationship(
-        "ConnectorCredentialPair",
-        back_populates="connector",
+    credentials: Mapped[list["DatasourceCredentialPair"]] = relationship(
+        "DatasourceCredentialPair",
+        back_populates="datasource",
         cascade="all, delete-orphan",
     )
-    documents_by_connector: Mapped[list["DocumentByConnectorCredentialPair"]] = (
+    documents_by_datasource: Mapped[list["DocumentByDatasourceCredentialPair"]] = (
         relationship(
-            "DocumentByConnectorCredentialPair",
-            back_populates="connector",
+            "DocumentByDatasourceCredentialPair",
+            back_populates="datasource",
             passive_deletes=True,
         )
     )
@@ -1767,14 +1767,14 @@ class Credential(Base):
 
     curator_public: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    connectors: Mapped[list["ConnectorCredentialPair"]] = relationship(
-        "ConnectorCredentialPair",
+    datasources: Mapped[list["DatasourceCredentialPair"]] = relationship(
+        "DatasourceCredentialPair",
         back_populates="credential",
         cascade="all, delete-orphan",
     )
-    documents_by_credential: Mapped[list["DocumentByConnectorCredentialPair"]] = (
+    documents_by_credential: Mapped[list["DocumentByDatasourceCredentialPair"]] = (
         relationship(
-            "DocumentByConnectorCredentialPair",
+            "DocumentByDatasourceCredentialPair",
             back_populates="credential",
             passive_deletes=True,
         )
@@ -1783,8 +1783,8 @@ class Credential(Base):
     user: Mapped[User | None] = relationship("User", back_populates="credentials")
 
 
-class FederatedConnector(Base):
-    __tablename__ = "federated_connector"
+class FederatedDatasource(Base):
+    __tablename__ = "federated_datasource"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     source: Mapped[FederatedConnectorSource] = mapped_column(
@@ -1797,24 +1797,24 @@ class FederatedConnector(Base):
         postgresql.JSONB(), default=dict, nullable=False, server_default="{}"
     )
 
-    oauth_tokens: Mapped[list["FederatedConnectorOAuthToken"]] = relationship(
-        "FederatedConnectorOAuthToken",
-        back_populates="federated_connector",
+    oauth_tokens: Mapped[list["FederatedDatasourceOAuthToken"]] = relationship(
+        "FederatedDatasourceOAuthToken",
+        back_populates="federated_datasource",
         cascade="all, delete-orphan",
     )
-    document_sets: Mapped[list["FederatedConnector__DocumentSet"]] = relationship(
-        "FederatedConnector__DocumentSet",
-        back_populates="federated_connector",
+    document_sets: Mapped[list["FederatedDatasource__DocumentSet"]] = relationship(
+        "FederatedDatasource__DocumentSet",
+        back_populates="federated_datasource",
         cascade="all, delete-orphan",
     )
 
 
-class FederatedConnectorOAuthToken(Base):
-    __tablename__ = "federated_connector_oauth_token"
+class FederatedDatasourceOAuthToken(Base):
+    __tablename__ = "federated_datasource_oauth_token"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    federated_connector_id: Mapped[int] = mapped_column(
-        ForeignKey("federated_connector.id", ondelete="CASCADE"), nullable=False
+    federated_datasource_id: Mapped[int] = mapped_column(
+        ForeignKey("federated_datasource.id", ondelete="CASCADE"), nullable=False
     )
     user_id: Mapped[UUID] = mapped_column(
         ForeignKey("user.id", ondelete="CASCADE"), nullable=False
@@ -1826,18 +1826,18 @@ class FederatedConnectorOAuthToken(Base):
         DateTime, nullable=True
     )
 
-    federated_connector: Mapped["FederatedConnector"] = relationship(
-        "FederatedConnector", back_populates="oauth_tokens"
+    federated_datasource: Mapped["FederatedDatasource"] = relationship(
+        "FederatedDatasource", back_populates="oauth_tokens"
     )
     user: Mapped["User"] = relationship("User")
 
 
-class FederatedConnector__DocumentSet(Base):
-    __tablename__ = "federated_connector__document_set"
+class FederatedDatasource__DocumentSet(Base):
+    __tablename__ = "federated_datasource__document_set"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    federated_connector_id: Mapped[int] = mapped_column(
-        ForeignKey("federated_connector.id", ondelete="CASCADE"), nullable=False
+    federated_datasource_id: Mapped[int] = mapped_column(
+        ForeignKey("federated_datasource.id", ondelete="CASCADE"), nullable=False
     )
     document_set_id: Mapped[int] = mapped_column(
         ForeignKey("document_set.id", ondelete="CASCADE"), nullable=False
@@ -1845,18 +1845,18 @@ class FederatedConnector__DocumentSet(Base):
     # unique per source type. Validated before insertion.
     entities: Mapped[dict[str, Any]] = mapped_column(postgresql.JSONB(), nullable=False)
 
-    federated_connector: Mapped["FederatedConnector"] = relationship(
-        "FederatedConnector", back_populates="document_sets"
+    federated_datasource: Mapped["FederatedDatasource"] = relationship(
+        "FederatedDatasource", back_populates="document_sets"
     )
     document_set: Mapped["DocumentSet"] = relationship(
-        "DocumentSet", back_populates="federated_connectors"
+        "DocumentSet", back_populates="federated_datasources"
     )
 
     __table_args__ = (
         UniqueConstraint(
-            "federated_connector_id",
+            "federated_datasource_id",
             "document_set_id",
-            name="uq_federated_connector_document_set",
+            name="uq_federated_datasource_document_set",
         ),
     )
 
@@ -2013,8 +2013,8 @@ class IndexAttempt(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    connector_credential_pair_id: Mapped[int] = mapped_column(
-        ForeignKey("connector_credential_pair.id"),
+    datasource_credential_pair_id: Mapped[int] = mapped_column(
+        ForeignKey("datasource_credential_pair.id"),
         nullable=False,
     )
 
@@ -2094,8 +2094,8 @@ class IndexAttempt(Base):
         onupdate=func.now(),
     )
 
-    connector_credential_pair: Mapped[ConnectorCredentialPair] = relationship(
-        "ConnectorCredentialPair", back_populates="index_attempts"
+    datasource_credential_pair: Mapped[DatasourceCredentialPair] = relationship(
+        "DatasourceCredentialPair", back_populates="index_attempts"
     )
 
     search_settings: Mapped[SearchSettings | None] = relationship(
@@ -2110,20 +2110,20 @@ class IndexAttempt(Base):
 
     __table_args__ = (
         Index(
-            "ix_index_attempt_latest_for_connector_credential_pair",
-            "connector_credential_pair_id",
+            "ix_index_attempt_latest_for_datasource_credential_pair",
+            "datasource_credential_pair_id",
             "time_created",
         ),
         Index(
-            "ix_index_attempt_ccpair_search_settings_time_updated",
-            "connector_credential_pair_id",
+            "ix_index_attempt_datasource_pair_search_settings_time_updated",
+            "datasource_credential_pair_id",
             "search_settings_id",
             desc("time_updated"),
             unique=False,
         ),
         Index(
-            "ix_index_attempt_cc_pair_settings_poll",
-            "connector_credential_pair_id",
+            "ix_index_attempt_datasource_credential_pair_settings_poll",
+            "datasource_credential_pair_id",
             "search_settings_id",
             "status",
             desc("time_updated"),
@@ -2131,7 +2131,7 @@ class IndexAttempt(Base):
         # NEW: Index for coordination queries
         Index(
             "ix_index_attempt_active_coordination",
-            "connector_credential_pair_id",
+            "datasource_credential_pair_id",
             "search_settings_id",
             "status",
         ),
@@ -2166,8 +2166,8 @@ class HierarchyFetchAttempt(Base):
         PGUUID(as_uuid=True), primary_key=True, default=uuid4
     )
 
-    connector_credential_pair_id: Mapped[int] = mapped_column(
-        ForeignKey("connector_credential_pair.id", ondelete="CASCADE"),
+    datasource_credential_pair_id: Mapped[int] = mapped_column(
+        ForeignKey("datasource_credential_pair.id", ondelete="CASCADE"),
         nullable=False,
     )
 
@@ -2199,14 +2199,14 @@ class HierarchyFetchAttempt(Base):
     )
 
     # Relationships
-    connector_credential_pair: Mapped["ConnectorCredentialPair"] = relationship(
-        "ConnectorCredentialPair"
+    datasource_credential_pair: Mapped["DatasourceCredentialPair"] = relationship(
+        "DatasourceCredentialPair"
     )
 
     __table_args__ = (
         Index(
-            "ix_hierarchy_fetch_attempt_cc_pair",
-            connector_credential_pair_id,
+            "ix_hierarchy_fetch_attempt_datasource_credential_pair",
+            datasource_credential_pair_id,
         ),
     )
 
@@ -2220,8 +2220,8 @@ class IndexAttemptError(Base):
         ForeignKey("index_attempt.id"),
         nullable=False,
     )
-    connector_credential_pair_id: Mapped[int] = mapped_column(
-        ForeignKey("connector_credential_pair.id"),
+    datasource_credential_pair_id: Mapped[int] = mapped_column(
+        ForeignKey("datasource_credential_pair.id"),
         nullable=False,
     )
 
@@ -2288,15 +2288,15 @@ class SyncRecord(Base):
     )
 
 
-class DocumentByConnectorCredentialPair(Base):
+class DocumentByDatasourceCredentialPair(Base):
     """Represents an indexing of a document by a specific connector / credential pair"""
 
-    __tablename__ = "document_by_connector_credential_pair"
+    __tablename__ = "document_by_datasource_credential_pair"
 
     id: Mapped[str] = mapped_column(ForeignKey("document.id"), primary_key=True)
     # TODO: transition this to use the ConnectorCredentialPair id directly
-    connector_id: Mapped[int] = mapped_column(
-        ForeignKey("connector.id", ondelete="CASCADE"), primary_key=True
+    datasource_id: Mapped[int] = mapped_column(
+        ForeignKey("datasource.id", ondelete="CASCADE"), primary_key=True
     )
     credential_id: Mapped[int] = mapped_column(
         ForeignKey("credential.id", ondelete="CASCADE"), primary_key=True
@@ -2308,8 +2308,8 @@ class DocumentByConnectorCredentialPair(Base):
     # the actual indexing is complete
     has_been_indexed: Mapped[bool] = mapped_column(Boolean)
 
-    connector: Mapped[Connector] = relationship(
-        "Connector", back_populates="documents_by_connector", passive_deletes=True
+    datasource: Mapped[Datasource] = relationship(
+        "Datasource", back_populates="documents_by_datasource", passive_deletes=True
     )
     credential: Mapped[Credential] = relationship(
         "Credential", back_populates="documents_by_credential", passive_deletes=True
@@ -2317,15 +2317,15 @@ class DocumentByConnectorCredentialPair(Base):
 
     __table_args__ = (
         Index(
-            "idx_document_cc_pair_connector_credential",
-            "connector_id",
+            "idx_document_datasource_credential_pair_datasource_credential",
+            "datasource_id",
             "credential_id",
             unique=False,
         ),
         # Index to optimize get_document_counts_for_cc_pairs query pattern
         Index(
-            "idx_document_cc_pair_counts",
-            "connector_id",
+            "idx_document_datasource_credential_pair_counts",
+            "datasource_id",
             "credential_id",
             "has_been_indexed",
             unique=False,
@@ -2982,16 +2982,16 @@ class DocumentSet(Base):
         DateTime(timezone=True), server_default=func.now()
     )
 
-    connector_credential_pairs: Mapped[list[ConnectorCredentialPair]] = relationship(
-        "ConnectorCredentialPair",
-        secondary=DocumentSet__ConnectorCredentialPair.__table__,
+    datasource_credential_pairs: Mapped[list[DatasourceCredentialPair]] = relationship(
+        "DatasourceCredentialPair",
+        secondary=DocumentSet__DatasourceCredentialPair.__table__,
         primaryjoin=(
-            (DocumentSet__ConnectorCredentialPair.document_set_id == id)
-            & (DocumentSet__ConnectorCredentialPair.is_current.is_(True))
+            (DocumentSet__DatasourceCredentialPair.document_set_id == id)
+            & (DocumentSet__DatasourceCredentialPair.is_current.is_(True))
         ),
         secondaryjoin=(
-            DocumentSet__ConnectorCredentialPair.connector_credential_pair_id
-            == ConnectorCredentialPair.id
+            DocumentSet__DatasourceCredentialPair.datasource_credential_pair_id
+            == DatasourceCredentialPair.id
         ),
         back_populates="document_sets",
         overlaps="document_set",
@@ -3012,9 +3012,9 @@ class DocumentSet(Base):
         secondary="document_set__team",
         viewonly=True,
     )
-    federated_connectors: Mapped[list["FederatedConnector__DocumentSet"]] = (
+    federated_datasources: Mapped[list["FederatedDatasource__DocumentSet"]] = (
         relationship(
-            "FederatedConnector__DocumentSet",
+            "FederatedDatasource__DocumentSet",
             back_populates="document_set",
             cascade="all, delete-orphan",
         )
@@ -3763,14 +3763,14 @@ class User__Team(Base):
     user: Mapped["User"] = relationship("User", viewonly=True)
 
 
-class Team__ConnectorCredentialPair(Base):
-    __tablename__ = "team__connector_credential_pair"
+class Team__DatasourceCredentialPair(Base):
+    __tablename__ = "team__datasource_credential_pair"
 
     team_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("team.id"), primary_key=True
     )
-    cc_pair_id: Mapped[int] = mapped_column(
-        ForeignKey("connector_credential_pair.id"), primary_key=True
+    datasource_credential_pair_id: Mapped[int] = mapped_column(
+        ForeignKey("datasource_credential_pair.id"), primary_key=True
     )
     # if `True`, then is part of the current state of the Team
     # if `False`, then is a part of the prior state of the Team
@@ -3783,8 +3783,8 @@ class Team__ConnectorCredentialPair(Base):
         primary_key=True,
     )
 
-    cc_pair: Mapped[ConnectorCredentialPair] = relationship(
-        "ConnectorCredentialPair",
+    datasource_credential_pair: Mapped[DatasourceCredentialPair] = relationship(
+        "DatasourceCredentialPair",
     )
 
 
@@ -3893,14 +3893,14 @@ class Team(Base):
         "User__Team",
         viewonly=True,
     )
-    cc_pairs: Mapped[list[ConnectorCredentialPair]] = relationship(
-        "ConnectorCredentialPair",
-        secondary=Team__ConnectorCredentialPair.__table__,
+    datasource_credential_pairs: Mapped[list[DatasourceCredentialPair]] = relationship(
+        "DatasourceCredentialPair",
+        secondary=Team__DatasourceCredentialPair.__table__,
         viewonly=True,
     )
-    cc_pair_relationships: Mapped[list[Team__ConnectorCredentialPair]] = (
+    datasource_credential_pair_relationships: Mapped[list[Team__DatasourceCredentialPair]] = (
         relationship(
-            "Team__ConnectorCredentialPair",
+            "Team__DatasourceCredentialPair",
             viewonly=True,
         )
     )
@@ -4041,12 +4041,12 @@ class BackgroundError(Base):
     )
 
     # option to link the error to a specific CC Pair
-    cc_pair_id: Mapped[int | None] = mapped_column(
-        ForeignKey("connector_credential_pair.id", ondelete="CASCADE"), nullable=True
+    datasource_credential_pair_id: Mapped[int | None] = mapped_column(
+        ForeignKey("datasource_credential_pair.id", ondelete="CASCADE"), nullable=True
     )
 
-    cc_pair: Mapped["ConnectorCredentialPair | None"] = relationship(
-        "ConnectorCredentialPair", back_populates="background_errors"
+    datasource_credential_pair: Mapped["DatasourceCredentialPair | None"] = relationship(
+        "DatasourceCredentialPair", back_populates="background_errors"
     )
 
 
@@ -4064,8 +4064,8 @@ class User__ExternalTeamId(Base):
     user_id: Mapped[UUID] = mapped_column(ForeignKey("user.id"), primary_key=True)
     # These group ids have been prefixed by the source type
     external_team_id: Mapped[str] = mapped_column(String, primary_key=True)
-    cc_pair_id: Mapped[int] = mapped_column(
-        ForeignKey("connector_credential_pair.id"), primary_key=True
+    datasource_credential_pair_id: Mapped[int] = mapped_column(
+        ForeignKey("datasource_credential_pair.id"), primary_key=True
     )
 
     # Signifies whether or not the group should be cleaned up at the end of a
@@ -4074,8 +4074,8 @@ class User__ExternalTeamId(Base):
 
     __table_args__ = (
         Index(
-            "ix_user_external_group_cc_pair_stale",
-            "cc_pair_id",
+            "ix_user_external_group_datasource_credential_pair_stale",
+            "datasource_credential_pair_id",
             "stale",
         ),
         Index(
@@ -4095,8 +4095,8 @@ class PublicExternalTeam(Base):
     __tablename__ = "public_external_team"
 
     external_team_id: Mapped[str] = mapped_column(String, primary_key=True)
-    cc_pair_id: Mapped[int] = mapped_column(
-        ForeignKey("connector_credential_pair.id", ondelete="CASCADE"), primary_key=True
+    datasource_credential_pair_id: Mapped[int] = mapped_column(
+        ForeignKey("datasource_credential_pair.id", ondelete="CASCADE"), primary_key=True
     )
 
     # Signifies whether or not the group should be cleaned up at the end of a
@@ -4105,8 +4105,8 @@ class PublicExternalTeam(Base):
 
     __table_args__ = (
         Index(
-            "ix_public_external_group_cc_pair_stale",
-            "cc_pair_id",
+            "ix_public_external_group_datasource_credential_pair_stale",
+            "datasource_credential_pair_id",
             "stale",
         ),
         Index(
@@ -4439,8 +4439,8 @@ class DocPermissionSyncAttempt(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    connector_credential_pair_id: Mapped[int] = mapped_column(
-        ForeignKey("connector_credential_pair.id"),
+    datasource_credential_pair_id: Mapped[int] = mapped_column(
+        ForeignKey("datasource_credential_pair.id"),
         nullable=False,
     )
 
@@ -4470,14 +4470,14 @@ class DocPermissionSyncAttempt(Base):
     )
 
     # Relationships
-    connector_credential_pair: Mapped[ConnectorCredentialPair] = relationship(
-        "ConnectorCredentialPair"
+    datasource_credential_pair: Mapped[DatasourceCredentialPair] = relationship(
+        "DatasourceCredentialPair"
     )
 
     __table_args__ = (
         Index(
-            "ix_permission_sync_attempt_latest_for_cc_pair",
-            "connector_credential_pair_id",
+            "ix_permission_sync_attempt_latest_for_datasource_pair",
+            "datasource_credential_pair_id",
             "time_created",
         ),
         Index(
@@ -4505,8 +4505,8 @@ class ExternalGroupPermissionSyncAttempt(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     # Can be tied to a specific connector or be a global group sync
-    connector_credential_pair_id: Mapped[int | None] = mapped_column(
-        ForeignKey("connector_credential_pair.id"),
+    datasource_credential_pair_id: Mapped[int | None] = mapped_column(
+        ForeignKey("datasource_credential_pair.id"),
         nullable=True,  # Nullable for global group syncs across all connectors
     )
 
@@ -4539,14 +4539,14 @@ class ExternalGroupPermissionSyncAttempt(Base):
     )
 
     # Relationships
-    connector_credential_pair: Mapped[ConnectorCredentialPair | None] = relationship(
-        "ConnectorCredentialPair"
+    datasource_credential_pair: Mapped[DatasourceCredentialPair | None] = relationship(
+        "DatasourceCredentialPair"
     )
 
     __table_args__ = (
         Index(
-            "ix_group_sync_attempt_cc_pair_time",
-            "connector_credential_pair_id",
+            "ix_group_sync_attempt_datasource_credential_pair_time",
+            "datasource_credential_pair_id",
             "time_created",
         ),
         Index(

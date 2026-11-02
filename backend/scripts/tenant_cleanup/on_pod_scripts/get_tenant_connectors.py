@@ -31,7 +31,7 @@ from sqlalchemy import select
 
 from om.db.engine.sql_engine import get_session_with_tenant
 from om.db.engine.sql_engine import SqlEngine
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 
 
 def get_tenant_connectors(tenant_id: str) -> dict:
@@ -51,13 +51,13 @@ def get_tenant_connectors(tenant_id: str) -> dict:
 
         with get_session_with_tenant(tenant_id=tenant_id) as db_session:
             # Get all connector credential pairs
-            stmt = select(ConnectorCredentialPair)
+            stmt = select(DatasourceCredentialPair)
             cc_pairs = db_session.execute(stmt).scalars().all()
 
             connectors = [
                 {
                     "id": cc.id,
-                    "connector_id": cc.connector_id,
+                    "connector_id": cc.datasource_id,
                     "credential_id": cc.credential_id,
                     "name": cc.name,
                     "status": cc.status.value,

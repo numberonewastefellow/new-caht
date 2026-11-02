@@ -3,12 +3,12 @@ from collections.abc import Generator
 from typing import Optional
 from typing import Protocol
 
-from om.db.external_perm import ExternalUserGroup  # noqa
 from om.access.models import DocExternalAccess  # noqa
 from om.access.models import ElementExternalAccess  # noqa
 from om.access.models import NodeExternalAccess  # noqa
 from om.context.search.models import InferenceChunk
-from om.db.models import ConnectorCredentialPair  # noqa
+from om.db.external_perm import ExternalUserGroup  # noqa
+from om.db.models import DatasourceCredentialPair  # noqa
 from om.db.utils import DocumentRow
 from om.db.utils import SortOrder
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface  # noqa
@@ -50,7 +50,7 @@ class FetchAllDocumentsIdsFunction(Protocol):
 # Defining the input/output types for the sync functions
 DocSyncFuncType = Callable[
     [
-        ConnectorCredentialPair,
+        DatasourceCredentialPair,
         FetchAllDocumentsFunction,
         FetchAllDocumentsIdsFunction,
         Optional[IndexingHeartbeatInterface],
@@ -61,7 +61,7 @@ DocSyncFuncType = Callable[
 GroupSyncFuncType = Callable[
     [
         str,  # tenant_id
-        ConnectorCredentialPair,  # cc_pair
+        DatasourceCredentialPair,  # cc_pair
     ],
     Generator[ExternalUserGroup, None, None],
 ]

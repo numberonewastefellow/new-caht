@@ -9,7 +9,7 @@ from om.access.utils import build_ext_team_name_for_om
 from om.configs.constants import DocumentSource
 from om.datasource.github.connector import DocMetadata
 from om.datasource.github.connector import GithubConnector
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.utils import DocumentRow
 from om.db.utils import SortOrder
 from om.external_permissions.github.utils import fetch_repository_team_slugs
@@ -32,7 +32,7 @@ GITHUB_DOC_SYNC_LABEL = "github_doc_sync"
 
 
 def github_doc_sync(
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     fetch_all_existing_docs_fn: FetchAllDocumentsFunction,
     fetch_all_existing_docs_ids_fn: FetchAllDocumentsIdsFunction,  # noqa: ARG001
     callback: IndexingHeartbeatInterface | None = None,
@@ -47,7 +47,7 @@ def github_doc_sync(
 
     # Initialize GitHub connector with credentials
     github_connector: GithubConnector = GithubConnector(
-        **cc_pair.connector.connector_specific_config
+        **cc_pair.datasource.datasource_specific_config
     )
 
     credential_json = (

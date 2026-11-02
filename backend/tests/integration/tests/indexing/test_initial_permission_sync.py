@@ -193,7 +193,7 @@ def test_permission_sync_attempt_tracking_integration(
     with get_session_with_current_tenant() as db_session:
         attempt = db_session.execute(
             select(DocPermissionSyncAttempt).where(
-                DocPermissionSyncAttempt.connector_credential_pair_id == cc_pair.id
+                DocPermissionSyncAttempt.datasource_credential_pair_id == cc_pair.id
             )
         ).scalar_one()
 
@@ -280,7 +280,7 @@ def test_permission_sync_attempt_tracking_with_mocked_failure(
     with get_session_with_current_tenant() as db_session:
         attempt = db_session.execute(
             select(DocPermissionSyncAttempt).where(
-                DocPermissionSyncAttempt.connector_credential_pair_id == cc_pair.id
+                DocPermissionSyncAttempt.datasource_credential_pair_id == cc_pair.id
             )
         ).scalar_one()
 
@@ -349,7 +349,7 @@ def test_permission_sync_attempt_status_success(
     with get_session_with_current_tenant() as db_session:
         attempt = db_session.execute(
             select(DocPermissionSyncAttempt).where(
-                DocPermissionSyncAttempt.connector_credential_pair_id == cc_pair.id
+                DocPermissionSyncAttempt.datasource_credential_pair_id == cc_pair.id
             )
         ).scalar_one()
 

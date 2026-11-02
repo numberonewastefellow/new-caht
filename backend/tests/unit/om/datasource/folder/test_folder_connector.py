@@ -495,7 +495,7 @@ class TestDocSync:
     def test_folder_doc_sync_yields_permissions(self, temp_folder: Path) -> None:
         cc_pair = MagicMock()
         cc_pair.id = 1
-        cc_pair.connector.connector_specific_config = {
+        cc_pair.datasource.datasource_specific_config = {
             "folder_paths": [str(temp_folder)],
             "recursive": True,
         }
@@ -515,7 +515,7 @@ class TestDocSync:
     def test_folder_doc_sync_respects_callback_stop(self, temp_folder: Path) -> None:
         cc_pair = MagicMock()
         cc_pair.id = 1
-        cc_pair.connector.connector_specific_config = {
+        cc_pair.datasource.datasource_specific_config = {
             "folder_paths": [str(temp_folder)],
             "recursive": True,
         }
@@ -535,7 +535,7 @@ class TestDocSync:
     def test_folder_doc_sync_empty_config(self) -> None:
         cc_pair = MagicMock()
         cc_pair.id = 1
-        cc_pair.connector.connector_specific_config = {}
+        cc_pair.datasource.datasource_specific_config = {}
         results = list(
             folder_doc_sync(
                 cc_pair=cc_pair,

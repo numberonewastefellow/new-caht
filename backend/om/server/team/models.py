@@ -13,8 +13,8 @@ from om.db.models import User__Team
 from om.server.documents.models import ConnectorCredentialPairDescriptor
 from om.server.documents.models import ConnectorSnapshot
 from om.server.documents.models import CredentialSnapshot
-from om.server.features.document_set.models import DocumentSet
 from om.server.features.agent.models import AgentSnapshot
+from om.server.features.document_set.models import DocumentSet
 from om.server.manage.models import UserInfo
 from om.server.manage.models import UserPreferences
 
@@ -138,17 +138,17 @@ class Team(BaseModel):
             ],
             cc_pairs=[
                 ConnectorCredentialPairDescriptor(
-                    id=cc_pair_relationship.cc_pair.id,
-                    name=cc_pair_relationship.cc_pair.name,
+                    id=cc_pair_relationship.datasource_credential_pair.id,
+                    name=cc_pair_relationship.datasource_credential_pair.name,
                     connector=ConnectorSnapshot.from_connector_db_model(
-                        cc_pair_relationship.cc_pair.connector
+                        cc_pair_relationship.datasource_credential_pair.datasource
                     ),
                     credential=CredentialSnapshot.from_credential_db_model(
-                        cc_pair_relationship.cc_pair.credential
+                        cc_pair_relationship.datasource_credential_pair.credential
                     ),
-                    access_type=cc_pair_relationship.cc_pair.access_type,
+                    access_type=cc_pair_relationship.datasource_credential_pair.access_type,
                 )
-                for cc_pair_relationship in team_model.cc_pair_relationships
+                for cc_pair_relationship in team_model.datasource_credential_pair_relationships
                 if cc_pair_relationship.is_current
             ],
             document_sets=document_sets,

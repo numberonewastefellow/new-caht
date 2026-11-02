@@ -4,7 +4,7 @@ from github import Repository
 
 from om.datasource.github.connector import GithubConnector
 from om.db.external_perm import ExternalUserGroup
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.external_permissions.github.utils import get_external_team
 from om.utils.logger import setup_logger
 
@@ -13,10 +13,10 @@ logger = setup_logger()
 
 def github_group_sync(
     tenant_id: str,  # noqa: ARG001
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
 ) -> Generator[ExternalUserGroup, None, None]:
     github_connector: GithubConnector = GithubConnector(
-        **cc_pair.connector.connector_specific_config
+        **cc_pair.datasource.datasource_specific_config
     )
     credential_json = (
         cc_pair.credential.credential_json.get_value(apply_mask=False)

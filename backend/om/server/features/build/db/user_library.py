@@ -25,10 +25,10 @@ from om.db.credentials import create_credential
 from om.db.credentials import fetch_credentials_for_user
 from om.db.enums import AccessType
 from om.db.enums import ProcessingMode
-from om.db.models import Connector
-from om.db.models import ConnectorCredentialPair
+from om.db.models import Datasource
+from om.db.models import DatasourceCredentialPair
 from om.db.models import Document as DbDocument
-from om.db.models import DocumentByConnectorCredentialPair
+from om.db.models import DocumentByDatasourceCredentialPair
 from om.db.models import User
 from om.server.documents.models import ConnectorBase
 from om.server.documents.models import CredentialBase
@@ -59,24 +59,24 @@ def get_user_storage_bytes(db_session: Session, user_id: UUID) -> int:
             )
         )
         .join(
-            DocumentByConnectorCredentialPair,
-            DbDocument.id == DocumentByConnectorCredentialPair.id,
+            DocumentByDatasourceCredentialPair,
+            DbDocument.id == DocumentByDatasourceCredentialPair.id,
         )
         .join(
-            ConnectorCredentialPair,
+            DatasourceCredentialPair,
             and_(
-                DocumentByConnectorCredentialPair.connector_id
-                == ConnectorCredentialPair.connector_id,
-                DocumentByConnectorCredentialPair.credential_id
-                == ConnectorCredentialPair.credential_id,
+                DocumentByDatasourceCredentialPair.datasource_id
+                == DatasourceCredentialPair.datasource_id,
+                DocumentByDatasourceCredentialPair.credential_id
+                == DatasourceCredentialPair.credential_id,
             ),
         )
         .join(
-            Connector,
-            ConnectorCredentialPair.connector_id == Connector.id,
+            Datasource,
+            DatasourceCredentialPair.datasource_id == Datasource.id,
         )
-        .where(Connector.source == DocumentSource.CRAFT_FILE)
-        .where(ConnectorCredentialPair.creator_id == user_id)
+        .where(Datasource.source == DocumentSource.CRAFT_FILE)
+        .where(DatasourceCredentialPair.creator_id == user_id)
         .where(DbDocument.doc_metadata["is_directory"].as_boolean().is_not(True))
     )
     result = db_session.execute(stmt).scalar()
@@ -107,8 +107,8 @@ def get_or_create_craft_connector(db_session: Session, user: User) -> tuple[int,
     )
 
     for cc_pair in cc_pairs:
-        if cc_pair.connector.source == DocumentSource.CRAFT_FILE:
-            return cc_pair.connector.id, cc_pair.credential.id
+        if cc_pair.datasource.source == DocumentSource.CRAFT_FILE:
+            return cc_pair.datasource.id, cc_pair.credential.id
 
     # Check for orphaned connector (created but cc_pair creation failed previously)
     existing_connectors = fetch_connectors(

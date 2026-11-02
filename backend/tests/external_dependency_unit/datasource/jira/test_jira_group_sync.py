@@ -6,9 +6,9 @@ from om.configs.constants import DocumentSource
 from om.datasource.models import InputType
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
-from om.db.models import Connector
-from om.db.models import ConnectorCredentialPair
 from om.db.models import Credential
+from om.db.models import Datasource
+from om.db.models import DatasourceCredentialPair
 from om.external_permissions.jira.group_sync import jira_group_sync
 from shared_configs.contextvars import get_current_tenant_id
 from tests.daily.datasource.confluence.models import ExternalUserGroupSet
@@ -96,11 +96,11 @@ def test_jira_group_sync(
     jira_credential_json: dict[str, Any],
 ) -> None:
     try:
-        connector = Connector(
+        connector = Datasource(
             name="Test Jira Connector",
             source=DocumentSource.JIRA,
             input_type=InputType.POLL,
-            connector_specific_config=jira_connector_config,
+            datasource_specific_config=jira_connector_config,
             refresh_freq=None,
             prune_freq=None,
             indexing_start=None,
@@ -117,8 +117,8 @@ def test_jira_group_sync(
         # Expire the credential so it reloads from DB with SensitiveValue wrapper
         db_session.expire(credential)
 
-        cc_pair = ConnectorCredentialPair(
-            connector_id=connector.id,
+        cc_pair = DatasourceCredentialPair(
+            datasource_id=connector.id,
             credential_id=credential.id,
             name="Test Jira CC Pair",
             status=ConnectorCredentialPairStatus.ACTIVE,

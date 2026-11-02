@@ -41,7 +41,7 @@ from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.hierarchy import upsert_hierarchy_nodes_batch
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.redis.redis_hierarchy import cache_hierarchy_nodes_batch
 from om.redis.redis_hierarchy import ensure_source_node_exists
 from om.redis.redis_hierarchy import HierarchyNodeCacheEntry
@@ -54,7 +54,7 @@ logger = setup_logger()
 HIERARCHY_FETCH_INTERVAL_SECONDS = 24 * 60 * 60
 
 
-def _is_hierarchy_fetching_due(cc_pair: ConnectorCredentialPair) -> bool:
+def _is_hierarchy_fetching_due(cc_pair: DatasourceCredentialPair) -> bool:
     """Returns boolean indicating if hierarchy fetching is due for this connector.
 
     Hierarchy fetching should run once per day for active connectors.
@@ -80,7 +80,7 @@ def _is_hierarchy_fetching_due(cc_pair: ConnectorCredentialPair) -> bool:
 
 def _try_creating_hierarchy_fetching_task(
     celery_app: Celery,
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     db_session: Session,
     r: Redis,
     tenant_id: str,
@@ -226,7 +226,7 @@ HIERARCHY_NODE_BATCH_SIZE = 100
 
 def _run_hierarchy_extraction(
     db_session: Session,
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     source: DocumentSource,
     tenant_id: str,
 ) -> int:
@@ -238,7 +238,7 @@ def _run_hierarchy_extraction(
 
     Returns the total number of hierarchy nodes extracted.
     """
-    connector = cc_pair.connector
+    connector = cc_pair.datasource
     credential = cc_pair.credential
 
     # Instantiate the connector using its configured input type
@@ -246,7 +246,7 @@ def _run_hierarchy_extraction(
         db_session=db_session,
         source=source,
         input_type=connector.input_type,
-        connector_specific_config=connector.connector_specific_config,
+        connector_specific_config=connector.datasource_specific_config,
         credential=credential,
     )
 
@@ -357,7 +357,7 @@ def connector_hierarchy_fetching_task(
                 )
                 return
 
-            source = cc_pair.connector.source
+            source = cc_pair.datasource.source
             total_nodes = _run_hierarchy_extraction(
                 db_session=db_session,
                 cc_pair=cc_pair,

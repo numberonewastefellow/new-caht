@@ -167,7 +167,7 @@ def validate_ccpair_for_user(
             db_session=db_session,
             source=connector.source,
             input_type=connector.input_type,
-            connector_specific_config=connector.connector_specific_config,
+            connector_specific_config=connector.datasource_specific_config,
             credential=credential,
         )
     except ConnectorValidationError as e:

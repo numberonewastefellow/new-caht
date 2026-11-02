@@ -20,7 +20,7 @@ from om.context.search.models import IndexFilters
 from om.context.search.models import SavedSearchDoc
 from om.db.engine.sql_engine import get_session_with_tenant
 from om.db.models import Document
-from om.db.models import FederatedConnector
+from om.db.models import FederatedDatasource
 from om.db.search_settings import get_current_search_settings
 from om.document_index.factory import get_default_document_index
 from om.document_index.interfaces_new import DocumentSectionRequest
@@ -37,7 +37,7 @@ def get_federated_sources(db_session: Session) -> set[DocumentSource]:
     """Get all federated sources from the database."""
     return {
         source
-        for connector in db_session.query(FederatedConnector).all()
+        for connector in db_session.query(FederatedDatasource).all()
         if (source := connector.source.to_non_federated_source()) is not None
     }
 

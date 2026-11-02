@@ -8,9 +8,9 @@ from om.configs.constants import DocumentSource
 from om.datasource.models import InputType
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
-from om.db.models import Connector
-from om.db.models import ConnectorCredentialPair
 from om.db.models import Credential
+from om.db.models import Datasource
+from om.db.models import DatasourceCredentialPair
 from om.db.utils import DocumentRow
 from om.db.utils import SortOrder
 from om.external_permissions.jira.doc_sync import jira_doc_sync
@@ -60,11 +60,11 @@ def test_jira_doc_sync(
             "project_key": "AS",  # DailyConnectorTestProject
         }
 
-        connector = Connector(
+        connector = Datasource(
             name="Test Jira Doc Sync Connector",
             source=DocumentSource.JIRA,
             input_type=InputType.POLL,
-            connector_specific_config=connector_config,
+            datasource_specific_config=connector_config,
             refresh_freq=None,
             prune_freq=None,
             indexing_start=None,
@@ -81,8 +81,8 @@ def test_jira_doc_sync(
         # Expire the credential so it reloads from DB with SensitiveValue wrapper
         db_session.expire(credential)
 
-        cc_pair = ConnectorCredentialPair(
-            connector_id=connector.id,
+        cc_pair = DatasourceCredentialPair(
+            datasource_id=connector.id,
             credential_id=credential.id,
             name="Test Jira Doc Sync CC Pair",
             status=ConnectorCredentialPairStatus.ACTIVE,
@@ -157,11 +157,11 @@ def test_jira_doc_sync_with_specific_permissions(
             "project_key": "SUP",
         }
 
-        connector = Connector(
+        connector = Datasource(
             name="Test Jira Doc Sync with Groups Connector",
             source=DocumentSource.JIRA,
             input_type=InputType.POLL,
-            connector_specific_config=connector_config,
+            datasource_specific_config=connector_config,
             refresh_freq=None,
             prune_freq=None,
             indexing_start=None,
@@ -178,8 +178,8 @@ def test_jira_doc_sync_with_specific_permissions(
         # Expire the credential so it reloads from DB with SensitiveValue wrapper
         db_session.expire(credential)
 
-        cc_pair = ConnectorCredentialPair(
-            connector_id=connector.id,
+        cc_pair = DatasourceCredentialPair(
+            datasource_id=connector.id,
             credential_id=credential.id,
             name="Test Jira Doc Sync with Groups CC Pair",
             status=ConnectorCredentialPairStatus.ACTIVE,

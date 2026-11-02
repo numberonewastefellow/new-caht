@@ -19,7 +19,7 @@ from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import IndexingStatus
 from om.db.enums import IndexModelStatus
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.models import IndexAttempt
 from om.db.models import IndexAttemptError
 from om.db.models import SearchSettings
@@ -47,7 +47,7 @@ def get_last_attempt_for_cc_pair(
     return (
         db_session.query(IndexAttempt)
         .filter(
-            IndexAttempt.connector_credential_pair_id == cc_pair_id,
+            IndexAttempt.datasource_credential_pair_id == cc_pair_id,
             IndexAttempt.search_settings_id == search_settings_id,
         )
         .order_by(IndexAttempt.time_updated.desc())
@@ -65,7 +65,7 @@ def get_recent_completed_attempts_for_cc_pair(
     return (
         db_session.query(IndexAttempt)
         .filter(
-            IndexAttempt.connector_credential_pair_id == cc_pair_id,
+            IndexAttempt.datasource_credential_pair_id == cc_pair_id,
             IndexAttempt.search_settings_id == search_settings_id,
             IndexAttempt.status.notin_(
                 [IndexingStatus.NOT_STARTED, IndexingStatus.IN_PROGRESS]
@@ -87,7 +87,7 @@ def get_recent_attempts_for_cc_pair(
     return (
         db_session.query(IndexAttempt)
         .filter(
-            IndexAttempt.connector_credential_pair_id == cc_pair_id,
+            IndexAttempt.datasource_credential_pair_id == cc_pair_id,
             IndexAttempt.search_settings_id == search_settings_id,
         )
         .order_by(IndexAttempt.time_updated.desc())
@@ -105,13 +105,13 @@ def get_index_attempt(
     stmt = select(IndexAttempt).where(IndexAttempt.id == index_attempt_id)
     if eager_load_cc_pair:
         stmt = stmt.options(
-            joinedload(IndexAttempt.connector_credential_pair).joinedload(
-                ConnectorCredentialPair.connector
+            joinedload(IndexAttempt.datasource_credential_pair).joinedload(
+                DatasourceCredentialPair.datasource
             )
         )
         stmt = stmt.options(
-            joinedload(IndexAttempt.connector_credential_pair).joinedload(
-                ConnectorCredentialPair.credential
+            joinedload(IndexAttempt.datasource_credential_pair).joinedload(
+                DatasourceCredentialPair.credential
             )
         )
     if eager_load_search_settings:
@@ -138,7 +138,7 @@ def create_index_attempt(
     celery_task_id: str | None = None,
 ) -> int:
     new_attempt = IndexAttempt(
-        connector_credential_pair_id=connector_credential_pair_id,
+        datasource_credential_pair_id=connector_credential_pair_id,
         search_settings_id=search_settings_id,
         from_beginning=from_beginning,
         status=IndexingStatus.NOT_STARTED,
@@ -166,7 +166,7 @@ def mock_successful_index_attempt(
     """Should not be used in any user triggered flows"""
     db_time = func.now()
     new_attempt = IndexAttempt(
-        connector_credential_pair_id=connector_credential_pair_id,
+        datasource_credential_pair_id=connector_credential_pair_id,
         search_settings_id=search_settings_id,
         from_beginning=True,
         status=IndexingStatus.SUCCESS,
@@ -190,7 +190,7 @@ def get_in_progress_index_attempts(
     stmt = select(IndexAttempt)
     if connector_id is not None:
         stmt = stmt.where(
-            IndexAttempt.connector_credential_pair.has(connector_id=connector_id)
+            IndexAttempt.datasource_credential_pair.has(connector_id=connector_id)
         )
     stmt = stmt.where(IndexAttempt.status == IndexingStatus.IN_PROGRESS)
 
@@ -267,7 +267,7 @@ def mark_attempt_in_progress(
             data={
                 "index_attempt_id": index_attempt.id,
                 "status": IndexingStatus.IN_PROGRESS.value,
-                "cc_pair_id": index_attempt.connector_credential_pair_id,
+                "cc_pair_id": index_attempt.datasource_credential_pair_id,
             },
         )
     except Exception:
@@ -296,7 +296,7 @@ def mark_attempt_succeeded(
             data={
                 "index_attempt_id": index_attempt_id,
                 "status": IndexingStatus.SUCCESS.value,
-                "cc_pair_id": attempt.connector_credential_pair_id,
+                "cc_pair_id": attempt.datasource_credential_pair_id,
             },
         )
         return attempt
@@ -326,7 +326,7 @@ def mark_attempt_partially_succeeded(
             data={
                 "index_attempt_id": index_attempt_id,
                 "status": IndexingStatus.COMPLETED_WITH_ERRORS.value,
-                "cc_pair_id": attempt.connector_credential_pair_id,
+                "cc_pair_id": attempt.datasource_credential_pair_id,
             },
         )
         return attempt
@@ -359,7 +359,7 @@ def mark_attempt_canceled(
             data={
                 "index_attempt_id": index_attempt_id,
                 "status": IndexingStatus.CANCELED.value,
-                "cc_pair_id": attempt.connector_credential_pair_id,
+                "cc_pair_id": attempt.datasource_credential_pair_id,
             },
         )
     except Exception:
@@ -394,7 +394,7 @@ def mark_attempt_failed(
             data={
                 "index_attempt_id": index_attempt_id,
                 "status": IndexingStatus.FAILED.value,
-                "cc_pair_id": attempt.connector_credential_pair_id,
+                "cc_pair_id": attempt.datasource_credential_pair_id,
             },
         )
     except Exception:
@@ -440,10 +440,10 @@ def get_last_attempt(
 ) -> IndexAttempt | None:
     stmt = (
         select(IndexAttempt)
-        .join(ConnectorCredentialPair)
+        .join(DatasourceCredentialPair)
         .where(
-            ConnectorCredentialPair.connector_id == connector_id,
-            ConnectorCredentialPair.credential_id == credential_id,
+            DatasourceCredentialPair.datasource_id == connector_id,
+            DatasourceCredentialPair.credential_id == credential_id,
             IndexAttempt.search_settings_id == search_settings_id,
         )
     )
@@ -466,7 +466,7 @@ def get_latest_index_attempts_by_status(
     """
     latest_failed_attempts = (
         select(
-            IndexAttempt.connector_credential_pair_id,
+            IndexAttempt.datasource_credential_pair_id,
             func.max(IndexAttempt.id).label("max_failed_id"),
         )
         .join(SearchSettings, IndexAttempt.search_settings_id == SearchSettings.id)
@@ -477,15 +477,15 @@ def get_latest_index_attempts_by_status(
             ),
             IndexAttempt.status == status,
         )
-        .group_by(IndexAttempt.connector_credential_pair_id)
+        .group_by(IndexAttempt.datasource_credential_pair_id)
         .subquery()
     )
 
     stmt = select(IndexAttempt).join(
         latest_failed_attempts,
         (
-            IndexAttempt.connector_credential_pair_id
-            == latest_failed_attempts.c.connector_credential_pair_id
+            IndexAttempt.datasource_credential_pair_id
+            == latest_failed_attempts.c.datasource_credential_pair_id
         )
         & (IndexAttempt.id == latest_failed_attempts.c.max_failed_id),
     )
@@ -511,7 +511,7 @@ def get_latest_index_attempts(
     only_finished: bool = False,
 ) -> Sequence[IndexAttempt]:
     ids_stmt = select(
-        IndexAttempt.connector_credential_pair_id,
+        IndexAttempt.datasource_credential_pair_id,
         func.max(IndexAttempt.id).label("max_id"),
     ).join(SearchSettings, IndexAttempt.search_settings_id == SearchSettings.id)
 
@@ -521,15 +521,15 @@ def get_latest_index_attempts(
     if only_finished:
         ids_stmt = _add_only_finished_clause(ids_stmt)
 
-    ids_stmt = ids_stmt.group_by(IndexAttempt.connector_credential_pair_id)
+    ids_stmt = ids_stmt.group_by(IndexAttempt.datasource_credential_pair_id)
     ids_subquery = ids_stmt.subquery()
 
     stmt = (
         select(IndexAttempt)
         .join(
             ids_subquery,
-            IndexAttempt.connector_credential_pair_id
-            == ids_subquery.c.connector_credential_pair_id,
+            IndexAttempt.datasource_credential_pair_id
+            == ids_subquery.c.datasource_credential_pair_id,
         )
         .where(IndexAttempt.id == ids_subquery.c.max_id)
     )
@@ -539,7 +539,7 @@ def get_latest_index_attempts(
 
     if eager_load_cc_pair:
         stmt = stmt.options(
-            joinedload(IndexAttempt.connector_credential_pair),
+            joinedload(IndexAttempt.datasource_credential_pair),
             joinedload(IndexAttempt.error_rows),
         )
 
@@ -571,7 +571,7 @@ def get_latest_index_attempt_for_cc_pair_id(
 ) -> IndexAttempt | None:
     stmt = select(IndexAttempt)
     stmt = stmt.where(
-        IndexAttempt.connector_credential_pair_id == connector_credential_pair_id,
+        IndexAttempt.datasource_credential_pair_id == connector_credential_pair_id,
     )
     if only_finished:
         stmt = _add_only_finished_clause(stmt)
@@ -590,7 +590,7 @@ def count_index_attempts_for_cc_pair(
     disinclude_finished: bool = False,
 ) -> int:
     stmt = select(IndexAttempt).where(
-        IndexAttempt.connector_credential_pair_id == cc_pair_id
+        IndexAttempt.datasource_credential_pair_id == cc_pair_id
     )
     if disinclude_finished:
         stmt = stmt.where(
@@ -617,7 +617,7 @@ def get_paginated_index_attempts_for_cc_pair_id(
     disinclude_finished: bool = False,
 ) -> list[IndexAttempt]:
     stmt = select(IndexAttempt).where(
-        IndexAttempt.connector_credential_pair_id == cc_pair_id
+        IndexAttempt.datasource_credential_pair_id == cc_pair_id
     )
     if disinclude_finished:
         stmt = stmt.where(
@@ -646,11 +646,11 @@ def get_index_attempts_for_cc_pair(
 ) -> Sequence[IndexAttempt]:
     stmt = (
         select(IndexAttempt)
-        .join(ConnectorCredentialPair)
+        .join(DatasourceCredentialPair)
         .where(
             and_(
-                ConnectorCredentialPair.connector_id == cc_pair_identifier.connector_id,
-                ConnectorCredentialPair.credential_id
+                DatasourceCredentialPair.datasource_id == cc_pair_identifier.connector_id,
+                DatasourceCredentialPair.credential_id
                 == cc_pair_identifier.credential_id,
             )
         )
@@ -678,14 +678,14 @@ def delete_index_attempts(
     stmt_errors = delete(IndexAttemptError).where(
         IndexAttemptError.index_attempt_id.in_(
             select(IndexAttempt.id).where(
-                IndexAttempt.connector_credential_pair_id == cc_pair_id
+                IndexAttempt.datasource_credential_pair_id == cc_pair_id
             )
         )
     )
     db_session.execute(stmt_errors)
 
     stmt = delete(IndexAttempt).where(
-        IndexAttempt.connector_credential_pair_id == cc_pair_id,
+        IndexAttempt.datasource_credential_pair_id == cc_pair_id,
     )
 
     db_session.execute(stmt)
@@ -727,7 +727,7 @@ def cancel_indexing_attempts_for_ccpair(
 ) -> None:
     stmt = (
         update(IndexAttempt)
-        .where(IndexAttempt.connector_credential_pair_id == cc_pair_id)
+        .where(IndexAttempt.datasource_credential_pair_id == cc_pair_id)
         .where(IndexAttempt.status == IndexingStatus.NOT_STARTED)
         .values(
             status=IndexingStatus.CANCELED,
@@ -791,8 +791,8 @@ def count_unique_cc_pairs_with_successful_index_attempts(
     Then do distinct by connector_id and credential_id which is equivalent to the cc-pair. Finally,
     do a count to get the total number of unique cc-pairs with successful attempts"""
     unique_pairs_count = (
-        db_session.query(IndexAttempt.connector_credential_pair_id)
-        .join(ConnectorCredentialPair)
+        db_session.query(IndexAttempt.datasource_credential_pair_id)
+        .join(DatasourceCredentialPair)
         .filter(
             IndexAttempt.search_settings_id == search_settings_id,
             IndexAttempt.status == IndexingStatus.SUCCESS,
@@ -813,12 +813,12 @@ def count_unique_active_cc_pairs_with_successful_index_attempts(
     which is equivalent to the cc-pair. Finally, do a count to get the total number of unique non-paused
     cc-pairs with successful attempts."""
     unique_pairs_count = (
-        db_session.query(IndexAttempt.connector_credential_pair_id)
-        .join(ConnectorCredentialPair)
+        db_session.query(IndexAttempt.datasource_credential_pair_id)
+        .join(DatasourceCredentialPair)
         .filter(
             IndexAttempt.search_settings_id == search_settings_id,
             IndexAttempt.status == IndexingStatus.SUCCESS,
-            ConnectorCredentialPair.status != ConnectorCredentialPairStatus.PAUSED,
+            DatasourceCredentialPair.status != ConnectorCredentialPairStatus.PAUSED,
         )
         .distinct()
         .count()
@@ -835,7 +835,7 @@ def create_index_attempt_error(
 ) -> int:
     new_error = IndexAttemptError(
         index_attempt_id=index_attempt_id,
-        connector_credential_pair_id=connector_credential_pair_id,
+        datasource_credential_pair_id=connector_credential_pair_id,
         document_id=(
             failure.failed_document.document_id if failure.failed_document else None
         ),
@@ -882,7 +882,7 @@ def count_index_attempt_errors_for_cc_pair(
     stmt = (
         select(func.count())
         .select_from(IndexAttemptError)
-        .where(IndexAttemptError.connector_credential_pair_id == cc_pair_id)
+        .where(IndexAttemptError.datasource_credential_pair_id == cc_pair_id)
     )
     if unresolved_only:
         stmt = stmt.where(IndexAttemptError.is_resolved.is_(False))
@@ -899,7 +899,7 @@ def get_index_attempt_errors_for_cc_pair(
     page_size: int | None = None,
 ) -> list[IndexAttemptError]:
     stmt = select(IndexAttemptError).where(
-        IndexAttemptError.connector_credential_pair_id == cc_pair_id
+        IndexAttemptError.datasource_credential_pair_id == cc_pair_id
     )
     if unresolved_only:
         stmt = stmt.where(IndexAttemptError.is_resolved.is_(False))

@@ -1,27 +1,27 @@
 from sqlalchemy.orm import Session
 
+from om.db.connector import mark_cc_pair_as_external_group_synced
+from om.db.connector_credential_pair import get_connector_credential_pairs_for_source
+from om.db.models import DatasourceCredentialPair
 from om.external_permissions.sync_params import (
     source_group_sync_is_cc_pair_agnostic,
 )
-from om.db.connector import mark_cc_pair_as_external_group_synced
-from om.db.connector_credential_pair import get_connector_credential_pairs_for_source
-from om.db.models import ConnectorCredentialPair
 
 
 def _get_all_cc_pair_ids_to_mark_as_group_synced(
-    db_session: Session, cc_pair: ConnectorCredentialPair
+    db_session: Session, cc_pair: DatasourceCredentialPair
 ) -> list[int]:
-    if not source_group_sync_is_cc_pair_agnostic(cc_pair.connector.source):
+    if not source_group_sync_is_cc_pair_agnostic(cc_pair.datasource.source):
         return [cc_pair.id]
 
     cc_pairs = get_connector_credential_pairs_for_source(
-        db_session, cc_pair.connector.source
+        db_session, cc_pair.datasource.source
     )
     return [cc_pair.id for cc_pair in cc_pairs]
 
 
 def mark_all_relevant_cc_pairs_as_external_group_synced(
-    db_session: Session, cc_pair: ConnectorCredentialPair
+    db_session: Session, cc_pair: DatasourceCredentialPair
 ) -> None:
     """For some source types, one successful group sync run should count for all
     cc pairs of that type. This function handles that case."""

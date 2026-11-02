@@ -37,9 +37,9 @@ def _censoring_sources() -> set[DocumentSource]:
         return set()
     with get_current_tenant_session() as db_session:
         return {
-            cc_pair.connector.source
+            cc_pair.datasource.source
             for cc_pair in get_all_auto_sync_cc_pairs(db_session)
-            if cc_pair.connector.source in censoring_capable
+            if cc_pair.datasource.source in censoring_capable
         }
 
 

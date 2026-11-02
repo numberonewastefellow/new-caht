@@ -6,8 +6,8 @@ from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import DocumentSource
 from om.db.document import get_num_chunks_for_document
 from om.db.engine.sql_engine import get_session_with_current_tenant
-from om.db.models import Connector
-from om.db.models import DocumentByConnectorCredentialPair
+from om.db.models import Datasource
+from om.db.models import DocumentByDatasourceCredentialPair
 from om.db.models import KGEntityType
 from om.document_index.interfaces_new import KGUChunkUpdateRequest
 from om.kg.opensearch.opensearch_interactions import update_kg_chunks_opensearch_info
@@ -66,8 +66,8 @@ def reset_opensearch_kg_index(
             # get all connectors of the given source name
             kg_connectors = [
                 connector.id
-                for connector in db_session.query(Connector)
-                .filter(Connector.source == DocumentSource(source_name))
+                for connector in db_session.query(Datasource)
+                .filter(Datasource.source == DocumentSource(source_name))
                 .all()
             ]
         else:
@@ -84,16 +84,16 @@ def reset_opensearch_kg_index(
             ]
             kg_connectors = [
                 connector.id
-                for connector in db_session.query(Connector)
-                .filter(Connector.source.in_(kg_sources))
+                for connector in db_session.query(Datasource)
+                .filter(Datasource.source.in_(kg_sources))
                 .all()
             ]
 
         # Get all the documents for the given connectors
         document_ids = [
             cc_pair.id
-            for cc_pair in db_session.query(DocumentByConnectorCredentialPair)
-            .filter(DocumentByConnectorCredentialPair.connector_id.in_(kg_connectors))
+            for cc_pair in db_session.query(DocumentByDatasourceCredentialPair)
+            .filter(DocumentByDatasourceCredentialPair.datasource_id.in_(kg_connectors))
             .all()
         ]
 

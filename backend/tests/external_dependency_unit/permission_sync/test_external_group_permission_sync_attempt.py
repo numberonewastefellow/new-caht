@@ -17,9 +17,9 @@ from om.datasource.models import InputType
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import PermissionSyncStatus
-from om.db.models import Connector
-from om.db.models import ConnectorCredentialPair
 from om.db.models import Credential
+from om.db.models import Datasource
+from om.db.models import DatasourceCredentialPair
 from om.db.models import ExternalGroupPermissionSyncAttempt
 from om.db.permission_sync_attempt import (
     complete_external_group_sync_attempt,
@@ -44,15 +44,15 @@ from tests.external_dependency_unit.conftest import create_test_user
 
 def _create_test_connector_credential_pair(
     db_session: Session, source: DocumentSource = DocumentSource.GOOGLE_DRIVE
-) -> ConnectorCredentialPair:
+) -> DatasourceCredentialPair:
     """Create a test connector credential pair for testing."""
     user = create_test_user(db_session, "test_user")
 
-    connector = Connector(
+    connector = Datasource(
         name=f"Test {source.value} Connector",
         source=source,
         input_type=InputType.LOAD_STATE,
-        connector_specific_config={},
+        datasource_specific_config={},
         refresh_freq=None,
         prune_freq=None,
         indexing_start=datetime.now(timezone.utc),
@@ -70,8 +70,8 @@ def _create_test_connector_credential_pair(
     # Expire the credential so it reloads from DB with SensitiveValue wrapper
     db_session.expire(credential)
 
-    cc_pair = ConnectorCredentialPair(
-        connector_id=connector.id,
+    cc_pair = DatasourceCredentialPair(
+        datasource_id=connector.id,
         credential_id=credential.id,
         name="Test CC Pair",
         status=ConnectorCredentialPairStatus.ACTIVE,
@@ -87,7 +87,7 @@ def _cleanup_global_external_group_sync_attempts(db_session: Session) -> None:
     """Clean up any existing global external group sync attempts from previous test runs."""
     # Delete all global attempts (where connector_credential_pair_id is None)
     db_session.query(ExternalGroupPermissionSyncAttempt).filter(
-        ExternalGroupPermissionSyncAttempt.connector_credential_pair_id.is_(None)
+        ExternalGroupPermissionSyncAttempt.datasource_credential_pair_id.is_(None)
     ).delete()
     db_session.commit()
 
@@ -111,7 +111,7 @@ class TestExternalGroupPermissionSyncAttempt:
         # Verify the attempt was created with correct defaults
         attempt = get_external_group_sync_attempt(db_session, attempt_id)
         assert attempt is not None
-        assert attempt.connector_credential_pair_id == cc_pair.id
+        assert attempt.datasource_credential_pair_id == cc_pair.id
         assert attempt.status == PermissionSyncStatus.NOT_STARTED
         assert attempt.total_users_processed == 0
         assert attempt.total_groups_processed == 0
@@ -135,7 +135,7 @@ class TestExternalGroupPermissionSyncAttempt:
         # Verify the attempt was created as global
         attempt = get_external_group_sync_attempt(db_session, attempt_id)
         assert attempt is not None
-        assert attempt.connector_credential_pair_id is None
+        assert attempt.datasource_credential_pair_id is None
         assert attempt.status == PermissionSyncStatus.NOT_STARTED
 
     def test_get_external_group_sync_attempt(self, db_session: Session) -> None:
@@ -153,8 +153,8 @@ class TestExternalGroupPermissionSyncAttempt:
             db_session, attempt_id, eager_load_connector=True
         )
         assert attempt_with_connector is not None
-        assert attempt_with_connector.connector_credential_pair is not None
-        assert attempt_with_connector.connector_credential_pair.id == cc_pair.id
+        assert attempt_with_connector.datasource_credential_pair is not None
+        assert attempt_with_connector.datasource_credential_pair.id == cc_pair.id
 
         # Test non-existent ID
         non_existent_attempt = get_external_group_sync_attempt(db_session, 99999)
@@ -241,7 +241,7 @@ class TestExternalGroupPermissionSyncAttempt:
 
         # Verify they all belong to the correct cc_pair
         for attempt in recent_attempts:
-            assert attempt.connector_credential_pair_id == cc_pair.id
+            assert attempt.datasource_credential_pair_id == cc_pair.id
 
         # Test with different cc_pair (should return empty)
         other_cc_pair = _create_test_connector_credential_pair(
@@ -282,7 +282,7 @@ class TestExternalGroupPermissionSyncAttempt:
 
         # Verify they are all global (cc_pair_id is None)
         for attempt in recent_global_attempts:
-            assert attempt.connector_credential_pair_id is None
+            assert attempt.datasource_credential_pair_id is None
 
         # Verify they are ordered by time_created descending
         for i in range(len(recent_global_attempts) - 1):

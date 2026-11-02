@@ -9,7 +9,7 @@ from om.datasource.confluence.om_confluence import OmConfluence
 from om.datasource.credentials_provider import OmDBCredentialsProvider
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.external_perm import ExternalUserGroup
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.users import get_all_users
 from om.external_permissions.confluence.constants import ALL_CONF_EMAILS_GROUP_NAME
 from om.utils.logger import setup_logger
@@ -157,11 +157,11 @@ def _build_final_group_to_member_email_map(
 
 def confluence_group_sync(
     tenant_id: str,
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
 ) -> Generator[ExternalUserGroup, None, None]:
     provider = OmDBCredentialsProvider(tenant_id, "confluence", cc_pair.credential_id)
-    is_cloud = cc_pair.connector.connector_specific_config.get("is_cloud", False)
-    wiki_base: str = cc_pair.connector.connector_specific_config["wiki_base"]
+    is_cloud = cc_pair.datasource.datasource_specific_config.get("is_cloud", False)
+    wiki_base: str = cc_pair.datasource.datasource_specific_config["wiki_base"]
     url = wiki_base.rstrip("/")
 
     probe_kwargs = {
@@ -194,7 +194,7 @@ def confluence_group_sync(
 
     # This is so that when we find a public confleunce server page, we can
     # give access to all users only in if they have an email in Confluence
-    if cc_pair.connector.connector_specific_config.get("is_cloud", False):
+    if cc_pair.datasource.datasource_specific_config.get("is_cloud", False):
         all_found_group = ExternalUserGroup(
             id=ALL_CONF_EMAILS_GROUP_NAME,
             user_emails=list(all_found_emails),

@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 from om.access.models import DocExternalAccess
 from om.datasource.google_drive.connector import GoogleDriveConnector
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.utils import DocumentRow
 from om.db.utils import SortOrder
 from om.external_permissions.google_drive.doc_sync import gdrive_doc_sync
@@ -107,9 +107,9 @@ def test_gdrive_perm_sync_with_real_data(
     and verifies the permission structure returned.
     """
     # Create a mock cc_pair that will use our real connector
-    mock_cc_pair = MagicMock(spec=ConnectorCredentialPair)
-    mock_cc_pair.connector = MagicMock()
-    mock_cc_pair.connector.connector_specific_config = {}
+    mock_cc_pair = MagicMock(spec=DatasourceCredentialPair)
+    mock_cc_pair.datasource = MagicMock()
+    mock_cc_pair.datasource.datasource_specific_config = {}
     mock_cc_pair.credential_id = 1
     # Import and use the mock helper
     from om.utils.sensitive import make_mock_sensitive_value

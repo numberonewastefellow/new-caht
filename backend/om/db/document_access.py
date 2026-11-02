@@ -23,9 +23,9 @@ from sqlalchemy.sql.elements import ColumnElement
 
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.models import Document
-from om.db.models import DocumentByConnectorCredentialPair
+from om.db.models import DocumentByDatasourceCredentialPair
 
 
 def apply_document_access_filter(
@@ -51,27 +51,27 @@ def apply_document_access_filter(
     """
     # Join to get cc_pair info for each document
     stmt = stmt.join(
-        DocumentByConnectorCredentialPair,
-        Document.id == DocumentByConnectorCredentialPair.id,
+        DocumentByDatasourceCredentialPair,
+        Document.id == DocumentByDatasourceCredentialPair.id,
     ).join(
-        ConnectorCredentialPair,
+        DatasourceCredentialPair,
         and_(
-            DocumentByConnectorCredentialPair.connector_id
-            == ConnectorCredentialPair.connector_id,
-            DocumentByConnectorCredentialPair.credential_id
-            == ConnectorCredentialPair.credential_id,
+            DocumentByDatasourceCredentialPair.datasource_id
+            == DatasourceCredentialPair.datasource_id,
+            DocumentByDatasourceCredentialPair.credential_id
+            == DatasourceCredentialPair.credential_id,
         ),
     )
 
     # Exclude documents from cc_pairs that are being deleted
     stmt = stmt.where(
-        ConnectorCredentialPair.status != ConnectorCredentialPairStatus.DELETING
+        DatasourceCredentialPair.status != ConnectorCredentialPairStatus.DELETING
     )
 
     # Build access filters
     access_filters: list[ColumnElement[bool]] = [
         # Document is from a PUBLIC connector
-        ConnectorCredentialPair.access_type == AccessType.PUBLIC,
+        DatasourceCredentialPair.access_type == AccessType.PUBLIC,
         # Document is marked as public (e.g., "Anyone with link" in source)
         Document.is_public.is_(True),
     ]

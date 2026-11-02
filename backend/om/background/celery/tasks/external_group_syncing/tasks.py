@@ -14,23 +14,13 @@ from pydantic import ValidationError
 from redis import Redis
 from redis.lock import Lock as RedisLock
 
-from om.background.celery.tasks.external_group_syncing.group_sync_utils import (
-    mark_all_relevant_cc_pairs_as_external_group_synced,
-)
-from om.db.connector_credential_pair import get_all_auto_sync_cc_pairs
-from om.db.connector_credential_pair import get_cc_pairs_by_source
-from om.db.external_perm import ExternalUserGroup
-from om.db.external_perm import mark_old_external_groups_as_stale
-from om.db.external_perm import remove_stale_external_groups
-from om.db.external_perm import upsert_external_groups
-from om.external_permissions.sync_params import (
-    get_all_cc_pair_agnostic_group_sync_sources,
-)
-from om.external_permissions.sync_params import get_source_perm_sync_config
 from om.background.celery.apps.app_base import task_logger
 from om.background.celery.celery_redis import celery_find_task
 from om.background.celery.celery_redis import celery_get_unacked_task_ids
 from om.background.celery.tasks.beat_schedule import CLOUD_BEAT_MULTIPLIER_DEFAULT
+from om.background.celery.tasks.external_group_syncing.group_sync_utils import (
+    mark_all_relevant_cc_pairs_as_external_group_synced,
+)
 from om.background.error_logging import emit_background_error
 from om.configs.app_configs import JOB_TIMEOUT
 from om.configs.constants import CELERY_EXTERNAL_GROUP_SYNC_LOCK_TIMEOUT
@@ -42,13 +32,19 @@ from om.configs.constants import OmCeleryTask
 from om.configs.constants import OmRedisConstants
 from om.configs.constants import OmRedisLocks
 from om.configs.constants import OmRedisSignals
+from om.db.connector_credential_pair import get_all_auto_sync_cc_pairs
+from om.db.connector_credential_pair import get_cc_pairs_by_source
 from om.db.connector_credential_pair import get_connector_credential_pair_from_id
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import SyncStatus
 from om.db.enums import SyncType
-from om.db.models import ConnectorCredentialPair
+from om.db.external_perm import ExternalUserGroup
+from om.db.external_perm import mark_old_external_groups_as_stale
+from om.db.external_perm import remove_stale_external_groups
+from om.db.external_perm import upsert_external_groups
+from om.db.models import DatasourceCredentialPair
 from om.db.permission_sync_attempt import complete_external_group_sync_attempt
 from om.db.permission_sync_attempt import (
     create_external_group_sync_attempt,
@@ -61,6 +57,10 @@ from om.db.permission_sync_attempt import (
 )
 from om.db.sync_record import insert_sync_record
 from om.db.sync_record import update_sync_record_status
+from om.external_permissions.sync_params import (
+    get_all_cc_pair_agnostic_group_sync_sources,
+)
+from om.external_permissions.sync_params import get_source_perm_sync_config
 from om.redis.redis_connector import RedisConnector
 from om.redis.redis_connector_ext_group_sync import RedisConnectorExternalGroupSync
 from om.redis.redis_connector_ext_group_sync import (
@@ -106,7 +106,7 @@ def _get_fence_validation_block_expiration() -> int:
     return int(base_expiration * beat_multiplier)
 
 
-def _is_external_group_sync_due(cc_pair: ConnectorCredentialPair) -> bool:
+def _is_external_group_sync_due(cc_pair: DatasourceCredentialPair) -> bool:
     """Returns boolean indicating if external group sync is due."""
 
     if cc_pair.access_type != AccessType.SYNC:
@@ -123,11 +123,11 @@ def _is_external_group_sync_due(cc_pair: ConnectorCredentialPair) -> bool:
         )
         return False
 
-    sync_config = get_source_perm_sync_config(cc_pair.connector.source)
+    sync_config = get_source_perm_sync_config(cc_pair.datasource.source)
     if sync_config is None:
         task_logger.debug(
             f"Skipping group sync for CC Pair {cc_pair.id} - "
-            f"no sync config found for {cc_pair.connector.source}"
+            f"no sync config found for {cc_pair.datasource.source}"
         )
         return False
 
@@ -136,7 +136,7 @@ def _is_external_group_sync_due(cc_pair: ConnectorCredentialPair) -> bool:
     if sync_config.group_sync_config is None:
         task_logger.debug(
             f"Skipping group sync for CC Pair {cc_pair.id} - "
-            f"no group sync config found for {cc_pair.connector.source}"
+            f"no group sync config found for {cc_pair.datasource.source}"
         )
         return False
 
@@ -487,7 +487,7 @@ def _perform_external_group_sync(
         if cc_pair is None:
             raise ValueError(f"No connector credential pair found for id: {cc_pair_id}")
 
-        source_type = cc_pair.connector.source
+        source_type = cc_pair.datasource.source
         sync_config = get_source_perm_sync_config(source_type)
         if sync_config is None:
             msg = f"No sync config found for {source_type} for cc_pair: {cc_pair_id}"
@@ -551,7 +551,7 @@ def _perform_external_group_sync(
                         db_session=db_session,
                         cc_pair_id=cc_pair_id,
                         external_groups=external_team_batch,
-                        source=cc_pair.connector.source,
+                        source=cc_pair.datasource.source,
                     )
                     external_team_batch = []
 
@@ -561,7 +561,7 @@ def _perform_external_group_sync(
                     db_session=db_session,
                     cc_pair_id=cc_pair_id,
                     external_groups=external_team_batch,
-                    source=cc_pair.connector.source,
+                    source=cc_pair.datasource.source,
                 )
         except Exception as e:
             format_error_for_logging(e)

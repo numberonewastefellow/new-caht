@@ -14,9 +14,9 @@ from om.configs.app_configs import DEFAULT_PRUNING_FREQ
 from om.configs.constants import DocumentSource
 from om.datasource.models import InputType
 from om.db.enums import IndexingMode
-from om.db.models import Connector
-from om.db.models import ConnectorCredentialPair
-from om.db.models import FederatedConnector
+from om.db.models import Datasource
+from om.db.models import DatasourceCredentialPair
+from om.db.models import FederatedDatasource
 from om.db.models import IndexAttempt
 from om.kg.models import KGConnectorData
 from om.server.documents.models import ConnectorBase
@@ -28,7 +28,7 @@ logger = setup_logger()
 
 
 def check_federated_connectors_exist(db_session: Session) -> bool:
-    stmt = select(exists(FederatedConnector))
+    stmt = select(exists(FederatedDatasource))
     result = db_session.execute(stmt)
     return result.scalar() or False
 
@@ -36,7 +36,7 @@ def check_federated_connectors_exist(db_session: Session) -> bool:
 def check_connectors_exist(db_session: Session) -> bool:
     # Connector 0 is created on server startup as a default for ingestion
     # it will always exist and we don't need to count it for this
-    stmt = select(exists(Connector).where(Connector.id > 0))
+    stmt = select(exists(Datasource).where(Datasource.id > 0))
     result = db_session.execute(stmt)
     return result.scalar() or False
 
@@ -60,12 +60,12 @@ def fetch_connectors(
     db_session: Session,
     sources: list[DocumentSource] | None = None,
     input_types: list[InputType] | None = None,
-) -> list[Connector]:
-    stmt = select(Connector)
+) -> list[Datasource]:
+    stmt = select(Datasource)
     if sources is not None:
-        stmt = stmt.where(Connector.source.in_(sources))
+        stmt = stmt.where(Datasource.source.in_(sources))
     if input_types is not None:
-        stmt = stmt.where(Connector.input_type.in_(input_types))
+        stmt = stmt.where(Datasource.input_type.in_(input_types))
     results = db_session.scalars(stmt)
     return list(results.all())
 
@@ -73,16 +73,16 @@ def fetch_connectors(
 def connector_by_name_source_exists(
     connector_name: str, source: DocumentSource, db_session: Session
 ) -> bool:
-    stmt = select(Connector).where(
-        Connector.name == connector_name, Connector.source == source
+    stmt = select(Datasource).where(
+        Datasource.name == connector_name, Datasource.source == source
     )
     result = db_session.execute(stmt)
     connector = result.scalar_one_or_none()
     return connector is not None
 
 
-def fetch_connector_by_id(connector_id: int, db_session: Session) -> Connector | None:
-    stmt = select(Connector).where(Connector.id == connector_id)
+def fetch_connector_by_id(connector_id: int, db_session: Session) -> Datasource | None:
+    stmt = select(Datasource).where(Datasource.id == connector_id)
     result = db_session.execute(stmt)
     connector = result.scalar_one_or_none()
     return connector
@@ -90,11 +90,11 @@ def fetch_connector_by_id(connector_id: int, db_session: Session) -> Connector |
 
 def fetch_ingestion_connector_by_name(
     connector_name: str, db_session: Session
-) -> Connector | None:
+) -> Datasource | None:
     stmt = (
-        select(Connector)
-        .where(Connector.name == connector_name)
-        .where(Connector.source == DocumentSource.INGESTION_API)
+        select(Datasource)
+        .where(Datasource.name == connector_name)
+        .where(Datasource.source == DocumentSource.INGESTION_API)
     )
     result = db_session.execute(stmt)
     connector = result.scalar_one_or_none()
@@ -112,11 +112,11 @@ def create_connector(
             "Connector by this name already exists, duplicate naming not allowed."
         )
 
-    connector = Connector(
+    connector = Datasource(
         name=connector_data.name,
         source=connector_data.source,
         input_type=connector_data.input_type,
-        connector_specific_config=connector_data.connector_specific_config,
+        datasource_specific_config=connector_data.connector_specific_config,
         refresh_freq=connector_data.refresh_freq,
         indexing_start=connector_data.indexing_start,
         prune_freq=connector_data.prune_freq,
@@ -131,7 +131,7 @@ def update_connector(
     connector_id: int,
     connector_data: ConnectorBase,
     db_session: Session,
-) -> Connector | None:
+) -> Datasource | None:
     connector = fetch_connector_by_id(connector_id, db_session)
     if connector is None:
         return None
@@ -146,7 +146,7 @@ def update_connector(
     connector.name = connector_data.name
     connector.source = connector_data.source
     connector.input_type = connector_data.input_type
-    connector.connector_specific_config = connector_data.connector_specific_config
+    connector.datasource_specific_config = connector_data.connector_specific_config
     connector.refresh_freq = connector_data.refresh_freq
     connector.prune_freq = (
         connector_data.prune_freq
@@ -205,8 +205,8 @@ def fetch_latest_index_attempt_by_connector(
     for connector in connectors:
         latest_index_attempt = (
             db_session.query(IndexAttempt)
-            .join(ConnectorCredentialPair)
-            .filter(ConnectorCredentialPair.connector_id == connector.id)
+            .join(DatasourceCredentialPair)
+            .filter(DatasourceCredentialPair.datasource_id == connector.id)
             .order_by(IndexAttempt.time_updated.desc())
             .first()
         )
@@ -222,11 +222,11 @@ def fetch_latest_index_attempts_by_status(
 ) -> list[IndexAttempt]:
     subquery = (
         db_session.query(
-            IndexAttempt.connector_credential_pair_id,
+            IndexAttempt.datasource_credential_pair_id,
             IndexAttempt.status,
             func.max(IndexAttempt.time_updated).label("time_updated"),
         )
-        .group_by(IndexAttempt.connector_credential_pair_id)
+        .group_by(IndexAttempt.datasource_credential_pair_id)
         .group_by(IndexAttempt.status)
         .subquery()
     )
@@ -236,8 +236,8 @@ def fetch_latest_index_attempts_by_status(
     query = db_session.query(IndexAttempt).join(
         alias,
         and_(
-            IndexAttempt.connector_credential_pair_id
-            == alias.connector_credential_pair_id,
+            IndexAttempt.datasource_credential_pair_id
+            == alias.datasource_credential_pair_id,
             IndexAttempt.status == alias.status,
             IndexAttempt.time_updated == alias.time_updated,
         ),
@@ -247,7 +247,7 @@ def fetch_latest_index_attempts_by_status(
 
 
 def fetch_unique_document_sources(db_session: Session) -> list[DocumentSource]:
-    distinct_sources = db_session.query(Connector.source).distinct().all()
+    distinct_sources = db_session.query(Datasource.source).distinct().all()
 
     sources = [
         source[0]
@@ -262,7 +262,7 @@ def fetch_sources_with_connectors(db_session: Session) -> list[DocumentSource]:
     # scalars(select(...)) rather than the legacy Query API the EE version used: that one
     # needed a blanket `# type: ignore` and still left the result un-inferable. This
     # matches the idiom used by the rest of this module and types cleanly.
-    return list(db_session.scalars(select(distinct(Connector.source))).all())
+    return list(db_session.scalars(select(distinct(Datasource.source))).all())
 
 
 def create_initial_default_connector(db_session: Session) -> None:
@@ -274,7 +274,7 @@ def create_initial_default_connector(db_session: Session) -> None:
             or default_connector.input_type != InputType.LOAD_STATE
             or default_connector.refresh_freq is not None
             or default_connector.name != "Ingestion API"
-            or default_connector.connector_specific_config != {}
+            or default_connector.datasource_specific_config != {}
             or default_connector.prune_freq is not None
         ):
             logger.warning(
@@ -285,18 +285,18 @@ def create_initial_default_connector(db_session: Session) -> None:
             default_connector.input_type = InputType.LOAD_STATE
             default_connector.refresh_freq = None
             default_connector.name = "Ingestion API"
-            default_connector.connector_specific_config = {}
+            default_connector.datasource_specific_config = {}
             default_connector.prune_freq = None
             db_session.commit()
         return
 
     # Create a new default connector if it doesn't exist
-    connector = Connector(
+    connector = Datasource(
         id=default_connector_id,
         name="Ingestion API",
         source=DocumentSource.INGESTION_API,
         input_type=InputType.LOAD_STATE,
-        connector_specific_config={},
+        datasource_specific_config={},
         refresh_freq=None,
         prune_freq=None,
     )
@@ -305,8 +305,8 @@ def create_initial_default_connector(db_session: Session) -> None:
 
 
 def mark_ccpair_as_pruned(cc_pair_id: int, db_session: Session) -> None:
-    stmt = select(ConnectorCredentialPair).where(
-        ConnectorCredentialPair.id == cc_pair_id
+    stmt = select(DatasourceCredentialPair).where(
+        DatasourceCredentialPair.id == cc_pair_id
     )
     cc_pair = db_session.scalar(stmt)
     if cc_pair is None:
@@ -317,8 +317,8 @@ def mark_ccpair_as_pruned(cc_pair_id: int, db_session: Session) -> None:
 
 
 def mark_cc_pair_as_hierarchy_fetched(db_session: Session, cc_pair_id: int) -> None:
-    stmt = select(ConnectorCredentialPair).where(
-        ConnectorCredentialPair.id == cc_pair_id
+    stmt = select(DatasourceCredentialPair).where(
+        DatasourceCredentialPair.id == cc_pair_id
     )
     cc_pair = db_session.scalar(stmt)
     if cc_pair is None:
@@ -331,8 +331,8 @@ def mark_cc_pair_as_hierarchy_fetched(db_session: Session, cc_pair_id: int) -> N
 def mark_cc_pair_as_permissions_synced(
     db_session: Session, cc_pair_id: int, start_time: datetime | None
 ) -> None:
-    stmt = select(ConnectorCredentialPair).where(
-        ConnectorCredentialPair.id == cc_pair_id
+    stmt = select(DatasourceCredentialPair).where(
+        DatasourceCredentialPair.id == cc_pair_id
     )
     cc_pair = db_session.scalar(stmt)
     if cc_pair is None:
@@ -343,8 +343,8 @@ def mark_cc_pair_as_permissions_synced(
 
 
 def mark_cc_pair_as_external_group_synced(db_session: Session, cc_pair_id: int) -> None:
-    stmt = select(ConnectorCredentialPair).where(
-        ConnectorCredentialPair.id == cc_pair_id
+    stmt = select(DatasourceCredentialPair).where(
+        DatasourceCredentialPair.id == cc_pair_id
     )
     cc_pair = db_session.scalar(stmt)
     if cc_pair is None:
@@ -364,8 +364,8 @@ def mark_ccpair_with_indexing_trigger(
     to trigger indexing. Set to None to disable the trigger."""
     try:
         cc_pair = db_session.execute(
-            select(ConnectorCredentialPair)
-            .where(ConnectorCredentialPair.id == cc_pair_id)
+            select(DatasourceCredentialPair)
+            .where(DatasourceCredentialPair.id == cc_pair_id)
             .with_for_update()
         ).scalar_one()
 
@@ -388,8 +388,8 @@ def get_kg_enabled_connectors(db_session: Session) -> list[KGConnectorData]:
         list[KGConnectorData]: List of connector IDs with KG extraction enabled but have unprocessed documents
     """
     try:
-        stmt = select(Connector.id, Connector.source, Connector.kg_coverage_days).where(
-            Connector.kg_processing_enabled
+        stmt = select(Datasource.id, Datasource.source, Datasource.kg_coverage_days).where(
+            Datasource.kg_processing_enabled
         )
         result = db_session.execute(stmt)
 

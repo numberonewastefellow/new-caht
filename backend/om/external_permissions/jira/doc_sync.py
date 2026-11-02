@@ -3,7 +3,7 @@ from collections.abc import Generator
 from om.access.models import ElementExternalAccess
 from om.configs.constants import DocumentSource
 from om.datasource.jira.connector import JiraConnector
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.external_permissions.perm_sync_types import FetchAllDocumentsFunction
 from om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunction
 from om.external_permissions.utils import generic_doc_sync
@@ -16,13 +16,13 @@ JIRA_DOC_SYNC_TAG = "jira_doc_sync"
 
 
 def jira_doc_sync(
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     fetch_all_existing_docs_fn: FetchAllDocumentsFunction,  # noqa: ARG001
     fetch_all_existing_docs_ids_fn: FetchAllDocumentsIdsFunction,
     callback: IndexingHeartbeatInterface | None = None,
 ) -> Generator[ElementExternalAccess, None, None]:
     jira_connector = JiraConnector(
-        **cc_pair.connector.connector_specific_config,
+        **cc_pair.datasource.datasource_specific_config,
     )
     credential_json = (
         cc_pair.credential.credential_json.get_value(apply_mask=False)

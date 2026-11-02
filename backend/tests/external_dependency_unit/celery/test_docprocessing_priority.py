@@ -25,21 +25,21 @@ from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import EmbeddingPrecision
 from om.db.enums import IndexingStatus
 from om.db.enums import IndexModelStatus
-from om.db.models import Connector
-from om.db.models import ConnectorCredentialPair
 from om.db.models import Credential
+from om.db.models import Datasource
+from om.db.models import DatasourceCredentialPair
 from om.db.models import IndexAttempt
 from om.db.models import SearchSettings
 from tests.external_dependency_unit.constants import TEST_TENANT_ID
 
 
-def _create_test_connector(db_session: Session, name: str) -> Connector:
+def _create_test_connector(db_session: Session, name: str) -> Datasource:
     """Create a test connector with all required fields."""
-    connector = Connector(
+    connector = Datasource(
         name=name,
         source=DocumentSource.FILE,
         input_type=InputType.LOAD_STATE,
-        connector_specific_config={},
+        datasource_specific_config={},
         refresh_freq=3600,
     )
     db_session.add(connector)
@@ -64,16 +64,16 @@ def _create_test_credential(db_session: Session) -> Credential:
 
 def _create_test_cc_pair(
     db_session: Session,
-    connector: Connector,
+    connector: Datasource,
     credential: Credential,
     status: ConnectorCredentialPairStatus,
     name: str,
     last_successful_index_time: datetime | None = None,
-) -> ConnectorCredentialPair:
+) -> DatasourceCredentialPair:
     """Create a connector credential pair with the specified status."""
-    cc_pair = ConnectorCredentialPair(
+    cc_pair = DatasourceCredentialPair(
         name=name,
-        connector_id=connector.id,
+        datasource_id=connector.id,
         credential_id=credential.id,
         status=status,
         access_type=AccessType.PUBLIC,
@@ -107,13 +107,13 @@ def _create_test_search_settings(
 
 def _create_test_index_attempt(
     db_session: Session,
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     search_settings: SearchSettings,
     from_beginning: bool = False,
 ) -> IndexAttempt:
     """Create a test index attempt with the specified cc_pair and search_settings."""
     index_attempt = IndexAttempt(
-        connector_credential_pair_id=cc_pair.id,
+        datasource_credential_pair_id=cc_pair.id,
         search_settings_id=search_settings.id,
         from_beginning=from_beginning,
         status=IndexingStatus.IN_PROGRESS,

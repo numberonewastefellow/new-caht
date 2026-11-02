@@ -27,27 +27,27 @@ from om.configs.constants import NotificationType
 from om.context.search.enums import RecencyBiasSetting
 from om.db.constants import SLACK_BOT_AGENT_PREFIX
 from om.db.document_access import get_accessible_documents_by_ids
-from om.db.models import ConnectorCredentialPair
+from om.db.models import Agent
+from om.db.models import Agent__Team
+from om.db.models import Agent__User
+from om.db.models import AgentLabel
+from om.db.models import DatasourceCredentialPair
 from om.db.models import Document
 from om.db.models import DocumentSet
-from om.db.models import FederatedConnector__DocumentSet
+from om.db.models import FederatedDatasource__DocumentSet
 from om.db.models import HierarchyNode
-from om.db.models import Agent
-from om.db.models import Agent__User
-from om.db.models import Agent__Team
-from om.db.models import AgentLabel
+from om.db.models import KnowledgeFile
 from om.db.models import StarterMessage
+from om.db.models import Team
 from om.db.models import Tool
 from om.db.models import User
 from om.db.models import User__Team
-from om.db.models import KnowledgeFile
-from om.db.models import Team
 from om.db.notification import create_notification
-from om.server.features.agent.models import FullAgentSnapshot
-from om.server.features.agent.models import MinimalAgentSnapshot
 from om.server.features.agent.models import AgentSharedNotificationData
 from om.server.features.agent.models import AgentSnapshot
 from om.server.features.agent.models import AgentUpsertRequest
+from om.server.features.agent.models import FullAgentSnapshot
+from om.server.features.agent.models import MinimalAgentSnapshot
 from om.server.features.document_set.models import DocumentSetSummary
 from om.server.features.tool.models import ToolSnapshot
 from om.server.features.tool.tool_visibility import should_expose_tool_to_fe
@@ -422,12 +422,12 @@ def _minimal_agent_snapshot_load_options() -> list[Any]:
         selectinload(Agent.tools).selectinload(Tool.oauth_config),
         selectinload(Agent.labels),
         agent_document_sets.selectinload(
-            DocumentSet.connector_credential_pairs
-        ).selectinload(ConnectorCredentialPair.connector),
+            DocumentSet.datasource_credential_pairs
+        ).selectinload(DatasourceCredentialPair.datasource),
         agent_document_sets.selectinload(DocumentSet.users),
         agent_document_sets.selectinload(DocumentSet.groups),
-        agent_document_sets.selectinload(DocumentSet.federated_connectors).selectinload(
-            FederatedConnector__DocumentSet.federated_connector
+        agent_document_sets.selectinload(DocumentSet.federated_datasources).selectinload(
+            FederatedDatasource__DocumentSet.federated_datasource
         ),
         selectinload(Agent.hierarchy_nodes),
         selectinload(Agent.attached_documents).selectinload(

@@ -10,7 +10,7 @@ Sync lifecycle contract (unchanged, relied on by the celery propagation tasks):
 * ``Team.is_up_to_date`` — False whenever membership/grants changed and the
   document index has not yet been re-stamped. The sync task flips it back True.
 * ``Team.is_up_for_deletion`` — the sync task tears down ACLs then deletes.
-* ``team__connector_credential_pair.is_current`` — False marks a grant edge that
+* ``team__datasource_credential_pair.is_current`` — False marks a grant edge that
   was removed but is kept until the sync task has cleared it from the index.
 """
 
@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from operator import and_
+from typing import Any
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -28,8 +29,6 @@ from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.orm import Session
 
-from typing import Any
-
 from om.access.rbac.audit import audit_event
 from om.access.rbac.repository import TeamRepository
 from om.auth.schemas import UserRole
@@ -37,11 +36,11 @@ from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import MembershipSource
 from om.db.enums import TeamRole
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.models import Document
-from om.db.models import DocumentByConnectorCredentialPair
+from om.db.models import DocumentByDatasourceCredentialPair
 from om.db.models import Team
-from om.db.models import Team__ConnectorCredentialPair
+from om.db.models import Team__DatasourceCredentialPair
 from om.db.models import User
 from om.db.models import User__Team
 
@@ -96,29 +95,29 @@ def fetch_teams_for_documents(
     stmt = (
         select(Document.id, func.array_agg(Team.name))
         .join(
-            Team__ConnectorCredentialPair,
-            Team.id == Team__ConnectorCredentialPair.team_id,
+            Team__DatasourceCredentialPair,
+            Team.id == Team__DatasourceCredentialPair.team_id,
         )
         .join(
-            ConnectorCredentialPair,
+            DatasourceCredentialPair,
             and_(
-                ConnectorCredentialPair.id == Team__ConnectorCredentialPair.cc_pair_id,
-                ConnectorCredentialPair.access_type != AccessType.SYNC,
+                DatasourceCredentialPair.id == Team__DatasourceCredentialPair.datasource_credential_pair_id,
+                DatasourceCredentialPair.access_type != AccessType.SYNC,
             ),
         )
         .join(
-            DocumentByConnectorCredentialPair,
+            DocumentByDatasourceCredentialPair,
             and_(
-                DocumentByConnectorCredentialPair.connector_id
-                == ConnectorCredentialPair.connector_id,
-                DocumentByConnectorCredentialPair.credential_id
-                == ConnectorCredentialPair.credential_id,
+                DocumentByDatasourceCredentialPair.datasource_id
+                == DatasourceCredentialPair.datasource_id,
+                DocumentByDatasourceCredentialPair.credential_id
+                == DatasourceCredentialPair.credential_id,
             ),
         )
-        .join(Document, Document.id == DocumentByConnectorCredentialPair.id)
+        .join(Document, Document.id == DocumentByDatasourceCredentialPair.id)
         .where(Document.id.in_(document_ids))
-        .where(Team__ConnectorCredentialPair.is_current.is_(True))
-        .where(ConnectorCredentialPair.status != ConnectorCredentialPairStatus.DELETING)
+        .where(Team__DatasourceCredentialPair.is_current.is_(True))
+        .where(DatasourceCredentialPair.status != ConnectorCredentialPairStatus.DELETING)
         .group_by(Document.id)
     )
     return db_session.execute(stmt).all()  # type: ignore[return-value]
@@ -130,23 +129,23 @@ def construct_document_id_select_by_team(team_id: int) -> Select:
     return (
         select(Document.id)
         .join(
-            DocumentByConnectorCredentialPair,
-            Document.id == DocumentByConnectorCredentialPair.id,
+            DocumentByDatasourceCredentialPair,
+            Document.id == DocumentByDatasourceCredentialPair.id,
         )
         .join(
-            ConnectorCredentialPair,
+            DatasourceCredentialPair,
             and_(
-                DocumentByConnectorCredentialPair.connector_id
-                == ConnectorCredentialPair.connector_id,
-                DocumentByConnectorCredentialPair.credential_id
-                == ConnectorCredentialPair.credential_id,
+                DocumentByDatasourceCredentialPair.datasource_id
+                == DatasourceCredentialPair.datasource_id,
+                DocumentByDatasourceCredentialPair.credential_id
+                == DatasourceCredentialPair.credential_id,
             ),
         )
         .join(
-            Team__ConnectorCredentialPair,
-            Team__ConnectorCredentialPair.cc_pair_id == ConnectorCredentialPair.id,
+            Team__DatasourceCredentialPair,
+            Team__DatasourceCredentialPair.datasource_credential_pair_id == DatasourceCredentialPair.id,
         )
-        .join(Team, Team__ConnectorCredentialPair.team_id == Team.id)
+        .join(Team, Team__DatasourceCredentialPair.team_id == Team.id)
         .where(Team.id == team_id)
         .order_by(Document.id)
         .distinct()
@@ -288,15 +287,15 @@ def _add_cc_pair_grants(
     db_session: Session, team_id: int, cc_pair_ids: list[int]
 ) -> None:
     db_session.add_all(
-        Team__ConnectorCredentialPair(team_id=team_id, cc_pair_id=cc_pair_id)
+        Team__DatasourceCredentialPair(team_id=team_id, datasource_credential_pair_id=cc_pair_id)
         for cc_pair_id in cc_pair_ids
     )
 
 
 def _mark_cc_pair_grants_outdated(db_session: Session, team_id: int) -> None:
     for grant in db_session.scalars(
-        select(Team__ConnectorCredentialPair).where(
-            Team__ConnectorCredentialPair.team_id == team_id
+        select(Team__DatasourceCredentialPair).where(
+            Team__DatasourceCredentialPair.team_id == team_id
         )
     ):
         grant.is_current = False
@@ -559,9 +558,9 @@ def mark_team_as_synced(db_session: Session, team: Team) -> None:
         event="team.perm_sync", entity="team", action="update", entity_id=team.id
     ):
         db_session.execute(
-            delete(Team__ConnectorCredentialPair).where(
-                Team__ConnectorCredentialPair.team_id == team.id,
-                Team__ConnectorCredentialPair.is_current.is_(False),
+            delete(Team__DatasourceCredentialPair).where(
+                Team__DatasourceCredentialPair.team_id == team.id,
+                Team__DatasourceCredentialPair.is_current.is_(False),
             )
         )
         db_session.execute(
@@ -589,8 +588,8 @@ def delete_team_cc_pair_relationship__no_commit(
     """Remove every team's grant edge to a connector-credential-pair (used when a
     connector is being deleted). Caller commits."""
     db_session.execute(
-        delete(Team__ConnectorCredentialPair).where(
-            Team__ConnectorCredentialPair.cc_pair_id == cc_pair_id
+        delete(Team__DatasourceCredentialPair).where(
+            Team__DatasourceCredentialPair.datasource_credential_pair_id == cc_pair_id
         )
     )
 
@@ -622,8 +621,8 @@ def delete_team(db_session: Session, team: Team) -> None:
     ):
         db_session.execute(delete(User__Team).where(User__Team.team_id == team.id))
         db_session.execute(
-            delete(Team__ConnectorCredentialPair).where(
-                Team__ConnectorCredentialPair.team_id == team.id
+            delete(Team__DatasourceCredentialPair).where(
+                Team__DatasourceCredentialPair.team_id == team.id
             )
         )
         db_session.execute(delete(Team).where(Team.id == team.id))

@@ -7,7 +7,7 @@ from om.access.models import NodeExternalAccess
 from om.configs.constants import DocumentSource
 from om.datasource.interfaces import SlimConnectorWithPermSync
 from om.datasource.models import HierarchyNode
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunction
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.utils.logger import setup_logger
@@ -16,7 +16,7 @@ logger = setup_logger()
 
 
 def generic_doc_sync(
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     fetch_all_existing_docs_ids_fn: FetchAllDocumentsIdsFunction,
     callback: IndexingHeartbeatInterface | None,
     doc_source: DocumentSource,

@@ -9,11 +9,11 @@ from pydantic import Field
 from om.configs.constants import DocumentSource
 from om.context.search.enums import RecencyBiasSetting
 from om.db.enums import HierarchyNodeType
-from om.db.models import Document
-from om.db.models import HierarchyNode
 from om.db.models import Agent
 from om.db.models import AgentLabel
+from om.db.models import Document
 from om.db.models import DocumentSet
+from om.db.models import HierarchyNode
 from om.db.models import StarterMessage
 from om.db.models import Tool
 from om.server.features.document_set.models import DocumentSetSummary
@@ -225,8 +225,8 @@ class MinimalAgentSnapshot(BaseModel):
 
         # Sources from document sets
         for doc_set in agent.document_sets:
-            for cc_pair in doc_set.connector_credential_pairs:
-                sources.add(cc_pair.connector.source)
+            for cc_pair in doc_set.datasource_credential_pairs:
+                sources.add(cc_pair.datasource.source)
 
         # Sources from hierarchy nodes
         for node in agent.hierarchy_nodes:

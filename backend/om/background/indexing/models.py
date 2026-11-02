@@ -27,7 +27,7 @@ class IndexAttemptErrorPydantic(BaseModel):
     def from_model(cls, model: IndexAttemptError) -> "IndexAttemptErrorPydantic":
         return cls(
             id=model.id,
-            connector_credential_pair_id=model.connector_credential_pair_id,
+            connector_credential_pair_id=model.datasource_credential_pair_id,
             document_id=model.document_id,
             document_link=model.document_link,
             entity_id=model.entity_id,

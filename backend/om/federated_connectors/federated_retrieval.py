@@ -15,7 +15,7 @@ from om.db.federated import (
     get_federated_connector_document_set_mappings_by_document_set_names,
 )
 from om.db.federated import list_federated_connector_oauth_tokens
-from om.db.models import FederatedConnector__DocumentSet
+from om.db.models import FederatedDatasource__DocumentSet
 from om.db.slack_bot import fetch_slack_bots
 from om.federated_connectors.factory import get_federated_connector
 from om.federated_connectors.interfaces import FederatedConnector
@@ -73,12 +73,12 @@ def get_federated_retrieval_functions(
         )
         for mapping in slack_federated_mappings:
             if (
-                mapping.federated_connector is not None
-                and mapping.federated_connector.source
+                mapping.federated_datasource is not None
+                and mapping.federated_datasource.source
                 == FederatedConnectorSource.FEDERATED_SLACK
             ):
                 slack_federated_connector_config = (
-                    mapping.federated_connector.config or {}
+                    mapping.federated_datasource.config or {}
                 )
                 logger.debug(
                     f"Found Slack federated connector config: {slack_federated_connector_config}"
@@ -217,10 +217,10 @@ def get_federated_retrieval_functions(
         else []
     )
     federated_connector_id_to_document_sets: dict[
-        int, list[FederatedConnector__DocumentSet]
+        int, list[FederatedDatasource__DocumentSet]
     ] = defaultdict(list)
     for pair in federated_connector__document_set_pairs:
-        federated_connector_id_to_document_sets[pair.federated_connector_id].append(
+        federated_connector_id_to_document_sets[pair.federated_datasource_id].append(
             pair
         )
 
@@ -237,7 +237,7 @@ def get_federated_retrieval_functions(
     for oauth_token in federated_oauth_tokens:
         # Slack is handled separately inside SearchTool
         if (
-            oauth_token.federated_connector.source
+            oauth_token.federated_datasource.source
             == FederatedConnectorSource.FEDERATED_SLACK
         ):
             logger.debug(
@@ -247,13 +247,13 @@ def get_federated_retrieval_functions(
             continue
 
         if (
-            oauth_token.federated_connector.source.to_non_federated_source()
+            oauth_token.federated_datasource.source.to_non_federated_source()
             not in source_types
         ):
             continue
 
         document_set_associations = federated_connector_id_to_document_sets[
-            oauth_token.federated_connector_id
+            oauth_token.federated_datasource_id
         ]
 
         # if document set names are specified by the user, skip federated connectors that are
@@ -262,11 +262,11 @@ def get_federated_retrieval_functions(
             continue
 
         # Only use connector-level config (no junction table entities)
-        entities = oauth_token.federated_connector.config or {}
+        entities = oauth_token.federated_datasource.config or {}
 
         connector = get_federated_connector(
-            oauth_token.federated_connector.source,
-            oauth_token.federated_connector.credentials.get_value(apply_mask=False),
+            oauth_token.federated_datasource.source,
+            oauth_token.federated_datasource.credentials.get_value(apply_mask=False),
         )
 
         # Capture variables by value to avoid lambda closure issues
@@ -289,7 +289,7 @@ def get_federated_retrieval_functions(
                 retrieval_function=create_retrieval_function(
                     connector, entities, access_token
                 ),
-                source=oauth_token.federated_connector.source,
+                source=oauth_token.federated_datasource.source,
             )
         )
     return federated_retrieval_infos

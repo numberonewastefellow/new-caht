@@ -102,7 +102,7 @@ def test_connector_deletion(
     with Session(get_sqlalchemy_engine()) as db_session:
         primary_search_settings = get_current_search_settings(db_session)
         new_attempt = IndexAttempt(
-            connector_credential_pair_id=cc_pair_1.id,
+            datasource_credential_pair_id=cc_pair_1.id,
             search_settings_id=primary_search_settings.id,
             from_beginning=False,
             status=IndexingStatus.COMPLETED_WITH_ERRORS,

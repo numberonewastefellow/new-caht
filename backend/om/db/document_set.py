@@ -18,14 +18,14 @@ from om.db.connector_credential_pair import get_connector_credential_pairs
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.federated import create_federated_connector_document_set_mapping
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.models import Document
-from om.db.models import DocumentByConnectorCredentialPair
+from om.db.models import DocumentByDatasourceCredentialPair
 from om.db.models import DocumentSet as DocumentSetDBModel
-from om.db.models import DocumentSet__ConnectorCredentialPair
-from om.db.models import DocumentSet__User
+from om.db.models import DocumentSet__DatasourceCredentialPair
 from om.db.models import DocumentSet__Team
-from om.db.models import FederatedConnector__DocumentSet
+from om.db.models import DocumentSet__User
+from om.db.models import FederatedDatasource__DocumentSet
 from om.db.models import User
 from om.db.models import User__Team
 from om.db.models import UserRole
@@ -91,11 +91,11 @@ def _delete_document_set_cc_pairs__no_commit(
     db_session: Session, document_set_id: int, is_current: bool | None = None
 ) -> None:
     """NOTE: does not commit transaction, this must be done by the caller"""
-    stmt = delete(DocumentSet__ConnectorCredentialPair).where(
-        DocumentSet__ConnectorCredentialPair.document_set_id == document_set_id
+    stmt = delete(DocumentSet__DatasourceCredentialPair).where(
+        DocumentSet__DatasourceCredentialPair.document_set_id == document_set_id
     )
     if is_current is not None:
-        stmt = stmt.where(DocumentSet__ConnectorCredentialPair.is_current == is_current)
+        stmt = stmt.where(DocumentSet__DatasourceCredentialPair.is_current == is_current)
     db_session.execute(stmt)
 
 
@@ -103,8 +103,8 @@ def _mark_document_set_cc_pairs_as_outdated__no_commit(
     db_session: Session, document_set_id: int
 ) -> None:
     """NOTE: does not commit transaction, this must be done by the caller"""
-    stmt = select(DocumentSet__ConnectorCredentialPair).where(
-        DocumentSet__ConnectorCredentialPair.document_set_id == document_set_id
+    stmt = select(DocumentSet__DatasourceCredentialPair).where(
+        DocumentSet__DatasourceCredentialPair.document_set_id == document_set_id
     )
     for row in db_session.scalars(stmt):
         row.is_current = False
@@ -131,7 +131,7 @@ def get_document_set_by_id_for_user(
     stmt = (
         select(DocumentSetDBModel)
         .distinct()
-        .options(selectinload(DocumentSetDBModel.federated_connectors))
+        .options(selectinload(DocumentSetDBModel.federated_datasources))
     )
     stmt = stmt.where(DocumentSetDBModel.id == document_set_id)
     stmt = _add_user_filters(stmt=stmt, user=user, get_editable=get_editable)
@@ -218,7 +218,7 @@ def _check_if_cc_pairs_are_owned_by_groups(
     )
 
     group_cc_pair_relationships_set = {
-        (relationship.cc_pair_id, relationship.team_id)
+        (relationship.datasource_credential_pair_id, relationship.team_id)
         for relationship in group_cc_pair_relationships
     }
 
@@ -246,7 +246,7 @@ def insert_document_set(
     document_set_creation_request: DocumentSetCreationRequest,
     user_id: UUID | None,
     db_session: Session,
-) -> tuple[DocumentSetDBModel, list[DocumentSet__ConnectorCredentialPair]]:
+) -> tuple[DocumentSetDBModel, list[DocumentSet__DatasourceCredentialPair]]:
     # Check if we have either CC pairs or federated connectors (or both)
     if (
         not document_set_creation_request.cc_pair_ids
@@ -262,7 +262,7 @@ def insert_document_set(
         )
 
     new_document_set_row: DocumentSetDBModel
-    ds_cc_pairs: list[DocumentSet__ConnectorCredentialPair]
+    ds_cc_pairs: list[DocumentSet__DatasourceCredentialPair]
     try:
         new_document_set_row = DocumentSetDBModel(
             name=document_set_creation_request.name,
@@ -276,9 +276,9 @@ def insert_document_set(
 
         # Create CC pair mappings
         ds_cc_pairs = [
-            DocumentSet__ConnectorCredentialPair(
+            DocumentSet__DatasourceCredentialPair(
                 document_set_id=new_document_set_row.id,
-                connector_credential_pair_id=cc_pair_id,
+                datasource_credential_pair_id=cc_pair_id,
                 is_current=True,
             )
             for cc_pair_id in document_set_creation_request.cc_pair_ids
@@ -319,7 +319,7 @@ def update_document_set(
     db_session: Session,
     document_set_update_request: DocumentSetUpdateRequest,
     user: User,
-) -> tuple[DocumentSetDBModel, list[DocumentSet__ConnectorCredentialPair]]:
+) -> tuple[DocumentSetDBModel, list[DocumentSet__DatasourceCredentialPair]]:
     """If successful, this sets document_set_row.is_up_to_date = False.
     That will be processed via Celery in check_for_document_index_sync_task
     and trigger a long running background sync to the document index.
@@ -377,9 +377,9 @@ def update_document_set(
         )
         # add in rows for the new CC pairs
         ds_cc_pairs = [
-            DocumentSet__ConnectorCredentialPair(
+            DocumentSet__DatasourceCredentialPair(
                 document_set_id=document_set_update_request.id,
-                connector_credential_pair_id=cc_pair_id,
+                datasource_credential_pair_id=cc_pair_id,
                 is_current=True,
             )
             for cc_pair_id in document_set_update_request.cc_pair_ids
@@ -388,8 +388,8 @@ def update_document_set(
 
         # Update federated connector mappings
         # Delete existing federated connector mappings for this document set
-        delete_stmt = delete(FederatedConnector__DocumentSet).where(
-            FederatedConnector__DocumentSet.document_set_id == document_set_row.id
+        delete_stmt = delete(FederatedDatasource__DocumentSet).where(
+            FederatedDatasource__DocumentSet.document_set_id == document_set_row.id
         )
         db_session.execute(delete_stmt)
 
@@ -470,8 +470,8 @@ def mark_document_set_as_to_be_deleted(
 
         # delete all federated connector mappings so the cleanup task can fully
         # remove the document set once the document index sync completes
-        delete_stmt = delete(FederatedConnector__DocumentSet).where(
-            FederatedConnector__DocumentSet.document_set_id == document_set_id
+        delete_stmt = delete(FederatedDatasource__DocumentSet).where(
+            FederatedDatasource__DocumentSet.document_set_id == document_set_id
         )
         db_session.execute(delete_stmt)
 
@@ -495,12 +495,12 @@ def delete_document_set_cc_pair_relationship__no_commit(
 ) -> int:
     """Deletes all rows from DocumentSet__ConnectorCredentialPair where the
     connector_credential_pair_id matches the given cc_pair_id."""
-    delete_stmt = delete(DocumentSet__ConnectorCredentialPair).where(
+    delete_stmt = delete(DocumentSet__DatasourceCredentialPair).where(
         and_(
-            ConnectorCredentialPair.connector_id == connector_id,
-            ConnectorCredentialPair.credential_id == credential_id,
-            DocumentSet__ConnectorCredentialPair.connector_credential_pair_id
-            == ConnectorCredentialPair.id,
+            DatasourceCredentialPair.datasource_id == connector_id,
+            DatasourceCredentialPair.credential_id == credential_id,
+            DocumentSet__DatasourceCredentialPair.datasource_credential_pair_id
+            == DatasourceCredentialPair.id,
         )
     )
     result = db_session.execute(delete_stmt)
@@ -521,41 +521,41 @@ def fetch_document_sets(
     user_id: UUID | None,  # noqa: ARG001
     db_session: Session,
     include_outdated: bool = False,
-) -> list[tuple[DocumentSetDBModel, list[ConnectorCredentialPair]]]:
+) -> list[tuple[DocumentSetDBModel, list[DatasourceCredentialPair]]]:
     """Return is a list where each element contains a tuple of:
     1. The document set itself
     2. All CC pairs associated with the document set"""
     stmt = (
-        select(DocumentSetDBModel, ConnectorCredentialPair)
+        select(DocumentSetDBModel, DatasourceCredentialPair)
         .join(
-            DocumentSet__ConnectorCredentialPair,
+            DocumentSet__DatasourceCredentialPair,
             DocumentSetDBModel.id
-            == DocumentSet__ConnectorCredentialPair.document_set_id,
+            == DocumentSet__DatasourceCredentialPair.document_set_id,
             isouter=True,  # outer join is needed to also fetch document sets with no cc pairs
         )
         .join(
-            ConnectorCredentialPair,
-            ConnectorCredentialPair.id
-            == DocumentSet__ConnectorCredentialPair.connector_credential_pair_id,
+            DatasourceCredentialPair,
+            DatasourceCredentialPair.id
+            == DocumentSet__DatasourceCredentialPair.datasource_credential_pair_id,
             isouter=True,  # outer join is needed to also fetch document sets with no cc pairs
         )
     )
     if not include_outdated:
         stmt = stmt.where(
             or_(
-                DocumentSet__ConnectorCredentialPair.is_current == True,  # noqa: E712
+                DocumentSet__DatasourceCredentialPair.is_current == True,  # noqa: E712
                 # `None` handles case where no CC Pairs exist for a Document Set
-                DocumentSet__ConnectorCredentialPair.is_current.is_(None),
+                DocumentSet__DatasourceCredentialPair.is_current.is_(None),
             )
         )
 
     results = cast(
-        list[tuple[DocumentSetDBModel, ConnectorCredentialPair | None]],
+        list[tuple[DocumentSetDBModel, DatasourceCredentialPair | None]],
         db_session.execute(stmt).all(),
     )
 
     aggregated_results: dict[
-        int, tuple[DocumentSetDBModel, list[ConnectorCredentialPair]]
+        int, tuple[DocumentSetDBModel, list[DatasourceCredentialPair]]
     ] = {}
     for document_set, cc_pair in results:
         if document_set.id not in aggregated_results:
@@ -581,7 +581,7 @@ def fetch_all_document_sets_for_user(
     stmt = (
         select(DocumentSetDBModel)
         .distinct()
-        .options(selectinload(DocumentSetDBModel.federated_connectors))
+        .options(selectinload(DocumentSetDBModel.federated_datasources))
     )
     stmt = _add_user_filters(stmt, user, get_editable=get_editable)
     return db_session.scalars(stmt).all()
@@ -597,27 +597,27 @@ def fetch_documents_for_document_set_paginated(
     stmt = (
         select(Document)
         .join(
-            DocumentByConnectorCredentialPair,
-            DocumentByConnectorCredentialPair.id == Document.id,
+            DocumentByDatasourceCredentialPair,
+            DocumentByDatasourceCredentialPair.id == Document.id,
         )
         .join(
-            ConnectorCredentialPair,
+            DatasourceCredentialPair,
             and_(
-                ConnectorCredentialPair.connector_id
-                == DocumentByConnectorCredentialPair.connector_id,
-                ConnectorCredentialPair.credential_id
-                == DocumentByConnectorCredentialPair.credential_id,
+                DatasourceCredentialPair.datasource_id
+                == DocumentByDatasourceCredentialPair.datasource_id,
+                DatasourceCredentialPair.credential_id
+                == DocumentByDatasourceCredentialPair.credential_id,
             ),
         )
         .join(
-            DocumentSet__ConnectorCredentialPair,
-            DocumentSet__ConnectorCredentialPair.connector_credential_pair_id
-            == ConnectorCredentialPair.id,
+            DocumentSet__DatasourceCredentialPair,
+            DocumentSet__DatasourceCredentialPair.datasource_credential_pair_id
+            == DatasourceCredentialPair.id,
         )
         .join(
             DocumentSetDBModel,
             DocumentSetDBModel.id
-            == DocumentSet__ConnectorCredentialPair.document_set_id,
+            == DocumentSet__DatasourceCredentialPair.document_set_id,
         )
         .where(DocumentSetDBModel.id == document_set_id)
         .order_by(Document.id)
@@ -627,7 +627,7 @@ def fetch_documents_for_document_set_paginated(
         stmt = stmt.where(Document.id > last_document_id)
     if current_only:
         stmt = stmt.where(
-            DocumentSet__ConnectorCredentialPair.is_current == True  # noqa: E712
+            DocumentSet__DatasourceCredentialPair.is_current == True  # noqa: E712
         )
     stmt = stmt.distinct()
 
@@ -646,27 +646,27 @@ def construct_document_id_select_by_docset(
     stmt = (
         select(Document.id)
         .join(
-            DocumentByConnectorCredentialPair,
-            DocumentByConnectorCredentialPair.id == Document.id,
+            DocumentByDatasourceCredentialPair,
+            DocumentByDatasourceCredentialPair.id == Document.id,
         )
         .join(
-            ConnectorCredentialPair,
+            DatasourceCredentialPair,
             and_(
-                ConnectorCredentialPair.connector_id
-                == DocumentByConnectorCredentialPair.connector_id,
-                ConnectorCredentialPair.credential_id
-                == DocumentByConnectorCredentialPair.credential_id,
+                DatasourceCredentialPair.datasource_id
+                == DocumentByDatasourceCredentialPair.datasource_id,
+                DatasourceCredentialPair.credential_id
+                == DocumentByDatasourceCredentialPair.credential_id,
             ),
         )
         .join(
-            DocumentSet__ConnectorCredentialPair,
-            DocumentSet__ConnectorCredentialPair.connector_credential_pair_id
-            == ConnectorCredentialPair.id,
+            DocumentSet__DatasourceCredentialPair,
+            DocumentSet__DatasourceCredentialPair.datasource_credential_pair_id
+            == DatasourceCredentialPair.id,
         )
         .join(
             DocumentSetDBModel,
             DocumentSetDBModel.id
-            == DocumentSet__ConnectorCredentialPair.document_set_id,
+            == DocumentSet__DatasourceCredentialPair.document_set_id,
         )
         .where(DocumentSetDBModel.id == document_set_id)
         .order_by(Document.id)
@@ -674,7 +674,7 @@ def construct_document_id_select_by_docset(
 
     if current_only:
         stmt = stmt.where(
-            DocumentSet__ConnectorCredentialPair.is_current == True  # noqa: E712
+            DocumentSet__DatasourceCredentialPair.is_current == True  # noqa: E712
         )
 
     stmt = stmt.distinct()
@@ -713,18 +713,18 @@ def fetch_document_sets_for_documents(
     # NOTE: CC pairs can never go from DELETING to any other state -> it's safe to ignore them
     # as we can assume their document sets are no longer relevant
     valid_cc_pairs_subquery = aliased(
-        ConnectorCredentialPair,
-        select(ConnectorCredentialPair)
+        DatasourceCredentialPair,
+        select(DatasourceCredentialPair)
         .where(
-            ConnectorCredentialPair.status != ConnectorCredentialPairStatus.DELETING
+            DatasourceCredentialPair.status != ConnectorCredentialPairStatus.DELETING
         )  # noqa: E712
         .subquery(),
     )
 
     valid_document_set__cc_pairs_subquery = aliased(
-        DocumentSet__ConnectorCredentialPair,
-        select(DocumentSet__ConnectorCredentialPair)
-        .where(DocumentSet__ConnectorCredentialPair.is_current == True)  # noqa: E712
+        DocumentSet__DatasourceCredentialPair,
+        select(DocumentSet__DatasourceCredentialPair)
+        .where(DocumentSet__DatasourceCredentialPair.is_current == True)  # noqa: E712
         .subquery(),
     )
     """End building subqueries"""
@@ -740,22 +740,22 @@ def fetch_document_sets_for_documents(
         # Document -> DocumentByConnectorCredentialPair -> ConnectorCredentialPair ->
         # DocumentSet__ConnectorCredentialPair -> DocumentSet
         .outerjoin(
-            DocumentByConnectorCredentialPair,
-            Document.id == DocumentByConnectorCredentialPair.id,
+            DocumentByDatasourceCredentialPair,
+            Document.id == DocumentByDatasourceCredentialPair.id,
         )
         .outerjoin(
             valid_cc_pairs_subquery,
             and_(
-                DocumentByConnectorCredentialPair.connector_id
-                == valid_cc_pairs_subquery.connector_id,
-                DocumentByConnectorCredentialPair.credential_id
+                DocumentByDatasourceCredentialPair.datasource_id
+                == valid_cc_pairs_subquery.datasource_id,
+                DocumentByDatasourceCredentialPair.credential_id
                 == valid_cc_pairs_subquery.credential_id,
             ),
         )
         .outerjoin(
             valid_document_set__cc_pairs_subquery,
             valid_cc_pairs_subquery.id
-            == valid_document_set__cc_pairs_subquery.connector_credential_pair_id,
+            == valid_document_set__cc_pairs_subquery.datasource_credential_pair_id,
         )
         .outerjoin(
             DocumentSetDBModel,
@@ -801,21 +801,21 @@ def check_document_sets_are_public(
     set is not Public"""
     connector_credential_pair_ids = (
         db_session.query(
-            DocumentSet__ConnectorCredentialPair.connector_credential_pair_id
+            DocumentSet__DatasourceCredentialPair.datasource_credential_pair_id
         )
         .filter(
-            DocumentSet__ConnectorCredentialPair.document_set_id.in_(document_set_ids)
+            DocumentSet__DatasourceCredentialPair.document_set_id.in_(document_set_ids)
         )
         .subquery()
     )
 
     not_public_exists = (
-        db_session.query(ConnectorCredentialPair.id)
+        db_session.query(DatasourceCredentialPair.id)
         .filter(
-            ConnectorCredentialPair.id.in_(
+            DatasourceCredentialPair.id.in_(
                 connector_credential_pair_ids  # type:ignore
             ),
-            ConnectorCredentialPair.access_type != AccessType.PUBLIC,
+            DatasourceCredentialPair.access_type != AccessType.PUBLIC,
         )
         .limit(1)
         .first()

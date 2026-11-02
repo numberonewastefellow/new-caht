@@ -56,7 +56,7 @@ from om.external_permissions.teams.doc_sync import teams_doc_sync
 
 if TYPE_CHECKING:
     from om.access.models import DocExternalAccess  # noqa
-    from om.db.models import ConnectorCredentialPair  # noqa
+    from om.db.models import DatasourceCredentialPair  # noqa
     from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface  # noqa
 
 
@@ -90,7 +90,7 @@ class SyncConfig(BaseModel):
 
 
 def mock_doc_sync(
-    cc_pair: "ConnectorCredentialPair",  # noqa: ARG001
+    cc_pair: "DatasourceCredentialPair",  # noqa: ARG001
     fetch_all_docs_fn: FetchAllDocumentsFunction,  # noqa: ARG001
     fetch_all_docs_ids_fn: FetchAllDocumentsIdsFunction,  # noqa: ARG001
     callback: Optional["IndexingHeartbeatInterface"],  # noqa: ARG001

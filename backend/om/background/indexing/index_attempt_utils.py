@@ -28,7 +28,7 @@ def get_old_index_attempts(
             func.row_number()
             .over(
                 partition_by=(
-                    IndexAttempt.connector_credential_pair_id,
+                    IndexAttempt.datasource_credential_pair_id,
                     IndexAttempt.search_settings_id,
                 ),
                 order_by=IndexAttempt.time_created.desc(),

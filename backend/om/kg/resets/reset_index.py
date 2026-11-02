@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from om.db.document import reset_all_document_kg_stages
-from om.db.models import Connector
+from om.db.models import Datasource
 from om.db.models import KGEntity
 from om.db.models import KGEntityExtractionStaging
 from om.db.models import KGEntityType
@@ -23,7 +23,7 @@ def reset_full_kg_index__commit(db_session: Session) -> None:
     db_session.query(KGEntityExtractionStaging).delete()
     db_session.query(KGRelationshipTypeExtractionStaging).delete()
     # Update all connectors to disable KG processing
-    db_session.query(Connector).update({"kg_processing_enabled": False})
+    db_session.query(Datasource).update({"kg_processing_enabled": False})
 
     # Only reset grounded entity types
     db_session.query(KGEntityType).filter(

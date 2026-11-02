@@ -3,9 +3,9 @@ from sqlalchemy import or_
 
 from om.configs.constants import DocumentSource
 from om.db.engine.sql_engine import get_session_with_current_tenant
-from om.db.models import Connector
+from om.db.models import Datasource
 from om.db.models import Document
-from om.db.models import DocumentByConnectorCredentialPair
+from om.db.models import DocumentByDatasourceCredentialPair
 from om.db.models import KGEntity
 from om.db.models import KGEntityExtractionStaging
 from om.db.models import KGEntityType
@@ -82,14 +82,14 @@ def reset_source_kg_index(
         # get all the documents for the given source
         kg_connectors = [
             connector.id
-            for connector in db_session.query(Connector)
-            .filter(Connector.source == DocumentSource(source_name))
+            for connector in db_session.query(Datasource)
+            .filter(Datasource.source == DocumentSource(source_name))
             .all()
         ]
         document_ids = [
             cc_pair.id
-            for cc_pair in db_session.query(DocumentByConnectorCredentialPair)
-            .filter(DocumentByConnectorCredentialPair.connector_id.in_(kg_connectors))
+            for cc_pair in db_session.query(DocumentByDatasourceCredentialPair)
+            .filter(DocumentByDatasourceCredentialPair.datasource_id.in_(kg_connectors))
             .all()
         ]
 

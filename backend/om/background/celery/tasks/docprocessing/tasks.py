@@ -295,7 +295,7 @@ def monitor_indexing_attempt_progress(
         return
 
     cc_pair = get_connector_credential_pair_from_id(
-        db_session, attempt.connector_credential_pair_id
+        db_session, attempt.datasource_credential_pair_id
     )
     if not cc_pair:
         task_logger.warning(f"CC pair not found for attempt {attempt.id}")
@@ -317,7 +317,7 @@ def monitor_indexing_attempt_progress(
         task_logger.info(
             f"Indexing attempt progress: "
             f"attempt={attempt.id} "
-            f"cc_pair={attempt.connector_credential_pair_id} "
+            f"cc_pair={attempt.datasource_credential_pair_id} "
             f"search_settings={attempt.search_settings_id} "
             f"completed_batches={coordination_status.completed_batches} "
             f"total_batches={coordination_status.total_batches or '?'} "
@@ -332,7 +332,7 @@ def monitor_indexing_attempt_progress(
         return
 
     storage = get_document_batch_storage(
-        attempt.connector_credential_pair_id, attempt.id
+        attempt.datasource_credential_pair_id, attempt.id
     )
 
     # Check task completion using Celery
@@ -514,11 +514,11 @@ def check_indexing_completion(
 
         # Update CC pair status if successful
         cc_pair = get_connector_credential_pair_from_id(
-            db_session, attempt.connector_credential_pair_id
+            db_session, attempt.datasource_credential_pair_id
         )
         if cc_pair is None:
             raise RuntimeError(
-                f"CC pair {attempt.connector_credential_pair_id} not found in database"
+                f"CC pair {attempt.datasource_credential_pair_id} not found in database"
             )
 
         if attempt.status.is_successful():
@@ -551,7 +551,7 @@ def check_indexing_completion(
                     f"Resolving indexing entity errors for attempt {index_attempt_id}"
                 )
                 _resolve_indexing_entity_errors(
-                    cc_pair_id=attempt.connector_credential_pair_id,
+                    cc_pair_id=attempt.datasource_credential_pair_id,
                     db_session=db_session,
                 )
 
@@ -580,7 +580,7 @@ def active_indexing_attempt(
     active_indexing_attempt = db_session.execute(
         select(
             exists().where(
-                IndexAttempt.connector_credential_pair_id == cc_pair_id,
+                IndexAttempt.datasource_credential_pair_id == cc_pair_id,
                 IndexAttempt.search_settings_id == search_settings_id,
                 IndexAttempt.status.in_(
                     [
@@ -929,7 +929,7 @@ def check_for_indexing(self: Task, *, tenant_id: str) -> int | None:
                 failure_reason = (
                     f"Inconsistent index attempt found - active status without Celery task: "
                     f"index_attempt={attempt.id} "
-                    f"cc_pair={attempt.connector_credential_pair_id} "
+                    f"cc_pair={attempt.datasource_credential_pair_id} "
                     f"search_settings={attempt.search_settings_id}"
                 )
                 task_logger.error(failure_reason)
@@ -1387,8 +1387,8 @@ def _docprocessing_task(
             # Set up metadata for this batch
             index_attempt_metadata = IndexAttemptMetadata(
                 attempt_id=index_attempt_id,
-                connector_id=index_attempt.connector_credential_pair.connector.id,
-                credential_id=index_attempt.connector_credential_pair.credential.id,
+                connector_id=index_attempt.datasource_credential_pair.datasource.id,
+                credential_id=index_attempt.datasource_credential_pair.credential.id,
                 request_id=make_randomized_om_request_id("DIP"),
                 structured_id=f"{tenant_id}:{cc_pair_id}:{index_attempt_id}:{batch_num}",
                 batch_num=batch_num,
@@ -1396,7 +1396,7 @@ def _docprocessing_task(
 
             # Process documents through indexing pipeline
             connector_source = (
-                index_attempt.connector_credential_pair.connector.source.value
+                index_attempt.datasource_credential_pair.datasource.source.value
             )
             task_logger.info(
                 f"Processing {len(documents)} documents through indexing pipeline: "
@@ -1406,8 +1406,8 @@ def _docprocessing_task(
 
             adapter = DocumentIndexingBatchAdapter(
                 db_session=db_session,
-                connector_id=index_attempt.connector_credential_pair.connector.id,
-                credential_id=index_attempt.connector_credential_pair.credential.id,
+                connector_id=index_attempt.datasource_credential_pair.datasource.id,
+                credential_id=index_attempt.datasource_credential_pair.credential.id,
                 tenant_id=tenant_id,
                 index_attempt_metadata=index_attempt_metadata,
             )
@@ -1479,7 +1479,7 @@ def _docprocessing_task(
                 "cc_pair_id": cc_pair_id,
                 "current_docs_indexed": coordination_status.total_docs,
                 "current_chunks_indexed": coordination_status.total_chunks,
-                "source": index_attempt.connector_credential_pair.connector.source.value,
+                "source": index_attempt.datasource_credential_pair.datasource.source.value,
                 "completed_batches": coordination_status.completed_batches,
                 "total_batches": coordination_status.total_batches,
             },

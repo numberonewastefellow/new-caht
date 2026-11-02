@@ -21,8 +21,8 @@ sys.path.append(parent_dir)
 
 # Now import VertualAI modules
 from om.db.models import (
-    DocumentSet__ConnectorCredentialPair,
-    Team__ConnectorCredentialPair,
+    DocumentSet__DatasourceCredentialPair,
+    Team__DatasourceCredentialPair,
 )
 from om.db.connector import fetch_connector_by_id
 from om.db.document import get_documents_for_connector_credential_pair
@@ -36,7 +36,7 @@ from om.db.permission_sync_attempt import (
 from om.db.permission_sync_attempt import (
     delete_external_group_permission_sync_attempts__no_commit,
 )
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.document_index.interfaces_new import DocumentIndex
 from om.utils.logger import setup_logger
 from om.configs.constants import DocumentSource
@@ -62,10 +62,10 @@ _DELETION_BATCH_SIZE = 1000
 def _unsafe_deletion(
     db_session: Session,
     document_indices: list[DocumentIndex],
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     pair_id: int,
 ) -> int:
-    connector_id = cc_pair.connector_id
+    connector_id = cc_pair.datasource_id
     credential_id = cc_pair.credential_id
 
     num_docs_deleted = 0
@@ -113,14 +113,14 @@ def _unsafe_deletion(
     )
 
     # Delete document sets
-    stmt = delete(DocumentSet__ConnectorCredentialPair).where(
-        DocumentSet__ConnectorCredentialPair.connector_credential_pair_id == pair_id
+    stmt = delete(DocumentSet__DatasourceCredentialPair).where(
+        DocumentSet__DatasourceCredentialPair.datasource_credential_pair_id == pair_id
     )
     db_session.execute(stmt)
 
     # delete user group associations
-    stmt = delete(Team__ConnectorCredentialPair).where(
-        Team__ConnectorCredentialPair.cc_pair_id == pair_id
+    stmt = delete(Team__DatasourceCredentialPair).where(
+        Team__DatasourceCredentialPair.datasource_credential_pair_id == pair_id
     )
     db_session.execute(stmt)
 
@@ -128,9 +128,9 @@ def _unsafe_deletion(
     db_session.flush()
 
     # delete the actual connector credential pair
-    stmt = delete(ConnectorCredentialPair).where(
-        ConnectorCredentialPair.connector_id == connector_id,
-        ConnectorCredentialPair.credential_id == credential_id,
+    stmt = delete(DatasourceCredentialPair).where(
+        DatasourceCredentialPair.datasource_id == connector_id,
+        DatasourceCredentialPair.credential_id == credential_id,
     )
     db_session.execute(stmt)
 
@@ -173,12 +173,12 @@ def _delete_connector(cc_pair_id: int, db_session: Session) -> None:
 
     if cc_pair.status == ConnectorCredentialPairStatus.ACTIVE:
         logger.error(
-            f"Connector {cc_pair.connector.name} is active, cannot continue. \
+            f"Connector {cc_pair.datasource.name} is active, cannot continue. \
             Please navigate to the connector and pause before attempting again"
         )
         return
 
-    connector_id = cc_pair.connector_id
+    connector_id = cc_pair.datasource_id
     credential_id = cc_pair.credential_id
 
     if cc_pair is None:
@@ -206,8 +206,8 @@ def _delete_connector(cc_pair_id: int, db_session: Session) -> None:
         )
 
     file_ids: list[str] = (
-        cc_pair.connector.connector_specific_config["file_locations"]
-        if cc_pair.connector.source == DocumentSource.FILE
+        cc_pair.datasource.datasource_specific_config["file_locations"]
+        if cc_pair.datasource.source == DocumentSource.FILE
         else []
     )
     try:

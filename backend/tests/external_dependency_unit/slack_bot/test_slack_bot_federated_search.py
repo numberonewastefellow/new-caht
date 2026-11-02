@@ -7,35 +7,33 @@ from unittest.mock import Mock
 from unittest.mock import patch
 from uuid import uuid4
 
-from om.db.llm import update_default_provider
-from om.db.llm import upsert_llm_provider
-from om.server.manage.llm.models import LLMProviderUpsertRequest
-from om.server.manage.llm.models import ModelConfigurationUpsertRequest
-
-
+from slack_sdk.errors import SlackApiError
 from sqlalchemy import inspect
 from sqlalchemy.orm import Session
-from slack_sdk.errors import SlackApiError
 
 from om.configs.constants import FederatedConnectorSource
 from om.context.search.enums import RecencyBiasSetting
 from om.context.search.federated.slack_search import fetch_and_cache_channel_metadata
-from om.db.models import DocumentSet
-from om.db.models import FederatedConnector
-from om.db.models import FederatedConnector__DocumentSet
-from om.db.models import LLMProvider
+from om.db.llm import update_default_provider
+from om.db.llm import upsert_llm_provider
 from om.db.models import Agent
 from om.db.models import Agent__DocumentSet
 from om.db.models import Agent__Tool
+from om.db.models import DocumentSet
+from om.db.models import FederatedDatasource
+from om.db.models import FederatedDatasource__DocumentSet
+from om.db.models import LLMProvider
 from om.db.models import SlackBot
 from om.db.models import SlackChannelConfig
 from om.db.models import User
+from om.db.tools import get_builtin_tool
+from om.llm.constants import LlmProviderNames
 from om.ombot.slack.listener import process_message
 from om.ombot.slack.models import ChannelType
-from om.db.tools import get_builtin_tool
+from om.server.manage.llm.models import LLMProviderUpsertRequest
+from om.server.manage.llm.models import ModelConfigurationUpsertRequest
 from om.tools.built_in_tools import SearchTool
 from tests.external_dependency_unit.conftest import create_test_user
-from om.llm.constants import LlmProviderNames
 
 
 def _create_test_agent_with_slack_config(db_session: Session) -> Agent | None:
@@ -236,7 +234,7 @@ class TestSlackBotFederatedSearch:
 
     def _setup_test_environment(
         self, db_session: Session
-    ) -> tuple[User, Agent, FederatedConnector, SlackBot, SlackChannelConfig]:
+    ) -> tuple[User, Agent, FederatedDatasource, SlackBot, SlackChannelConfig]:
         """Setup test environment with user, agent, and federated connector"""
         user = create_test_user(db_session, "slack_bot_test")
 
@@ -244,7 +242,7 @@ class TestSlackBotFederatedSearch:
         if agent is None:
             raise ValueError("Failed to create test agent")
 
-        federated_connector = FederatedConnector(
+        federated_connector = FederatedDatasource(
             source=FederatedConnectorSource.FEDERATED_SLACK,
             credentials={"workspace_url": "https://test.slack.com"},
         )
@@ -256,8 +254,8 @@ class TestSlackBotFederatedSearch:
         # Associate the federated connector with the agent's document sets
         # This is required for Slack federated search to be enabled
         for doc_set in agent.document_sets:
-            federated_doc_set_mapping = FederatedConnector__DocumentSet(
-                federated_connector_id=federated_connector.id,
+            federated_doc_set_mapping = FederatedDatasource__DocumentSet(
+                federated_datasource_id=federated_connector.id,
                 document_set_id=doc_set.id,
                 entities={},  # Empty entities for test
             )

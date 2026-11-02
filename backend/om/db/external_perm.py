@@ -54,7 +54,7 @@ def delete_user__ext_team_for_cc_pair__no_commit(
     db_session: Session, cc_pair_id: int
 ) -> None:
     db_session.execute(
-        delete(User__ExternalTeamId).where(User__ExternalTeamId.cc_pair_id == cc_pair_id)
+        delete(User__ExternalTeamId).where(User__ExternalTeamId.datasource_credential_pair_id == cc_pair_id)
     )
 
 
@@ -62,19 +62,19 @@ def delete_public_external_team_for_cc_pair__no_commit(
     db_session: Session, cc_pair_id: int
 ) -> None:
     db_session.execute(
-        delete(PublicExternalTeam).where(PublicExternalTeam.cc_pair_id == cc_pair_id)
+        delete(PublicExternalTeam).where(PublicExternalTeam.datasource_credential_pair_id == cc_pair_id)
     )
 
 
 def mark_old_external_groups_as_stale(db_session: Session, cc_pair_id: int) -> None:
     db_session.execute(
         update(User__ExternalTeamId)
-        .where(User__ExternalTeamId.cc_pair_id == cc_pair_id)
+        .where(User__ExternalTeamId.datasource_credential_pair_id == cc_pair_id)
         .values(stale=True)
     )
     db_session.execute(
         update(PublicExternalTeam)
-        .where(PublicExternalTeam.cc_pair_id == cc_pair_id)
+        .where(PublicExternalTeam.datasource_credential_pair_id == cc_pair_id)
         .values(stale=True)
     )
 
@@ -118,7 +118,7 @@ def upsert_external_groups(
                 select(User__ExternalTeamId).where(
                     User__ExternalTeamId.user_id == user_id,
                     User__ExternalTeamId.external_team_id == external_team_id,
-                    User__ExternalTeamId.cc_pair_id == cc_pair_id,
+                    User__ExternalTeamId.datasource_credential_pair_id == cc_pair_id,
                 )
             )
             if existing:
@@ -128,7 +128,7 @@ def upsert_external_groups(
                     User__ExternalTeamId(
                         user_id=user_id,
                         external_team_id=external_team_id,
-                        cc_pair_id=cc_pair_id,
+                        datasource_credential_pair_id=cc_pair_id,
                         stale=False,
                     )
                 )
@@ -137,7 +137,7 @@ def upsert_external_groups(
             existing_public = db_session.scalar(
                 select(PublicExternalTeam).where(
                     PublicExternalTeam.external_team_id == external_team_id,
-                    PublicExternalTeam.cc_pair_id == cc_pair_id,
+                    PublicExternalTeam.datasource_credential_pair_id == cc_pair_id,
                 )
             )
             if existing_public:
@@ -146,7 +146,7 @@ def upsert_external_groups(
                 db_session.add(
                     PublicExternalTeam(
                         external_team_id=external_team_id,
-                        cc_pair_id=cc_pair_id,
+                        datasource_credential_pair_id=cc_pair_id,
                         stale=False,
                     )
                 )
@@ -157,13 +157,13 @@ def upsert_external_groups(
 def remove_stale_external_groups(db_session: Session, cc_pair_id: int) -> None:
     db_session.execute(
         delete(User__ExternalTeamId).where(
-            User__ExternalTeamId.cc_pair_id == cc_pair_id,
+            User__ExternalTeamId.datasource_credential_pair_id == cc_pair_id,
             User__ExternalTeamId.stale.is_(True),
         )
     )
     db_session.execute(
         delete(PublicExternalTeam).where(
-            PublicExternalTeam.cc_pair_id == cc_pair_id,
+            PublicExternalTeam.datasource_credential_pair_id == cc_pair_id,
             PublicExternalTeam.stale.is_(True),
         )
     )

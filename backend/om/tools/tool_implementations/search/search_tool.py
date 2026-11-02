@@ -368,12 +368,12 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
                 found_slack_connector = False
                 for mapping in slack_federated_mappings:
                     if (
-                        mapping.federated_connector is not None
-                        and mapping.federated_connector.source
+                        mapping.federated_datasource is not None
+                        and mapping.federated_datasource.source
                         == FederatedConnectorSource.FEDERATED_SLACK
                     ):
                         # Step 3: Use slack_federated_connector_config from that connector
-                        entities = mapping.federated_connector.config or {}
+                        entities = mapping.federated_datasource.config or {}
                         found_slack_connector = True
                         logger.debug(
                             f"Found Slack federated connector config: {entities}"
@@ -426,7 +426,7 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
                         (
                             token
                             for token in federated_oauth_tokens
-                            if token.federated_connector.source
+                            if token.federated_datasource.source
                             == FederatedConnectorSource.FEDERATED_SLACK
                         ),
                         None,
@@ -436,7 +436,7 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
                         access_token = slack_oauth_token.token.get_value(
                             apply_mask=False
                         )
-                        entities = slack_oauth_token.federated_connector.config or {}
+                        entities = slack_oauth_token.federated_datasource.config or {}
                 except Exception as e:
                     logger.warning(f"Could not fetch Slack OAuth token: {e}")
 

@@ -119,7 +119,7 @@ def get_build_connectors(
     connectors: list[BuildConnectorInfo] = []
     for cc_pair in cc_pairs:
         # Skip ingestion API connectors and default pairs
-        if cc_pair.connector.source == DocumentSource.INGESTION_API:
+        if cc_pair.datasource.source == DocumentSource.INGESTION_API:
             continue
         if cc_pair.name == "DefaultCCPair":
             continue
@@ -207,10 +207,10 @@ def get_build_connectors(
         connectors.append(
             BuildConnectorInfo(
                 cc_pair_id=cc_pair.id,
-                connector_id=cc_pair.connector.id,
+                connector_id=cc_pair.datasource.id,
                 credential_id=cc_pair.credential.id,
-                source=cc_pair.connector.source.value,
-                name=cc_pair.name or cc_pair.connector.name or "Unnamed",
+                source=cc_pair.datasource.source.value,
+                name=cc_pair.name or cc_pair.datasource.name or "Unnamed",
                 status=status,
                 docs_indexed=0,  # Would need to query for this
                 last_indexed=cc_pair.last_successful_index_time,

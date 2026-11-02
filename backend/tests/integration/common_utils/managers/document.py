@@ -7,14 +7,14 @@ from sqlalchemy.orm import Session
 
 from om.configs.constants import DocumentSource
 from om.db.enums import AccessType
-from om.db.models import ConnectorCredentialPair
-from om.db.models import DocumentByConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
+from om.db.models import DocumentByDatasourceCredentialPair
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.constants import GENERAL_HEADERS
 from tests.integration.common_utils.constants import NUM_DOCS
+from tests.integration.common_utils.document_index import DocumentIndexClient
 from tests.integration.common_utils.managers.api_key import DATestAPIKey
 from tests.integration.common_utils.managers.cc_pair import DATestCCPair
-from tests.integration.common_utils.document_index import DocumentIndexClient
 from tests.integration.common_utils.test_models import DATestUser
 from tests.integration.common_utils.test_models import SimpleTestDocument
 
@@ -226,17 +226,17 @@ class DocumentManager:
         document_index_client: DocumentIndexClient,
     ) -> list[SimpleTestDocument]:
         stmt = (
-            select(DocumentByConnectorCredentialPair)
+            select(DocumentByDatasourceCredentialPair)
             .join(
-                ConnectorCredentialPair,
+                DatasourceCredentialPair,
                 and_(
-                    DocumentByConnectorCredentialPair.connector_id
-                    == ConnectorCredentialPair.connector_id,
-                    DocumentByConnectorCredentialPair.credential_id
-                    == ConnectorCredentialPair.credential_id,
+                    DocumentByDatasourceCredentialPair.datasource_id
+                    == DatasourceCredentialPair.datasource_id,
+                    DocumentByDatasourceCredentialPair.credential_id
+                    == DatasourceCredentialPair.credential_id,
                 ),
             )
-            .where(ConnectorCredentialPair.id == cc_pair_id)
+            .where(DatasourceCredentialPair.id == cc_pair_id)
         )
         documents = db_session.execute(stmt).scalars().all()
         if not documents:

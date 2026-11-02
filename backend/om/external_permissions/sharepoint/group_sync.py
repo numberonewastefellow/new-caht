@@ -2,7 +2,7 @@ from collections.abc import Generator
 
 from om.datasource.sharepoint.connector import SharepointConnector
 from om.db.external_perm import ExternalUserGroup
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.external_permissions.sharepoint.permission_utils import (
     get_sharepoint_external_groups,
 )
@@ -13,12 +13,12 @@ logger = setup_logger()
 
 def sharepoint_group_sync(
     tenant_id: str,  # noqa: ARG001
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
 ) -> Generator[ExternalUserGroup, None, None]:
     """Sync SharePoint groups and their members"""
 
     # Get site URLs from connector config
-    connector_config = cc_pair.connector.connector_specific_config
+    connector_config = cc_pair.datasource.datasource_specific_config
 
     # Create SharePoint connector instance and load credentials
     connector = SharepointConnector(**connector_config)

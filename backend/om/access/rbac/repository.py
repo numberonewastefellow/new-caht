@@ -22,7 +22,7 @@ from om.db.models import Credential__Team
 from om.db.models import DocumentSet__Team
 from om.db.models import LLMProvider__Team
 from om.db.models import Team
-from om.db.models import Team__ConnectorCredentialPair
+from om.db.models import Team__DatasourceCredentialPair
 from om.db.models import User__Team
 
 
@@ -98,8 +98,8 @@ class TeamRepository:
         return set(db.scalars(stmt))
 
     def teams_for_cc_pair(self, db: Session, cc_pair_id: int) -> set[int]:
-        stmt = select(Team__ConnectorCredentialPair.team_id).where(
-            Team__ConnectorCredentialPair.cc_pair_id == cc_pair_id
+        stmt = select(Team__DatasourceCredentialPair.team_id).where(
+            Team__DatasourceCredentialPair.datasource_credential_pair_id == cc_pair_id
         )
         return set(db.scalars(stmt))
 

@@ -197,7 +197,7 @@ def on_worker_init(sender: Worker, **kwargs: Any) -> None:
                 failure_reason = (
                     f"Orphaned index attempt found on startup - Celery task not found: "
                     f"index_attempt={attempt.id} "
-                    f"cc_pair={attempt.connector_credential_pair_id} "
+                    f"cc_pair={attempt.datasource_credential_pair_id} "
                     f"search_settings={attempt.search_settings_id} "
                     f"celery_task_id={attempt.celery_task_id}"
                 )

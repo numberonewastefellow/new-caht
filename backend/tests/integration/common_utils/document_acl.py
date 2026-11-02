@@ -9,11 +9,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from om.access.access import get_access_for_documents
-from om.db.external_perm import fetch_external_teams_for_user
 from om.access.utils import prefix_external_team
 from om.access.utils import prefix_user_email
 from om.configs.constants import PUBLIC_DOC_PAT
-from om.db.models import DocumentByConnectorCredentialPair
+from om.db.external_perm import fetch_external_teams_for_user
+from om.db.models import DocumentByDatasourceCredentialPair
 from om.db.models import User
 from om.db.users import fetch_user_by_id
 from om.utils.logger import setup_logger
@@ -104,9 +104,9 @@ def get_all_connector_documents(
     Returns:
         List of document IDs
     """
-    stmt = select(DocumentByConnectorCredentialPair.id).where(
-        DocumentByConnectorCredentialPair.connector_id == cc_pair.connector_id,
-        DocumentByConnectorCredentialPair.credential_id == cc_pair.credential_id,
+    stmt = select(DocumentByDatasourceCredentialPair.id).where(
+        DocumentByDatasourceCredentialPair.datasource_id == cc_pair.connector_id,
+        DocumentByDatasourceCredentialPair.credential_id == cc_pair.credential_id,
     )
 
     result = db_session.execute(stmt)

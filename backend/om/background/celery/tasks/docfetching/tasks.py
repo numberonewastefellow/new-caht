@@ -57,10 +57,10 @@ def _verify_indexing_attempt(
                 code=IndexingWatchdogTerminalStatus.FENCE_NOT_FOUND.code,
             )
 
-        if attempt.connector_credential_pair_id != cc_pair_id:
+        if attempt.datasource_credential_pair_id != cc_pair_id:
             raise SimpleJobException(
                 f"docfetching_task - CC pair mismatch: "
-                f"expected={cc_pair_id} actual={attempt.connector_credential_pair_id}",
+                f"expected={cc_pair_id} actual={attempt.datasource_credential_pair_id}",
                 code=IndexingWatchdogTerminalStatus.FENCE_MISMATCH.code,
             )
 
@@ -470,7 +470,7 @@ def docfetching_proxy_task(
                 raise RuntimeError("Index attempt not found")
 
             result.connector_source = (
-                index_attempt.connector_credential_pair.connector.source.value
+                index_attempt.datasource_credential_pair.datasource.source.value
             )
 
         while True:

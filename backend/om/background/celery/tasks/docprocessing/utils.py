@@ -16,7 +16,7 @@ from om.db.enums import IndexingStatus
 from om.db.enums import IndexModelStatus
 from om.db.index_attempt import get_last_attempt_for_cc_pair
 from om.db.index_attempt import get_recent_attempts_for_cc_pair
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.models import SearchSettings
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.redis.redis_connector import RedisConnector
@@ -144,13 +144,13 @@ class IndexingCallback(IndexingHeartbeatInterface):
 
 
 def is_in_repeated_error_state(
-    cc_pair: ConnectorCredentialPair, search_settings_id: int, db_session: Session
+    cc_pair: DatasourceCredentialPair, search_settings_id: int, db_session: Session
 ) -> bool:
     """Checks if the cc pair / search setting combination is in a repeated error state."""
     # if the connector doesn't have a refresh_freq, a single failed attempt is enough
     number_of_failed_attempts_in_a_row_needed = (
         NUM_REPEAT_ERRORS_BEFORE_REPEATED_ERROR_STATE
-        if cc_pair.connector.refresh_freq is not None
+        if cc_pair.datasource.refresh_freq is not None
         else 1
     )
 
@@ -169,7 +169,7 @@ def is_in_repeated_error_state(
 
 
 def should_index(
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     search_settings_instance: SearchSettings,
     secondary_index_building: bool,
     db_session: Session,
@@ -182,7 +182,7 @@ def should_index(
 
     Return True if we should try to index, False if not.
     """
-    connector = cc_pair.connector
+    connector = cc_pair.datasource
     last_index_attempt = get_last_attempt_for_cc_pair(
         cc_pair_id=cc_pair.id,
         search_settings_id=search_settings_instance.id,

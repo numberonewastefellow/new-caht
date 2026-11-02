@@ -48,7 +48,7 @@ from om.db.enums import ConnectorCredentialPairStatus
 from om.db.enums import SyncStatus
 from om.db.enums import SyncType
 from om.db.hierarchy import upsert_hierarchy_nodes_batch
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.sync_record import insert_sync_record
 from om.db.sync_record import update_sync_record_status
 from om.db.tag import delete_orphan_tags__no_commit
@@ -116,7 +116,7 @@ class PruneCallback(IndexingCallbackBase):
 """Jobs / utils for kicking off pruning tasks."""
 
 
-def _is_pruning_due(cc_pair: ConnectorCredentialPair) -> bool:
+def _is_pruning_due(cc_pair: DatasourceCredentialPair) -> bool:
     """Returns boolean indicating if pruning is due.
 
     Next pruning time is calculated as a delta from the last successful prune, or the
@@ -128,7 +128,7 @@ def _is_pruning_due(cc_pair: ConnectorCredentialPair) -> bool:
 
     # skip pruning if no prune frequency is set
     # pruning can still be forced via the API which will run a pruning task directly
-    if not cc_pair.connector.prune_freq:
+    if not cc_pair.datasource.prune_freq:
         return False
 
     # skip pruning if not active
@@ -146,9 +146,9 @@ def _is_pruning_due(cc_pair: ConnectorCredentialPair) -> bool:
         # compute the completion time of the first successful index attempt, but
         # that is a reasonably heavy operation. This is a reasonable approximation —
         # in the worst case, we'll prune a little bit earlier than we should.
-        last_pruned = cc_pair.connector.time_created
+        last_pruned = cc_pair.datasource.time_created
 
-    next_prune = last_pruned + timedelta(seconds=cc_pair.connector.prune_freq)
+    next_prune = last_pruned + timedelta(seconds=cc_pair.datasource.prune_freq)
     return datetime.now(timezone.utc) >= next_prune
 
 
@@ -262,7 +262,7 @@ def check_for_pruning(self: Task, *, tenant_id: str) -> bool | None:
 
 def try_creating_prune_generator_task(
     celery_app: Celery,
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     db_session: Session,
     r: Redis,
     tenant_id: str,
@@ -364,7 +364,7 @@ def try_creating_prune_generator_task(
             OmCeleryTask.CONNECTOR_PRUNING_GENERATOR_TASK,
             kwargs=dict(
                 cc_pair_id=cc_pair.id,
-                connector_id=cc_pair.connector_id,
+                connector_id=cc_pair.datasource_id,
                 credential_id=cc_pair.credential_id,
                 tenant_id=tenant_id,
             ),
@@ -512,14 +512,14 @@ def connector_pruning_generator_task(
             task_logger.info(
                 f"Pruning generator running connector: "
                 f"cc_pair={cc_pair_id} "
-                f"connector_source={cc_pair.connector.source}"
+                f"connector_source={cc_pair.datasource.source}"
             )
 
             runnable_connector = instantiate_connector(
                 db_session,
-                cc_pair.connector.source,
+                cc_pair.datasource.source,
                 InputType.SLIM_RETRIEVAL,
-                cc_pair.connector.connector_specific_config,
+                cc_pair.datasource.datasource_specific_config,
                 cc_pair.credential,
             )
 
@@ -544,13 +544,13 @@ def connector_pruning_generator_task(
 
                 redis_client = get_redis_client(tenant_id=tenant_id)
                 ensure_source_node_exists(
-                    redis_client, db_session, cc_pair.connector.source
+                    redis_client, db_session, cc_pair.datasource.source
                 )
 
                 upserted_nodes = upsert_hierarchy_nodes_batch(
                     db_session=db_session,
                     nodes=extraction_result.hierarchy_nodes,
-                    source=cc_pair.connector.source,
+                    source=cc_pair.datasource.source,
                     commit=True,
                     is_connector_public=is_connector_public,
                 )
@@ -561,7 +561,7 @@ def connector_pruning_generator_task(
                 ]
                 cache_hierarchy_nodes_batch(
                     redis_client=redis_client,
-                    source=cc_pair.connector.source,
+                    source=cc_pair.datasource.source,
                     entries=cache_entries,
                 )
 
@@ -586,7 +586,7 @@ def connector_pruning_generator_task(
             task_logger.info(
                 "Pruning set collected: "
                 f"cc_pair={cc_pair_id} "
-                f"connector_source={cc_pair.connector.source} "
+                f"connector_source={cc_pair.datasource.source} "
                 f"docs_to_remove={len(doc_ids_to_remove)}"
             )
 

@@ -9,7 +9,7 @@ from om.configs.constants import DocumentSource
 from om.datasource.gmail.connector import GmailConnector
 from om.datasource.interfaces import GenerateSlimDocumentOutput
 from om.datasource.models import HierarchyNode
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.external_permissions.perm_sync_types import FetchAllDocumentsFunction
 from om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunction
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
@@ -19,7 +19,7 @@ logger = setup_logger()
 
 
 def _get_slim_doc_generator(
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     gmail_connector: GmailConnector,
     callback: IndexingHeartbeatInterface | None = None,
 ) -> GenerateSlimDocumentOutput:
@@ -38,7 +38,7 @@ def _get_slim_doc_generator(
 
 
 def gmail_doc_sync(
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     fetch_all_existing_docs_fn: FetchAllDocumentsFunction,  # noqa: ARG001
     fetch_all_existing_docs_ids_fn: FetchAllDocumentsIdsFunction,  # noqa: ARG001
     callback: IndexingHeartbeatInterface | None,
@@ -49,7 +49,7 @@ def gmail_doc_sync(
     it in postgres so that when it gets created later, the permissions are
     already populated.
     """
-    gmail_connector = GmailConnector(**cc_pair.connector.connector_specific_config)
+    gmail_connector = GmailConnector(**cc_pair.datasource.datasource_specific_config)
     credential_json = (
         cc_pair.credential.credential_json.get_value(apply_mask=False)
         if cc_pair.credential.credential_json

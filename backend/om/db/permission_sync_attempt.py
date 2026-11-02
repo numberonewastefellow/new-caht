@@ -15,7 +15,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import Session
 
 from om.db.enums import PermissionSyncStatus
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.models import DocPermissionSyncAttempt
 from om.db.models import ExternalGroupPermissionSyncAttempt
 from om.utils.logger import setup_logger
@@ -44,7 +44,7 @@ def create_doc_permission_sync_attempt(
         The ID of the created attempt
     """
     attempt = DocPermissionSyncAttempt(
-        connector_credential_pair_id=connector_credential_pair_id,
+        datasource_credential_pair_id=connector_credential_pair_id,
         status=PermissionSyncStatus.NOT_STARTED,
     )
     db_session.add(attempt)
@@ -74,8 +74,8 @@ def get_doc_permission_sync_attempt(
 
     if eager_load_connector:
         stmt = stmt.options(
-            joinedload(DocPermissionSyncAttempt.connector_credential_pair).joinedload(
-                ConnectorCredentialPair.connector
+            joinedload(DocPermissionSyncAttempt.datasource_credential_pair).joinedload(
+                DatasourceCredentialPair.datasource
             )
         )
 
@@ -90,7 +90,7 @@ def get_latest_doc_permission_sync_attempt_for_cc_pair(
     return db_session.execute(
         select(DocPermissionSyncAttempt)
         .where(
-            DocPermissionSyncAttempt.connector_credential_pair_id
+            DocPermissionSyncAttempt.datasource_credential_pair_id
             == connector_credential_pair_id
         )
         .order_by(DocPermissionSyncAttempt.time_created.desc())
@@ -107,7 +107,7 @@ def get_recent_doc_permission_sync_attempts_for_cc_pair(
     return list(
         db_session.execute(
             select(DocPermissionSyncAttempt)
-            .where(DocPermissionSyncAttempt.connector_credential_pair_id == cc_pair_id)
+            .where(DocPermissionSyncAttempt.datasource_credential_pair_id == cc_pair_id)
             .order_by(DocPermissionSyncAttempt.time_created.desc())
             .limit(limit)
         ).scalars()
@@ -169,7 +169,7 @@ def mark_doc_permission_sync_attempt_failed(
             data={
                 "doc_permission_sync_attempt_id": attempt_id,
                 "status": PermissionSyncStatus.FAILED.value,
-                "cc_pair_id": attempt.connector_credential_pair_id,
+                "cc_pair_id": attempt.datasource_credential_pair_id,
             },
         )
     except Exception:
@@ -226,7 +226,7 @@ def complete_doc_permission_sync_attempt(
             data={
                 "doc_permission_sync_attempt_id": attempt_id,
                 "status": attempt.status.value,
-                "cc_pair_id": attempt.connector_credential_pair_id,
+                "cc_pair_id": attempt.datasource_credential_pair_id,
             },
         )
         return attempt
@@ -255,7 +255,7 @@ def create_external_group_sync_attempt(
         The ID of the created attempt
     """
     attempt = ExternalGroupPermissionSyncAttempt(
-        connector_credential_pair_id=connector_credential_pair_id,
+        datasource_credential_pair_id=connector_credential_pair_id,
         status=PermissionSyncStatus.NOT_STARTED,
     )
     db_session.add(attempt)
@@ -286,8 +286,8 @@ def get_external_group_sync_attempt(
     if eager_load_connector:
         stmt = stmt.options(
             joinedload(
-                ExternalGroupPermissionSyncAttempt.connector_credential_pair
-            ).joinedload(ConnectorCredentialPair.connector)
+                ExternalGroupPermissionSyncAttempt.datasource_credential_pair
+            ).joinedload(DatasourceCredentialPair.datasource)
         )
 
     return db_session.scalars(stmt).first()
@@ -304,12 +304,12 @@ def get_recent_external_group_sync_attempts_for_cc_pair(
 
     if cc_pair_id is not None:
         stmt = stmt.where(
-            ExternalGroupPermissionSyncAttempt.connector_credential_pair_id
+            ExternalGroupPermissionSyncAttempt.datasource_credential_pair_id
             == cc_pair_id
         )
     else:
         stmt = stmt.where(
-            ExternalGroupPermissionSyncAttempt.connector_credential_pair_id.is_(None)
+            ExternalGroupPermissionSyncAttempt.datasource_credential_pair_id.is_(None)
         )
 
     return list(
@@ -376,7 +376,7 @@ def mark_external_group_sync_attempt_failed(
             data={
                 "external_group_sync_attempt_id": attempt_id,
                 "status": PermissionSyncStatus.FAILED.value,
-                "cc_pair_id": attempt.connector_credential_pair_id,
+                "cc_pair_id": attempt.datasource_credential_pair_id,
             },
         )
     except Exception:
@@ -442,7 +442,7 @@ def complete_external_group_sync_attempt(
             data={
                 "external_group_sync_attempt_id": attempt_id,
                 "status": attempt.status.value,
-                "cc_pair_id": attempt.connector_credential_pair_id,
+                "cc_pair_id": attempt.datasource_credential_pair_id,
             },
         )
         return attempt
@@ -473,7 +473,7 @@ def delete_doc_permission_sync_attempts__no_commit(
         The number of attempts deleted
     """
     stmt = delete(DocPermissionSyncAttempt).where(
-        DocPermissionSyncAttempt.connector_credential_pair_id == cc_pair_id
+        DocPermissionSyncAttempt.datasource_credential_pair_id == cc_pair_id
     )
     result = cast(CursorResult[Any], db_session.execute(stmt))
     return result.rowcount or 0
@@ -495,7 +495,7 @@ def delete_external_group_permission_sync_attempts__no_commit(
         The number of attempts deleted
     """
     stmt = delete(ExternalGroupPermissionSyncAttempt).where(
-        ExternalGroupPermissionSyncAttempt.connector_credential_pair_id == cc_pair_id
+        ExternalGroupPermissionSyncAttempt.datasource_credential_pair_id == cc_pair_id
     )
     result = cast(CursorResult[Any], db_session.execute(stmt))
     return result.rowcount or 0

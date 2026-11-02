@@ -50,7 +50,7 @@ class IndexAttemptManager:
                 time_created = base_time - timedelta(hours=i)
 
                 index_attempt = IndexAttempt(
-                    connector_credential_pair_id=cc_pair_id,
+                    datasource_credential_pair_id=cc_pair_id,
                     from_beginning=from_beginning,
                     status=status,
                     new_docs_indexed=new_docs_indexed,

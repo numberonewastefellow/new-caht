@@ -13,7 +13,7 @@ from om.datasource.google_drive.models import GoogleDriveFileType
 from om.datasource.google_utils.resources import GoogleDriveService
 from om.datasource.interfaces import GenerateSlimDocumentOutput
 from om.datasource.models import HierarchyNode
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.external_permissions.google_drive.models import GoogleDrivePermission
 from om.external_permissions.google_drive.models import PermissionType
 from om.external_permissions.google_drive.permission_retrieval import (
@@ -28,7 +28,7 @@ logger = setup_logger()
 
 
 def _get_slim_doc_generator(
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     google_drive_connector: GoogleDriveConnector,
     callback: IndexingHeartbeatInterface | None = None,
 ) -> GenerateSlimDocumentOutput:
@@ -281,7 +281,7 @@ def get_external_access_for_folder(
 
 
 def gdrive_doc_sync(
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     fetch_all_existing_docs_fn: FetchAllDocumentsFunction,  # noqa: ARG001
     fetch_all_existing_docs_ids_fn: FetchAllDocumentsIdsFunction,  # noqa: ARG001
     callback: IndexingHeartbeatInterface | None,
@@ -293,7 +293,7 @@ def gdrive_doc_sync(
     already populated.
     """
     google_drive_connector = GoogleDriveConnector(
-        **cc_pair.connector.connector_specific_config
+        **cc_pair.datasource.datasource_specific_config
     )
     credential_json = (
         cc_pair.credential.credential_json.get_value(apply_mask=False)

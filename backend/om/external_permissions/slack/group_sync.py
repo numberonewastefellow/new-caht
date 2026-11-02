@@ -11,7 +11,7 @@ from om.datasource.credentials_provider import OmDBCredentialsProvider
 from om.datasource.slack.connector import SlackConnector
 from om.datasource.slack.utils import make_paginated_slack_api_call
 from om.db.external_perm import ExternalUserGroup
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.external_permissions.slack.utils import fetch_user_id_to_email_map
 from om.redis.redis_pool import get_redis_client
 from om.utils.logger import setup_logger
@@ -56,7 +56,7 @@ def _get_slack_group_members_email(
 
 def slack_group_sync(
     tenant_id: str,
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
 ) -> list[ExternalUserGroup]:
     """NOTE: not used atm. All channel access is done at the
     individual user level. Leaving in for now in case we need it later."""

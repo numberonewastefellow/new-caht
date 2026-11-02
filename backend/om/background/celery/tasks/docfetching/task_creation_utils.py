@@ -13,13 +13,13 @@ from om.configs.constants import OmCeleryTask
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.index_attempt import mark_attempt_failed
 from om.db.indexing_coordination import IndexingCoordination
-from om.db.models import ConnectorCredentialPair
+from om.db.models import DatasourceCredentialPair
 from om.db.models import SearchSettings
 
 
 def try_creating_docfetching_task(
     celery_app: Celery,
-    cc_pair: ConnectorCredentialPair,
+    cc_pair: DatasourceCredentialPair,
     search_settings: SearchSettings,
     reindex: bool,
     db_session: Session,
