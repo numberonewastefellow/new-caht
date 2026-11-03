@@ -253,8 +253,9 @@ describe("useWorkflowNotes", () => {
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>{children}</SWRConfig>
     );
+    const initialNotes = [note()];
     const { result } = renderHook(
-      () => useWorkflowNotes({ workflowId: 7, initialNotes: [note()], nodes: steps, savedStepKeys: new Set() }),
+      () => useWorkflowNotes({ workflowId: 7, initialNotes, nodes: steps, savedStepKeys: new Set() }),
       { wrapper }
     );
 
