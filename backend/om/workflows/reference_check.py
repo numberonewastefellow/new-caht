@@ -30,6 +30,7 @@ USER_INPUT = "user_input"
 LOOP_VARIABLES = "loop"
 LOOP_NODE_TYPE = "loop"
 CODE_NODE_TYPE = "code"
+ROUTER_NODE_TYPE = "conditional_router"
 LOOP_FIELDS = ("item", "index", "previous")
 _LOOP_FIELD = re.compile(r"^\$loop\.([A-Za-z_][A-Za-z0-9_]*)")
 
@@ -45,6 +46,7 @@ class _Step(Protocol):
     input_mapping: dict[str, Any] | None
     config: dict[str, Any] | None
     condition: Any
+    disabled: bool
 
 
 def _templates_of(step: _Step) -> Iterable[str]:
@@ -213,3 +215,81 @@ def reference_problem(steps: Sequence[_Step]) -> str | None:
         if problem:
             return problem
     return None
+
+
+# ── Disconnected steps ───────────────────────────────────────────────────
+
+
+def skipped_keys(steps: Sequence[_Step]) -> set[str | None]:
+    """Node keys of the disabled steps and of everything inside them."""
+    # getattr: callers that check steps saved before the flag existed don't set it
+    skipped: set[str | None] = {s.node_key for s in steps if getattr(s, "disabled", False)}
+    # A container comes before its children, so one pass in order reaches every level
+    for step in sorted(steps, key=lambda s: s.step_order):
+        if step.parent_key in skipped:
+            skipped.add(step.node_key)
+    return skipped
+
+
+def runnable_steps(steps: Sequence[_Step]) -> list[_Step]:
+    """The steps a run executes."""
+    skipped = skipped_keys(steps)
+    return [s for s in steps if s.node_key not in skipped]
+
+
+def skipped_step_problem(steps: Sequence[_Step]) -> str | None:
+    """A step that runs but reads, or routes to, a step that doesn't."""
+    skipped = skipped_keys(steps)
+    if not skipped:
+        return None
+    off = [s for s in steps if s.node_key in skipped]
+    by_output = {s.output_key: s for s in off}
+    by_key = {s.node_key: s for s in off}
+    by_order = {s.step_order: s for s in off}
+    for step in sorted(steps, key=lambda s: s.step_order):
+        if step.node_key in skipped:
+            continue
+        for reference in _references_read(step):
+            source = by_output.get(reference_name(reference))
+            if source is not None:
+                return (
+                    f'"{step.step_name}" reads {reference}, but "{source.step_name}" is '
+                    f'disconnected, so it won\'t run. Connect it, or change "{step.step_name}".'
+                )
+        for target in _router_targets(step, by_key, by_order):
+            return (
+                f'Condition step "{step.step_name}" leads to "{target.step_name}", which is '
+                "disconnected. Connect it, or take it out of the condition."
+            )
+    return None
+
+
+def _references_read(step: _Step) -> Iterable[str]:
+    for text in _templates_of(step):
+        yield from find_references(text)
+    for value in [*_values_of(step), _loop_condition(step)]:
+        if isinstance(value, str):
+            yield from find_references(value)
+
+
+def _router_targets(
+    step: _Step,
+    by_key: dict[str | None, _Step],
+    by_order: dict[int, _Step],
+) -> Iterable[_Step]:
+    """The disconnected steps among a condition step's branch targets."""
+    if step.step_type != ROUTER_NODE_TYPE:
+        return
+    config = step.config or {}
+    for key in [*config.get("true_node_keys", []), *config.get("false_node_keys", [])]:
+        if key in by_key:
+            yield by_key[key]
+    # Version 1 keeps its targets in the legacy condition, by step order
+    condition = step.condition
+    for field in ("true_steps", "false_steps"):
+        orders = (
+            condition.get(field) if isinstance(condition, dict) else getattr(condition, field, None)
+        )
+        for order in orders or []:
+            if order in by_order:
+                yield by_order[order]

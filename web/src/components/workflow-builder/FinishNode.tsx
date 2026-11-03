@@ -5,7 +5,10 @@ import { Handle, Position, type NodeProps } from "@xyflow/react";
 
 function FinishNodeComponent(_props: NodeProps) {
   return (
-    <div className="wfb-finish-node">
+    <div
+      className="wfb-finish-node"
+      title="The chat shows the last connected step's answer, unless a step has Show as Message on."
+    >
       <Handle
         type="target"
         position={Position.Left}

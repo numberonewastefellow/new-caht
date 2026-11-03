@@ -20,9 +20,13 @@ import "@xyflow/react/dist/style.css";
 import "./reactFlowControls.css";
 import "./WorkflowCanvas.css";
 
-import { isInContainerTree } from "./graphUtils";
+import { isInContainerTree, withDisconnectedMarks } from "./graphUtils";
 import { FLOW_NODE_TYPES } from "./nodeUi";
 import { StepEdge } from "./StepEdge";
+import { NotesPanel } from "./notes/NotesPanel";
+import { StickyNoteNode } from "./notes/StickyNoteNode";
+import { isNoteEdgeId, isNoteNodeId, NOTE_NODE_TYPE } from "./notes/noteLayout";
+import type { CanvasNotes } from "./notes/useWorkflowNotes";
 import type { WorkflowNode, WorkflowEdge, DragAgentData, OrchestratorNodeData } from "./types";
 import {
   AGENT_DRAG_MIME,
@@ -30,8 +34,8 @@ import {
   ORCHESTRATOR_NODE_ID,
 } from "./types";
 
-// Node components come from the per-kind UI registry (nodeUi.tsx).
-const nodeTypes: NodeTypes = FLOW_NODE_TYPES;
+// Node components come from the per-kind UI registry (nodeUi.tsx), plus sticky notes.
+const nodeTypes: NodeTypes = { ...FLOW_NODE_TYPES, [NOTE_NODE_TYPE]: StickyNoteNode as NodeTypes[string] };
 
 const edgeTypes: EdgeTypes = {
   step: StepEdge as any,
@@ -54,6 +58,8 @@ interface WorkflowCanvasProps {
   onNodeTypeDrop?: (stepType: string, position: { x: number; y: number }) => void;
   /** Problems to show above the canvas (e.g. steps the mode can't run). */
   warnings?: string[];
+  /** Sticky notes: drawn on the canvas but never part of the steps or the saved workflow. */
+  notes?: CanvasNotes;
 }
 
 function CanvasWarnings({ warnings }: { warnings: string[] }) {
@@ -144,6 +150,7 @@ export function WorkflowCanvas({
   onDrop,
   onNodeTypeDrop,
   warnings = [],
+  notes,
 }: WorkflowCanvasProps) {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { screenToFlowPosition, fitView } = useReactFlow();
@@ -197,7 +204,8 @@ export function WorkflowCanvas({
 
   const handleNodeClick = useCallback(
     (_: React.MouseEvent, node: WorkflowNode) => {
-      onNodeClick(node.id);
+      // A note has no step settings to open
+      if (!isNoteNodeId(node.id)) onNodeClick(node.id);
     },
     [onNodeClick]
   );
@@ -206,19 +214,56 @@ export function WorkflowCanvas({
     onNodeClick(""); // Deselect
   }, [onNodeClick]);
 
+  // Display only: steps no line from Start reaches are greyed and badged
+  const shownNodes = useMemo(() => withDisconnectedMarks(nodes, edges), [nodes, edges]);
+
+  // Notes ride along on the canvas; their changes go to the notes, never to the steps
+  const allNodes = useMemo(
+    () => (notes ? [...shownNodes, ...(notes.nodes as unknown as WorkflowNode[])] : shownNodes),
+    [shownNodes, notes]
+  );
+  const allEdges = useMemo(
+    () => (notes ? [...edges, ...(notes.edges as WorkflowEdge[])] : edges),
+    [edges, notes]
+  );
+  const handleNodesChange = useCallback<OnNodesChange<WorkflowNode>>(
+    (changes) => {
+      const isNote = (c: (typeof changes)[number]) => "id" in c && isNoteNodeId(c.id);
+      const noteChanges = changes.filter(isNote);
+      if (noteChanges.length && notes) notes.onNodesChange(noteChanges);
+      const stepChanges = changes.filter((c) => !isNote(c));
+      if (stepChanges.length) onNodesChange(stepChanges);
+    },
+    [notes, onNodesChange]
+  );
+  const handleEdgesChange = useCallback<OnEdgesChange<WorkflowEdge>>(
+    (changes) => {
+      const stepChanges = changes.filter((c) => !("id" in c && isNoteEdgeId(c.id)));
+      if (stepChanges.length) onEdgesChange(stepChanges);
+    },
+    [onEdgesChange]
+  );
+
   return (
     <div ref={reactFlowWrapper} className="wfb-canvas-wrapper">
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
+        nodes={allNodes}
+        edges={allEdges}
+        onNodesChange={handleNodesChange}
+        onEdgesChange={handleEdgesChange}
         onConnect={onConnect}
         onNodeClick={handleNodeClick}
-        onNodeDragStop={(_, __, dragged) =>
-          onNodesDragStop?.(dragged.map((n) => n.id))
-        }
-        onBeforeDelete={async ({ nodes: gone, edges: goneEdges }) => {
+        onNodeDragStop={(_, __, dragged) => {
+          const steps = dragged.filter((n) => !isNoteNodeId(n.id));
+          if (steps.length) onNodesDragStop?.(steps.map((n) => n.id));
+        }}
+        onBeforeDelete={async ({ nodes: goneAll, edges: goneAllEdges }) => {
+          // Notes ask before they go, and their lines go with them
+          const goneNotes = goneAll.filter((n) => isNoteNodeId(n.id));
+          if (goneNotes.length) notes?.requestDelete(goneNotes.map((n) => n.id));
+          const gone = goneAll.filter((n) => !isNoteNodeId(n.id));
+          const goneEdges = goneAllEdges.filter((e) => !isNoteEdgeId(e.id));
+          if (gone.length === 0 && goneEdges.length === 0) return false;
           if (!onRemoveNodes || !gone.some(isInContainerTree)) {
             return { nodes: gone, edges: goneEdges };
           }
@@ -248,6 +293,7 @@ export function WorkflowCanvas({
         />
         <FlowLegend nodes={nodes} />
         <CanvasWarnings warnings={warnings} />
+        {notes && <NotesPanel notes={notes} />}
       </ReactFlow>
     </div>
   );

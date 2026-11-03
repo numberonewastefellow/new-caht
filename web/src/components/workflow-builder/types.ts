@@ -41,6 +41,8 @@ export interface StepNodeDisplay {
   orchestration_mode?: OrchestrationMode;
   /** The step's type is not allowed in the workflow's orchestration mode. */
   modeConflict?: boolean;
+  /** No line from Start reaches this top-level step, so it won't run. */
+  disconnected?: boolean;
   /** Containers: steps inside it. Children: the container they're in. */
   childCount?: number;
   containerName?: string | null;

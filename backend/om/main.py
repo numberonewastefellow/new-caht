@@ -116,6 +116,8 @@ from om.server.features.user_oauth_token.api import router as user_oauth_token_r
 from om.server.features.web_search.api import router as web_search_router
 from om.server.features.workflow.api import admin_router as admin_workflow_router
 from om.server.features.workflow.api import router as workflow_router
+from om.server.features.workflow.notes_api import admin_router as admin_workflow_notes_router
+from om.server.features.workflow.notes_api import router as workflow_notes_router
 from om.server.features.pulse.api import admin_router as admin_pulse_router
 from om.server.features.pulse.api import router as pulse_router
 from om.server.features.pulse.webhook_api import public_router as public_webhook_router
@@ -483,6 +485,8 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     include_router_with_global_prefix_prepended(application, mcp_admin_router)
     include_router_with_global_prefix_prepended(application, workflow_router)
     include_router_with_global_prefix_prepended(application, admin_workflow_router)
+    include_router_with_global_prefix_prepended(application, workflow_notes_router)
+    include_router_with_global_prefix_prepended(application, admin_workflow_notes_router)
     # Pulse — scheduled workflow runs
     include_router_with_global_prefix_prepended(application, pulse_router)
     include_router_with_global_prefix_prepended(application, admin_pulse_router)

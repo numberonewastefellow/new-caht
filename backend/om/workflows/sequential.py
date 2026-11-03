@@ -90,10 +90,12 @@ def run_workflow_sequential_v2(
         paused_execution is not None,
     )
 
-    execution, state, graph = _start_or_resume(
+    execution, state, full_graph = _start_or_resume(
         registry, workflow, user_message, db_session, user, chat_session_id,
         paused_execution,
     )
+    # The version keeps disconnected steps; the run leaves them out.
+    graph = full_graph.runnable()
     trace = _init_trace(
         execution, workflow, chat_session_id, assistant_message_id,
         user_message, chat_files, resumed=paused_execution is not None,

@@ -29,6 +29,7 @@ from om.db.workflow import list_workflow_executions
 from om.db.workflow import list_workflows
 from om.db.workflow_version import get_workflow_version_by_number
 from om.db.workflow_version import list_workflow_versions
+from om.db.workflow_notes import list_workflow_notes
 from om.server.utils import get_json_line
 from om.utils.logger import setup_logger
 from om.workflows.models import CONDITION_OPERATORS
@@ -43,6 +44,7 @@ from om.workflows.models import WorkflowStepResponse
 from om.workflows.models import WorkflowUpdate
 from om.workflows.models import WorkflowVersionDetail
 from om.workflows.models import WorkflowVersionSummary
+from om.workflows.note_models import WorkflowNoteResponse
 from om.workflows.nodes.base import UpgradeContext
 from om.workflows.nodes.builtin import get_node_registry
 from om.workflows.nodes.registry import NodeTypeInfo
@@ -107,6 +109,7 @@ def _workflow_to_response(workflow: AgentWorkflow) -> WorkflowResponse:
                 is_terminal=step.is_terminal,
                 can_request_input=step.can_request_input,
                 promote_output=step.promote_output,
+                disabled=bool(step.disabled),
                 llm_provider_override=step.llm_provider_override,
                 llm_model_override=step.llm_model_override,
                 max_output_tokens_override=step.max_output_tokens_override,
@@ -389,10 +392,15 @@ def get_workflow_endpoint(
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
 ) -> WorkflowResponse:
-    """Get a workflow by ID."""
-    return _workflow_to_response(
+    """Get a workflow by ID, with its canvas notes."""
+    response = _workflow_to_response(
         _get_accessible_workflow(db_session, workflow_id, user)
     )
+    response.notes = [
+        WorkflowNoteResponse.model_validate(n)
+        for n in list_workflow_notes(db_session, workflow_id)
+    ]
+    return response
 
 
 @router.get("/{workflow_id}/versions")

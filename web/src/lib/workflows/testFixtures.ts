@@ -216,6 +216,7 @@ export function makeStep(
     is_terminal: false,
     can_request_input: false,
     promote_output: false,
+    disabled: false,
     ...overrides,
   };
 }

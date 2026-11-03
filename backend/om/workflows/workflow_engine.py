@@ -35,6 +35,7 @@ from om.workflows.trace_models import WorkflowTraceBuilder
 from om.db.workflow import get_paused_execution
 from om.db.workflow import get_workflow_for_update
 from om.db.workflow import load_checkpoint
+from om.db.workflow import runnable_workflow_steps
 from om.db.workflow import save_checkpoint
 from om.db.workflow import update_workflow_execution
 from om.db.llm import fetch_llm_provider_view
@@ -310,7 +311,7 @@ def run_workflow_sequential(
     the node-registry coordinator in om/workflows/sequential.py. Kept for one
     release as a fallback, then removed.
     """
-    steps = sorted(workflow.steps, key=lambda s: s.step_order)
+    steps = runnable_workflow_steps(workflow)
     completed_step_ids: set[int] = set()
 
     logger.info(
@@ -1122,7 +1123,7 @@ def run_workflow_llm_decision(
 
     Supports pause/resume via checkpoints (human-in-the-loop).
     """
-    steps = sorted(workflow.steps, key=lambda s: s.step_order)
+    steps = runnable_workflow_steps(workflow)
     steps_by_id = {step.id: step for step in steps}
 
     logger.info(
@@ -2390,7 +2391,7 @@ def run_workflow(
     (human-in-the-loop support).
     """
     mode = workflow.orchestration_mode
-    step_names = [s.step_name for s in sorted(workflow.steps, key=lambda s: s.step_order)]
+    step_names = [s.step_name for s in runnable_workflow_steps(workflow)]
 
     logger.info(
         "[Workflow] START workflow_id=%d name='%s' mode=%s steps=%s "

@@ -2,6 +2,8 @@
 
 import React from "react";
 import { StepPlacementFields } from "@/components/workflows/StepPlacementFields";
+import type { EditorStep } from "@/lib/workflows/editorModel";
+import { HIDES_FINAL_ANSWER_NOTE, hidesFinalAnswer } from "@/lib/workflows/finalAnswer";
 import type { StepConfigPanelProps, StepNodeData } from "./types";
 
 export function ToggleSwitch({
@@ -83,15 +85,19 @@ export function StepOptionsSection({
   data,
   canPause,
   onUpdate,
+  steps = [],
 }: {
   nodeId: string;
   data: StepNodeData;
   canPause: boolean;
   onUpdate: StepConfigPanelProps["onUpdate"];
+  /** The workflow's steps in run order, for the Show as Message note. */
+  steps?: readonly EditorStep[];
 }) {
   if (data.parent_key) {
     return null;
   }
+  const step = steps.find((s) => s.node_key === nodeId) ?? data;
   return (
     <div className="wfb-config-section">
       <div className="wfb-config-label">Options</div>
@@ -115,6 +121,11 @@ export function StepOptionsSection({
         checked={data.promote_output}
         onChange={(v) => onUpdate(nodeId, { promote_output: v })}
       />
+      {hidesFinalAnswer(step, steps) && (
+        <div className="wfb-config-warning-note" role="note">
+          {HIDES_FINAL_ANSWER_NOTE}
+        </div>
+      )}
     </div>
   );
 }

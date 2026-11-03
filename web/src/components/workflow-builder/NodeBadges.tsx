@@ -50,6 +50,18 @@ export function ModeConflictBadge() {
   );
 }
 
+/** Marks a step no line from Start reaches: it's saved but doesn't run. */
+export function DisconnectedBadge() {
+  return (
+    <span
+      className="wfb-disconnected-badge"
+      title="No line from Start reaches this step, so it's saved but doesn't run. Connect it to run it again."
+    >
+      Not connected — won&apos;t run
+    </span>
+  );
+}
+
 /** The status badges every step node shows, when they apply. */
 export function StepNodeBadges({
   nodeId,
@@ -58,11 +70,12 @@ export function StepNodeBadges({
   nodeId: string;
   data: StepNodeData;
 }) {
-  if (!data.upgrade_available && !data.modeConflict) {
+  if (!data.upgrade_available && !data.modeConflict && !data.disconnected) {
     return null;
   }
   return (
     <div className="wfb-node-badges">
+      {data.disconnected && <DisconnectedBadge />}
       {data.upgrade_available && <UpgradeBadge nodeId={nodeId} />}
       {data.modeConflict && <ModeConflictBadge />}
     </div>

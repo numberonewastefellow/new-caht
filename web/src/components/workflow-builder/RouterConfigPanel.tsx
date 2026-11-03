@@ -177,6 +177,7 @@ export function RouterConfigPanel({
           data={data}
           canPause={false}
           onUpdate={onUpdate}
+          steps={steps}
         />
 
         {/* Delete */}

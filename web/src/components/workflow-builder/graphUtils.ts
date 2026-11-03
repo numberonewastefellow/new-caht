@@ -138,32 +138,41 @@ export function stepsToEdges(
 
     // Each block (the top level, or one container branch) is its own chain. The
     // top level starts at the Start node; a branch starts at its first step.
+    // Disconnected top-level steps keep their order and stay linked to each other,
+    // apart from Start, so a part that was cut off comes back as it was drawn.
     for (const block of Array.from(groupByBlock(steps).values())) {
-      block.forEach((step, position) => {
-        const nodeId = step.node_key;
-        if (branchTargetIds.has(nodeId)) return;
-        const previous = block[position - 1];
-        const sourceId = previous
-          ? previous.node_key
-          : isTopLevel(step)
-            ? ORCHESTRATOR_NODE_ID
-            : null;
-        if (!sourceId) return;
-        edges.push({
-          id: `edge-${sourceId}-${nodeId}`,
-          source: sourceId,
-          target: nodeId,
-          type: "step",
-          data: {
-            stepOrder: stepIds.indexOf(nodeId),
-            orchestration_mode: mode,
-          },
+      const topLevel = isTopLevel(block[0]!);
+      const chains = topLevel
+        ? [block.filter((s) => !s.disabled), block.filter((s) => s.disabled)]
+        : [block];
+      chains.forEach((chain, chainIndex) => {
+        chain.forEach((step, position) => {
+          const nodeId = step.node_key;
+          if (branchTargetIds.has(nodeId)) return;
+          const previous = chain[position - 1];
+          const sourceId = previous
+            ? previous.node_key
+            : topLevel && chainIndex === 0
+              ? ORCHESTRATOR_NODE_ID
+              : null;
+          if (!sourceId) return;
+          edges.push({
+            id: `edge-${sourceId}-${nodeId}`,
+            source: sourceId,
+            target: nodeId,
+            type: "step",
+            data: {
+              stepOrder: stepIds.indexOf(nodeId),
+              orchestration_mode: mode,
+            },
+          });
         });
       });
     }
   } else {
-    // Star topology: orchestrator -> each step
+    // Star topology: orchestrator -> each step that runs
     stepIds.forEach((nodeId, i) => {
+      if (steps[i]!.disabled) return;
       edges.push({
         id: `edge-${ORCHESTRATOR_NODE_ID}-${nodeId}`,
         source: ORCHESTRATOR_NODE_ID,
@@ -174,9 +183,9 @@ export function stepsToEdges(
     });
   }
 
-  if (mode === "sequential" && stepIds.length > 0) {
-    const topLevel = steps.filter(isTopLevel);
-    const lastNodeId = topLevel[topLevel.length - 1]?.node_key ?? stepIds[stepIds.length - 1]!;
+  const running = steps.filter((s) => isTopLevel(s) && !s.disabled);
+  if (mode === "sequential" && running.length > 0) {
+    const lastNodeId = running[running.length - 1]!.node_key;
     edges.push({
       id: `edge-${lastNodeId}-${FINISH_NODE_ID}`,
       source: lastNodeId,
@@ -301,19 +310,69 @@ export function graphToSteps(
   const stepEdges = withoutFinish(edges);
   const stepOrders = computeStepOrders(nodes, stepEdges);
   const stepIds = new Set(stepNodes.map((n) => n.id));
+  const disconnected = disconnectedStepIds(nodes, edges);
 
   return [...stepNodes]
     .sort(
       (a, b) => (stepOrders.get(a.id) ?? 999) - (stepOrders.get(b.id) ?? 999)
     )
-    .map((node) =>
-      node.data.step_type === ROUTER_NODE_TYPE
-        ? {
-            ...node.data,
-            config: routerConfigFromEdges(node, stepEdges, stepIds),
-          }
-        : node.data
-    );
+    .map((node) => {
+      const step: EditorStep = {
+        ...node.data,
+        disabled: !node.data.parent_key && disconnected.has(node.id),
+      };
+      return node.data.step_type === ROUTER_NODE_TYPE
+        ? { ...step, config: routerConfigFromEdges(node, stepEdges, stepIds) }
+        : step;
+    });
+}
+
+/**
+ * Top-level steps that no line from Start reaches. They're saved but don't run,
+ * and the steps inside a disconnected container go with it.
+ */
+export function disconnectedStepIds(
+  nodes: WorkflowNode[],
+  edges: WorkflowEdge[]
+): Set<string> {
+  const next = new Map<string, string[]>();
+  for (const edge of edges) {
+    next.set(edge.source, [...(next.get(edge.source) ?? []), edge.target]);
+  }
+  const reached = new Set<string>();
+  const pending = [ORCHESTRATOR_NODE_ID];
+  while (pending.length > 0) {
+    for (const target of next.get(pending.pop()!) ?? []) {
+      if (!reached.has(target)) {
+        reached.add(target);
+        pending.push(target);
+      }
+    }
+  }
+  return new Set(
+    nodes
+      .filter(isStepNode)
+      .filter((node) => !node.data.parent_key && !reached.has(node.id))
+      .map((node) => node.id)
+  );
+}
+
+export const DISCONNECTED_NODE_CLASS = "wfb-node--disconnected";
+
+/** The nodes as drawn: disconnected steps are greyed and badged. Never saved. */
+export function withDisconnectedMarks(
+  nodes: WorkflowNode[],
+  edges: WorkflowEdge[]
+): WorkflowNode[] {
+  const disconnected = disconnectedStepIds(nodes, edges);
+  return nodes.map((node) => {
+    if (!isStepNode(node) || !disconnected.has(node.id)) return node;
+    return {
+      ...node,
+      className: [node.className, DISCONNECTED_NODE_CLASS].filter(Boolean).join(" "),
+      data: { ...node.data, disconnected: true },
+    };
+  });
 }
 
 /**
@@ -794,7 +853,8 @@ export function validateGraph(
     errors.push({ nodeId: error.nodeKey, message: error.message });
   }
 
-  // Check for disconnected nodes (no incoming edge)
+  // Inside a container every step needs a line in. At the top level a step without
+  // one is kept but skipped (disconnectedStepIds), like a step cut off to test the rest.
   const targetsWithEdges = new Set(edges.map((e) => e.target));
   const branchHeads = new Set(
     Array.from(groupByBlock(steps).values())
@@ -802,6 +862,7 @@ export function validateGraph(
       .map((block) => block[0]!.node_key)
   );
   for (const node of nodes.filter(isStepNode)) {
+    if (!node.data.parent_key) continue;
     if (!targetsWithEdges.has(node.id) && !branchHeads.has(node.id)) {
       const name =
         node.data.step_name || node.data.agent_name || node.data.type_label;

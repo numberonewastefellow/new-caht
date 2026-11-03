@@ -49,7 +49,13 @@ export function moveEditorStep(
 ): EditorStep[] {
   return moveStep(steps, key, to, position).map((s) =>
     s.node_key === key && to.parent_key && s.parent_key === to.parent_key
-      ? { ...s, is_terminal: false, promote_output: false, can_request_input: false }
+      ? {
+          ...s,
+          is_terminal: false,
+          promote_output: false,
+          can_request_input: false,
+          disabled: false,
+        }
       : s
   );
 }

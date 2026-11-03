@@ -121,6 +121,7 @@ export function GenericConfigPanel({
           data={data}
           canPause={info?.can_pause ?? false}
           onUpdate={onUpdate}
+          steps={steps}
         />
         <div className="wfb-config-section">
           <div className="wfb-config-label">Settings</div>

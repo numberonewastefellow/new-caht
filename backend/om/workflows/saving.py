@@ -40,6 +40,8 @@ from om.workflows.nodes.registry import NodeTypeRegistry
 from om.workflows.nodes.registry import UnknownNodeTypeError
 from om.workflows.reference_check import old_format_problem
 from om.workflows.reference_check import reference_problem
+from om.workflows.reference_check import runnable_steps
+from om.workflows.reference_check import skipped_step_problem
 from om.workflows.versioning import pin_workflow_version
 
 
@@ -191,6 +193,11 @@ def _check_containers(
                 f"Step '{step.step_name}' is inside a container, so it can't ask for "
                 f"input, promote its output, or end the workflow"
             )
+        if step.disabled:
+            raise WorkflowSaveError(
+                f"Step '{step.step_name}' is inside a container, so it can't be "
+                f"disconnected on its own. Disconnect the container instead"
+            )
 
 
 def _check_modes(graph: WorkflowGraph, mode: str, registry: NodeTypeRegistry) -> None:
@@ -331,13 +338,19 @@ def _steps_of(graph: WorkflowGraph, registry: NodeTypeRegistry) -> list[Workflow
 def _check_references(
     steps: list[WorkflowStepCreate], schema_version: int, mode: str
 ) -> None:
+    running = runnable_steps(steps)
+    if steps and not running:
+        raise WorkflowSaveError(
+            "Every step is disconnected, so this workflow has nothing to run. "
+            "Connect at least one step."
+        )
     # In LLM-decision mode the orchestrator writes each task; there's no fixed order.
     if mode == "llm_decision":
         return
-    problem = (
-        old_format_problem(steps)
+    problem = skipped_step_problem(steps) or (
+        old_format_problem(running)
         if schema_version < CURRENT_SCHEMA_VERSION
-        else reference_problem(steps)
+        else reference_problem(running)
     )
     if problem:
         raise WorkflowSaveError(problem)
@@ -404,6 +417,7 @@ def _node_to_step_create(node: WorkflowNode, registry: NodeTypeRegistry) -> Work
         is_terminal=node.is_terminal,
         can_request_input=node.can_request_input,
         promote_output=node.promote_output,
+        disabled=node.disabled,
         parent_key=node.parent_key,
         branch_index=node.branch_index,
         **config_fields,

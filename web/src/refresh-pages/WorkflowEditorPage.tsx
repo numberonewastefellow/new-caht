@@ -21,6 +21,8 @@ import {
   selectableStepAgents,
 } from "@/lib/workflows/stepAgents";
 import WorkflowUpgradeNotice from "@/components/workflows/WorkflowUpgradeNotice";
+import StepNotesList, { useStepNotes } from "@/components/workflows/StepNotesList";
+import type { WorkflowNote } from "@/lib/workflows/notes";
 import { StepPlacementFields } from "@/components/workflows/StepPlacementFields";
 import { ancestorsOf } from "@/lib/workflows/containerRules";
 import {
@@ -105,6 +107,7 @@ import {
   SvgOmOctagon,
 } from "@opal/icons";
 import { cn } from "@/lib/utils";
+import { HIDES_FINAL_ANSWER_NOTE, hidesFinalAnswer } from "@/lib/workflows/finalAnswer";
 
 // ─── Info Tooltip ────────────────────────────────────────────────────────
 
@@ -237,6 +240,8 @@ interface WorkflowStepRowProps {
   onMoveUp: () => void;
   onMoveDown: () => void;
   onUpgrade: () => void;
+  /** Canvas notes linked to this step, shown read only */
+  notes?: { workflowId: number; items: WorkflowNote[] };
 }
 
 function WorkflowStepRow({
@@ -250,6 +255,7 @@ function WorkflowStepRow({
   onMoveUp,
   onMoveDown,
   onUpgrade,
+  notes,
 }: WorkflowStepRowProps) {
   const { values, setFieldValue, errors, touched } =
     useFormikContext<WizardValues>();
@@ -280,6 +286,7 @@ function WorkflowStepRow({
         branch_index: step.branch_index,
         is_terminal: step.is_terminal,
         promote_output: step.promote_output,
+        disabled: step.disabled,
       })
     );
   const depth = ancestorsOf(
@@ -288,7 +295,10 @@ function WorkflowStepRow({
   ).length;
 
   return (
-    <div style={{ marginLeft: depth * CONTAINER_INDENT_PX }}>
+    <div
+      style={{ marginLeft: depth * CONTAINER_INDENT_PX, opacity: step.disabled ? 0.6 : 1 }}
+      data-testid={step.disabled ? "wizard-step-skipped" : undefined}
+    >
     <Card padding={1}>
       <div className="flex items-start gap-3">
         {/* Step number */}
@@ -515,6 +525,8 @@ function WorkflowStepRow({
             />
           </InputLayouts.Vertical>
 
+          {notes && <StepNotesList workflowId={notes.workflowId} notes={notes.items} />}
+
           {/* Row 3: Output Key — own row */}
           <div className="max-w-xs">
             <div className="flex flex-col gap-0.5">
@@ -565,7 +577,26 @@ function WorkflowStepRow({
                 </InfoTip>
               </div>
             </div>
+            <div className="flex items-center gap-2">
+              <SwitchField name={`steps.${index}.disabled`} />
+              <div className="flex items-center">
+                <Text secondaryBody text04>Skip this step</Text>
+                <InfoTip>
+                  Kept in the workflow but not run, like a step disconnected in the Visual Builder. Steps that read its output can&apos;t be saved while it&apos;s skipped.
+                </InfoTip>
+              </div>
+            </div>
           </div>
+          )}
+          {!step.parent_key && hidesFinalAnswer(step, values.steps) && (
+            <Text
+              as="p"
+              secondaryBody
+              className="text-status-warning-05"
+              data-testid="wizard-hides-final-answer"
+            >
+              {HIDES_FINAL_ANSWER_NOTE}
+            </Text>
           )}
         </div>
 
@@ -633,6 +664,7 @@ export default function WorkflowEditorPage({
 
   const [currentStep, setCurrentStep] = useState(0);
   const [showVersions, setShowVersions] = useState(false);
+  const stepNotes = useStepNotes(existingWorkflow?.id);
   const [upgradeTarget, setUpgradeTarget] = useState<
     (NodeUpgradeTarget & { index: number }) | null
   >(null);
@@ -734,6 +766,7 @@ export default function WorkflowEditorPage({
           is_terminal: Yup.boolean(),
           can_request_input: Yup.boolean(),
           promote_output: Yup.boolean(),
+          disabled: Yup.boolean(),
         })
       )
       .min(1, "Add at least one step"),
@@ -1002,6 +1035,7 @@ export default function WorkflowEditorPage({
                               {values.steps.map((step, index) => (
                                 <WorkflowStepRow
                                   key={step.node_key}
+                                  notes={stepNotes(step.node_key)}
                                   index={index}
                                   agents={agentOptions}
                                   catalog={catalog}

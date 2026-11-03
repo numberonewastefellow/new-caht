@@ -92,6 +92,8 @@ export interface WorkflowStepSnapshot extends StepOverrides {
   is_terminal: boolean;
   can_request_input: boolean;
   promote_output: boolean;
+  /** Kept but not run (disconnected on the canvas). Top-level steps only. */
+  disabled?: boolean;
 }
 
 export interface WorkflowSnapshot {
@@ -139,6 +141,7 @@ export interface WorkflowStepCreate extends StepOverrides {
   is_terminal?: boolean;
   can_request_input?: boolean;
   promote_output?: boolean;
+  disabled?: boolean;
 }
 
 export interface WorkflowCreate {
@@ -262,6 +265,8 @@ export interface WorkflowDefinitionNode {
   is_terminal: boolean;
   can_request_input: boolean;
   promote_output: boolean;
+  /** Written only when true. */
+  disabled?: boolean;
   parent_key?: string | null;
   branch_index?: number | null;
 }

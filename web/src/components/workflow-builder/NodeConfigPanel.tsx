@@ -307,6 +307,7 @@ export function AgentConfigPanel({
               data={data}
               canPause={!isUtilityAgent}
               onUpdate={onUpdate}
+              steps={steps}
             />
 
             {/* Agent info (read-only) */}

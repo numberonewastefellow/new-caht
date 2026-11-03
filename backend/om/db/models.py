@@ -4996,6 +4996,12 @@ class AgentWorkflowStep(Base):
     # collapsible timeline panel (WORKFLOW_STEP_DELTA).
     promote_output: Mapped[bool] = mapped_column(Boolean, default=False)
 
+    # Kept in the workflow but not run, like a step disconnected on the canvas.
+    # Top-level steps only; a disabled container skips everything inside it.
+    disabled: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
+
     # ── Step-level overrides (workflow-specific, override agent defaults) ──
     # When set, these override the corresponding agent fields at runtime.
     # When NULL, the agent's own values are used (inheritance).
@@ -5053,6 +5059,41 @@ class AgentWorkflowVersion(Base):
 
     __table_args__ = (
         UniqueConstraint("workflow_id", "version", name="uq_workflow_version_number"),
+    )
+
+
+class AgentWorkflowNote(Base):
+    """A sticky note on a workflow's canvas. Documentation only: runs never read it, and
+    it isn't part of the versioned definition."""
+
+    __tablename__ = "agent_workflow_note"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    workflow_id: Mapped[int] = mapped_column(
+        ForeignKey("agent_workflow.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    text: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    color: Mapped[str] = mapped_column(String(16), nullable=False, default="yellow")
+    # The linked step's node_key. Not a foreign key: a step can be removed and later
+    # restored with the same key, and the note should keep its link meanwhile.
+    step_node_key: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    # Relative to the linked step when there is one, otherwise canvas coordinates
+    x: Mapped[int] = mapped_column(Integer, nullable=False)
+    y: Mapped[int] = mapped_column(Integer, nullable=False)
+    width: Mapped[int] = mapped_column(Integer, nullable=False)
+    height: Mapped[int] = mapped_column(Integer, nullable=False)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    created_by_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("user.id", ondelete="SET NULL"), nullable=True
+    )
+    updated_by_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("user.id", ondelete="SET NULL"), nullable=True
+    )
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
     )
 
 

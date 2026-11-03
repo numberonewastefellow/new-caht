@@ -27,6 +27,7 @@ from om.db.pulse import lock_trigger_row
 from om.db.pulse import RUN_PENDING
 from om.db.pulse import RUN_RUNNING
 from om.db.pulse import TERMINAL_RUN_STATUSES
+from om.db.workflow import runnable_workflow_steps
 
 _MAX_REASON_CHARS = 200
 
@@ -226,7 +227,7 @@ def count_active_webhook_runs(db_session: Session) -> int:
 def workflow_tools(workflow: AgentWorkflow) -> dict[int, tuple[Tool, list[str]]]:
     """Every tool the workflow's steps can use, with the names of the steps using it."""
     found: dict[int, tuple[Tool, list[str]]] = {}
-    for step in sorted(workflow.steps, key=lambda s: s.step_order):
+    for step in runnable_workflow_steps(workflow):
         if step.agent is None:
             continue
         for tool in step.agent.tools:

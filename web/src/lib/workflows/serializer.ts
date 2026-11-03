@@ -102,6 +102,7 @@ function stepToEditor(
     is_terminal: step.is_terminal,
     can_request_input: step.can_request_input,
     promote_output: step.promote_output,
+    disabled: step.disabled ?? false,
     ...overridesOf(step),
   };
   return isRouter
@@ -160,6 +161,7 @@ function stepToPayload(
     is_terminal: step.is_terminal,
     can_request_input: step.can_request_input,
     promote_output: step.promote_output,
+    disabled: step.disabled,
     ...overrides,
   };
   if (step.type_version != null) payload.type_version = step.type_version;

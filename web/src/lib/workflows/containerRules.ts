@@ -61,6 +61,9 @@ function stepProblem(
   if (step.can_request_input || step.promote_output || step.is_terminal) {
     return `"${name}" is inside a container, so it can't ask for input, promote its output, or end the workflow`;
   }
+  if (step.disabled) {
+    return `"${name}" is inside a container, so it can't be disconnected on its own. Disconnect the container instead`;
+  }
   return null;
 }
 

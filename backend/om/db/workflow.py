@@ -206,6 +206,17 @@ def _get_workflow_agent(
     ).scalar_one_or_none()
 
 
+def runnable_workflow_steps(workflow: AgentWorkflow) -> list[AgentWorkflowStep]:
+    """The steps a run executes, in order: disabled steps and their contents left out."""
+    steps = sorted(workflow.steps, key=lambda s: s.step_order)
+    skipped: set[int] = set()
+    # A container comes before its children, so one pass in order reaches every level
+    for step in steps:
+        if step.disabled or step.parent_step_id in skipped:
+            skipped.add(step.id)
+    return [step for step in steps if step.id not in skipped]
+
+
 def _build_workflow_description(workflow: AgentWorkflow) -> str:
     """Build a user-facing description for the wrapper agent.
 
@@ -215,7 +226,7 @@ def _build_workflow_description(workflow: AgentWorkflow) -> str:
     if workflow.description:
         parts.append(workflow.description)
 
-    step_names = [s.step_name for s in sorted(workflow.steps, key=lambda s: s.step_order)]
+    step_names = [s.step_name for s in runnable_workflow_steps(workflow)]
     if step_names:
         mode_label = {
             "llm_decision": "LLM-Orchestrated",
@@ -414,6 +425,7 @@ def _apply_step_fields(step: AgentWorkflowStep, step_create: WorkflowStepCreate)
     step.is_terminal = step_create.is_terminal
     step.can_request_input = step_create.can_request_input
     step.promote_output = step_create.promote_output
+    step.disabled = step_create.disabled
     # parent_step_id is set by _link_parents once every row exists.
     step.branch_index = step_create.branch_index
     # Step-level overrides

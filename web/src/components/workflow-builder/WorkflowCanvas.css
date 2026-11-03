@@ -1974,6 +1974,37 @@
   background: var(--status-warning-01);
 }
 
+/* A step no line from Start reaches: saved, but it doesn't run. */
+.react-flow__node.wfb-node--disconnected {
+  opacity: 0.55;
+}
+
+.react-flow__node.wfb-node--disconnected.selected {
+  opacity: 0.8;
+}
+
+.wfb-disconnected-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: var(--text-04);
+  background: var(--background-tint-02);
+  border: 1px dashed var(--border-03);
+}
+
+/* Show as Message on an earlier step hides the last step's answer. */
+.wfb-config-warning-note {
+  margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-05);
+  background: var(--status-warning-01);
+  border: 1px solid var(--status-warning-05);
+}
+
 /* ── Canvas warning banner ──────────────────────────────────────────── */
 
 .wfb-canvas-warning {

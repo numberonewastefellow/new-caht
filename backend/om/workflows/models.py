@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from pydantic import model_validator
 
 from om.file_store.models import FileDescriptor
+from om.workflows.note_models import WorkflowNoteResponse
 
 # Valid orchestration modes
 OrchestrationMode = Literal["sequential", "llm_decision"]
@@ -98,6 +99,8 @@ class WorkflowStepCreate(BaseModel):
     is_terminal: bool = False
     can_request_input: bool = False
     promote_output: bool = False
+    # Kept but not run (a step disconnected on the canvas). Top-level steps only.
+    disabled: bool = False
 
     @model_validator(mode="after")
     def validate_step_type_fields(self) -> "WorkflowStepCreate":
@@ -187,6 +190,7 @@ class WorkflowStepResponse(BaseModel):
     is_terminal: bool
     can_request_input: bool
     promote_output: bool
+    disabled: bool = False
 
     # Step-level overrides
     llm_provider_override: str | None = None
@@ -220,6 +224,8 @@ class WorkflowResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     steps: list[WorkflowStepResponse]
+    # Canvas notes. Only filled in when one workflow is fetched by id.
+    notes: list[WorkflowNoteResponse] | None = None
 
 
 class StepExecutionRecord(BaseModel):

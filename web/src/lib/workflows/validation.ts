@@ -120,6 +120,12 @@ export function validateSteps(
     errors.push({ message: "Add at least one step to the workflow" });
     return errors;
   }
+  if (steps.filter((s) => !s.parent_key).every((s) => s.disabled)) {
+    errors.push({
+      message:
+        "Every step is disconnected, so this workflow has nothing to run. Connect at least one step.",
+    });
+  }
 
   const positionOf = new Map(steps.map((s, i) => [s.node_key, i]));
   const byKey = new Map(steps.map((s) => [s.node_key, s]));

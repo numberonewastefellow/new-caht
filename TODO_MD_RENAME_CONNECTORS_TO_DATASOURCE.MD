@@ -109,7 +109,7 @@ Tested on scratch DBs first. The migration follows `0006_webhook_notify_on_succe
 - [x] 2026-11-01 Stage 1 unit, safety, mypy, OpenAPI and collection comparison
 - [x] 2026-11-01 Scratch stack `ds_rename`; live lifecycle test
 - [x] 2026-11-01 Stage 1 Docker image `om/om-backend:ds-rename-stage1` builds; 50 of 52 sources load inside it (the other 2 are problem 1 below the table)
-- [ ] User review of Stage 1
+- [x] 2026-11-02 User approved moving to `main_multi_agent_stable`
 - [x] 2026-11-02 Stage 2 implemented and verified on `ds_rename`; awaiting user review
-- [ ] Apply to the real DB (stop workers, `pg_dump`, restart)
+- [x] 2026-11-02 Applied to the real DB (workers stopped, `pg_dump` verified by restoring it, API restart ran the migration); row counts and IDs identical; about 6 minutes of downtime
 - [x] 2026-11-02 Rebuilt on `bedd3686b`, branch `refactor/connectors-to-datasource`; all checks re-run

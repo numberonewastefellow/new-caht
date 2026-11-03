@@ -56,6 +56,11 @@ export interface EditorStep extends StepOverrides {
   is_terminal: boolean;
   can_request_input: boolean;
   promote_output: boolean;
+  /**
+   * Kept but not run. The Visual Builder sets it on top-level steps no line from Start
+   * reaches; the Wizard has a switch for it. A disabled container skips its contents.
+   */
+  disabled: boolean;
 }
 
 /** Workflow-level settings (everything except the steps). */
@@ -186,6 +191,7 @@ export function createEditorStep(
     is_terminal: false,
     can_request_input: false,
     promote_output: false,
+    disabled: false,
     ...init,
   };
 }

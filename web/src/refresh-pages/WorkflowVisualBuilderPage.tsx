@@ -17,7 +17,10 @@ import { toast } from "@/hooks/useToast";
 import { WorkflowCanvas } from "@/components/workflow-builder/WorkflowCanvas";
 import { AgentSidebar } from "@/components/workflow-builder/AgentSidebar";
 import { StepConfigPanel } from "@/components/workflow-builder/StepConfigPanel";
-import { graphToSteps } from "@/components/workflow-builder/graphUtils";
+import {
+  disconnectedStepIds,
+  graphToSteps,
+} from "@/components/workflow-builder/graphUtils";
 import { GlobalConfigToolbar } from "@/components/workflow-builder/GlobalConfigToolbar";
 import { useWorkflowGraph } from "@/components/workflow-builder/useWorkflowGraph";
 import {
@@ -36,6 +39,8 @@ import {
 } from "@/components/workflows/NodeUpgradeDialog";
 import { WorkflowVersionsDialog } from "@/components/workflows/WorkflowVersionsDialog";
 import WorkflowUpgradeNotice from "@/components/workflows/WorkflowUpgradeNotice";
+import { useWorkflowNotes } from "@/components/workflow-builder/notes/useWorkflowNotes";
+import type { WorkflowWithNotes } from "@/lib/workflows/notes";
 import type { DragAgentData } from "@/components/workflow-builder/types";
 import {
   ORCHESTRATOR_NODE_ID,
@@ -184,6 +189,18 @@ function WorkflowVisualBuilderInner({
       setLoaded(true);
     }
   }, [workflow, catalogReady, loaded, loadFromSnapshot]);
+
+  // Sticky notes save on their own, never through Update
+  const savedStepKeys = useMemo(
+    () => new Set((workflow?.steps ?? []).map((s) => s.node_key)),
+    [workflow]
+  );
+  const notes = useWorkflowNotes({
+    workflowId: workflowId ?? null,
+    initialNotes: (workflow as WorkflowWithNotes | null)?.notes,
+    nodes,
+    savedStepKeys,
+  });
 
   // Listen for "Upgrade available" clicks from ReactFlow nodes
   useEffect(() => {
@@ -368,6 +385,17 @@ function WorkflowVisualBuilderInner({
     [selectedStep, nodes, edges]
   );
 
+  // Above the early return below: hooks must run on every render
+  const disconnectedNames = useMemo(() => {
+    const ids = disconnectedStepIds(nodes, edges);
+    return nodes
+      .filter((n) => ids.has(n.id))
+      .map((n) => {
+        const data = n.data as { step_name?: string; type_label?: string };
+        return `"${data.step_name || data.type_label || "Step"}"`;
+      });
+  }, [nodes, edges]);
+
   // Show loading state for edit mode
   if (workflowId && workflowLoading) {
     return (
@@ -388,8 +416,8 @@ function WorkflowVisualBuilderInner({
     );
   }
 
-  const canvasWarnings =
-    modeConflicts.length > 0
+  const canvasWarnings = [
+    ...(modeConflicts.length > 0
       ? [
           `${modeConflicts
             .map((s) => `"${s.step_name || s.step_type}"`)
@@ -397,7 +425,17 @@ function WorkflowVisualBuilderInner({
             meta.orchestration_mode === "llm_decision" ? "LLM Decision" : "Sequential"
           } mode. Remove ${modeConflicts.length === 1 ? "it" : "them"} or switch the orchestration mode.`,
         ]
-      : [];
+      : []),
+    ...(disconnectedNames.length > 0
+      ? [
+          `${disconnectedNames.join(", ")} ${
+            disconnectedNames.length === 1 ? "isn't" : "aren't"
+          } connected to Start, so ${
+            disconnectedNames.length === 1 ? "it won't" : "they won't"
+          } run. ${disconnectedNames.length === 1 ? "It's" : "They're"} still saved.`,
+        ]
+      : []),
+  ];
   // Compute sidebar style
   const sidebarStyle: React.CSSProperties = sidebarCollapsed
     ? { width: 36, minWidth: 36 }
@@ -469,6 +507,7 @@ function WorkflowVisualBuilderInner({
           onDrop={handleDrop}
           onNodeTypeDrop={handleNodeTypeDrop}
           warnings={canvasWarnings}
+          notes={notes}
         />
 
         {/* Resize handle: config panel */}

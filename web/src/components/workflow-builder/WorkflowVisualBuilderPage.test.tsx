@@ -44,6 +44,7 @@ jest.mock("@/components/workflow-builder/useWorkflowGraph", () => ({
 }));
 jest.mock("@/components/workflow-builder/graphUtils", () => ({
   graphToSteps: () => [],
+  disconnectedStepIds: () => new Set(),
 }));
 jest.mock("@/components/workflow-builder/WorkflowCanvas", () => ({
   WorkflowCanvas: () => "canvas",

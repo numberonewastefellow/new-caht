@@ -58,6 +58,8 @@ class WorkflowNode(BaseModel):
     is_terminal: bool = False
     can_request_input: bool = False
     promote_output: bool = False
+    # Kept in the definition but not run. Top-level only; see WorkflowGraph.runnable.
+    disabled: bool = False
     # Container membership: the parent container's node key and the branch
     # within it. None for top-level nodes.
     parent_key: str | None = None
@@ -181,11 +183,32 @@ class WorkflowGraph(BaseModel):
             node = self._by_key[node.parent_key]
         return depth
 
+    def runnable(self) -> WorkflowGraph:
+        """The graph a run executes: disabled nodes and everything inside them left out.
+
+        The full graph is what gets versioned, so a restore brings disabled steps back.
+        """
+        skipped = {n.node_key for n in self.nodes if n.disabled}
+        if not skipped:
+            return self
+        for node in self.nodes:
+            if node.parent_key in skipped:
+                skipped.add(node.node_key)
+        # Built anew rather than copied, so the lookups cached on this graph don't carry over
+        return WorkflowGraph(
+            **{**dict(self), "nodes": [n for n in self.nodes if n.node_key not in skipped]}
+        )
+
     # ── Serialization ─────────────────────────────────────────────────────
 
     def to_definition(self) -> dict[str, Any]:
         """The JSON document stored in ``agent_workflow_version.definition``."""
-        return self.model_dump(mode="json")
+        definition = self.model_dump(mode="json")
+        # Written only when set, so definitions saved before it existed hash the same.
+        for node in definition["nodes"]:
+            if not node["disabled"]:
+                del node["disabled"]
+        return definition
 
     def content_hash(self) -> str:
         """SHA-256 of the canonical definition; equal content gives equal hashes."""
@@ -280,6 +303,7 @@ def _node_from_step(
         is_terminal=bool(step.is_terminal),
         can_request_input=bool(step.can_request_input),
         promote_output=bool(step.promote_output),
+        disabled=bool(step.disabled),
         parent_key=(
             key_by_step_id.get(step.parent_step_id)
             if step.parent_step_id is not None
