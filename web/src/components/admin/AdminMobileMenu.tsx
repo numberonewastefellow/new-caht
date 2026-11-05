@@ -8,15 +8,9 @@ import { SvgMenu, SvgX, SvgChevronDown, SvgArrowLeft } from "@opal/icons";
 import { Button } from "@opal/components";
 import { cn } from "@/lib/utils";
 import Text from "@/refresh-components/texts/Text";
-import type { AdminNavGroup, NavGroupColor } from "./adminNavItems";
+import type { AdminNavGroup } from "./adminNavItems";
+import { NAV_GROUP_COLORS } from "./navGroupColors";
 
-const colorMap: Record<NavGroupColor, { iconBg: string; iconText: string; activeBg: string; activeText: string }> = {
-  green:  { iconBg: "bg-theme-green-01",  iconText: "text-theme-green-05",  activeBg: "bg-theme-green-01",  activeText: "text-theme-green-05"  },
-  purple: { iconBg: "bg-theme-purple-01", iconText: "text-theme-purple-05", activeBg: "bg-theme-purple-01", activeText: "text-theme-purple-05" },
-  blue:   { iconBg: "bg-theme-blue-01",   iconText: "text-theme-blue-05",   activeBg: "bg-theme-blue-01",   activeText: "text-theme-blue-05"   },
-  orange: { iconBg: "bg-theme-orange-01", iconText: "text-theme-orange-05", activeBg: "bg-theme-orange-01", activeText: "text-theme-orange-05" },
-  cyan:   { iconBg: "bg-theme-cyan-01",   iconText: "text-theme-cyan-05",   activeBg: "bg-theme-cyan-01",   activeText: "text-theme-cyan-05"   },
-};
 
 interface AdminMobileMenuProps {
   groups: AdminNavGroup[];
@@ -65,7 +59,7 @@ export default function AdminMobileMenu({ groups }: AdminMobileMenuProps) {
 
             {groups.map((group) => {
               const GroupIcon = group.icon;
-              const colors = colorMap[group.color];
+              const colors = NAV_GROUP_COLORS[group.color];
               const isExpanded = expandedGroup === group.id;
               const hasActiveItem = group.items.some((item) =>
                 pathname.startsWith(item.link)
@@ -102,12 +96,17 @@ export default function AdminMobileMenu({ groups }: AdminMobileMenuProps) {
                     <div className="ml-5 mt-0.5 flex flex-col gap-0.5 border-l-2 border-border-01 pl-3">
                       {group.items.map((item) => {
                         const ItemIcon = item.icon;
-                        const isActive = pathname.startsWith(item.link);
+                        const isActive =
+                          !item.external && pathname.startsWith(item.link);
 
                         return (
                           <Link
                             key={item.link}
                             href={item.link as any}
+                            target={item.external ? "_blank" : undefined}
+                            rel={
+                              item.external ? "noopener noreferrer" : undefined
+                            }
                             onClick={() => setOpen(false)}
                             className={cn(
                               "flex items-center gap-2.5 px-2.5 py-2 rounded-08 transition-all",

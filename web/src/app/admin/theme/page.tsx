@@ -13,6 +13,7 @@ import { toast } from "@/hooks/useToast";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { EnterpriseSettings } from "@/app/admin/settings/interfaces";
+import { NAV_V2_FLAG, DEFAULT_NAV_VERSION } from "@/lib/navVersion";
 import { useRouter } from "next/navigation";
 
 const CHAR_LIMITS = {
@@ -143,6 +144,9 @@ export default function ThemePage() {
         enable_consent_screen:
           enterpriseSettings?.enable_consent_screen || false,
         consent_screen_prompt: enterpriseSettings?.consent_screen_prompt || "",
+        nav_v2:
+          enterpriseSettings?.feature_flags?.[NAV_V2_FLAG] ??
+          DEFAULT_NAV_VERSION === "v2",
       }}
       validationSchema={validationSchema}
       validateOnChange={false}
@@ -184,6 +188,12 @@ export default function ThemePage() {
           show_first_visit_notice: values.show_first_visit_notice || null,
           enable_consent_screen: values.enable_consent_screen || null,
           consent_screen_prompt: values.consent_screen_prompt || null,
+          // Merge rather than replace: feature_flags is a shared per-tenant
+          // bag and this page only owns the nav key.
+          feature_flags: {
+            ...(enterpriseSettings?.feature_flags || {}),
+            [NAV_V2_FLAG]: values.nav_v2,
+          },
         });
 
         // Important: after a successful save, reset Formik's "baseline" so

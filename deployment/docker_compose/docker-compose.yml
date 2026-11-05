@@ -379,6 +379,12 @@ services:
       # Values: "new" (default) | "legacy". Per-user override via the in-app
       # toggle / ?legacy=1. See AGENTIC_AI_REBRAND_PLAN.md.
       - DEFAULT_UI_VERSION=${DEFAULT_UI_VERSION:-new}
+      # Default navigation view when a workspace has not chosen one.
+      # Plain (NON-NEXT_PUBLIC_) var read at request time by the Next server
+      # layout, so changing it needs a restart, not a rebuild.
+      # Values: v1 (classic top bar, default) | v2 (left rail).
+      # A workspace admin can override this in Settings -> Branding.
+      - DEFAULT_NAV_VERSION=${DEFAULT_NAV_VERSION:-v1}
 
   # Uncomment the block below to enable the MCP server for VertualAI.
   # mcp_server:

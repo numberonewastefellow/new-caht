@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import CommandMenu from "@/refresh-components/commandmenu/CommandMenu";
 import { SvgArrowUpDown } from "@opal/icons";
 import Text from "@/refresh-components/texts/Text";
-import type { AdminNavGroup } from "./adminNavItems";
+import type { Route } from "next";
+import type { AdminNavGroup, AdminNavItem } from "./adminNavItems";
 
 interface AdminCommandPaletteProps {
   open: boolean;
@@ -42,10 +43,16 @@ export default function AdminCommandPalette({
   }, [open, onOpenChange]);
 
   const handleNavigate = useCallback(
-    (link: string) => {
-      router.push(link as any);
+    (item: AdminNavItem) => {
+      // Phoenix and friends live outside the Next router.
+      if (item.external) {
+        window.open(item.link, "_blank", "noopener,noreferrer");
+        onOpenChange(false);
+        return;
+      }
+      router.push(item.link as Route);
     },
-    [router]
+    [router, onOpenChange]
   );
 
   // Filter items based on search query
@@ -84,7 +91,7 @@ export default function AdminCommandPalette({
                     key={item.link}
                     value={item.link}
                     icon={item.icon}
-                    onSelect={() => handleNavigate(item.link)}
+                    onSelect={() => handleNavigate(item)}
                   >
                     {item.name}
                   </CommandMenu.Item>

@@ -9,6 +9,8 @@ import { errorHandlingFetcher } from "@/lib/fetcher";
 import { checkUserIsNoAuthUser, logout } from "@/lib/user";
 import { useUser } from "@/providers/UserProvider";
 import { useSettingsContext } from "@/providers/SettingsProvider";
+import useNavVersion from "@/hooks/useNavVersion";
+import { adminEntry } from "@/sections/sidebar/adminEntry";
 import InputAvatar from "@/refresh-components/inputs/InputAvatar";
 import Text from "@/refresh-components/texts/Text";
 import LineItem from "@/refresh-components/buttons/LineItem";
@@ -44,17 +46,14 @@ function getDisplayName(email?: string, personalName?: string): string {
 interface SettingsPopoverProps {
   onUserSettingsClick: () => void;
   onOpenNotifications: () => void;
-  showAdminPanel: boolean;
-  adminLabel: string;
-  onAdminPanelClick: () => void;
+  /** Present only in nav v1, where this menu owns the admin entry. */
+  admin?: { label: string; onClick: () => void };
 }
 
 function SettingsPopover({
   onUserSettingsClick,
   onOpenNotifications,
-  showAdminPanel,
-  adminLabel,
-  onAdminPanelClick,
+  admin,
 }: SettingsPopoverProps) {
   const { user } = useUser();
   const { data: notifications } = useSWR<Notification[]>(
@@ -113,15 +112,10 @@ function SettingsPopover({
               User Settings
             </LineItem>
           </div>,
-          // Admin/Curator Panel — unified into this menu, shown only to
-          // admins/curators (same gating as the previous standalone footer tab).
-          showAdminPanel && (
-            <LineItem
-              key="admin-panel"
-              icon={SvgShield}
-              onClick={onAdminPanelClick}
-            >
-              {adminLabel}
+          // nav v1 only — v2 pins this in the sidebar as AdminEntryTab.
+          admin && (
+            <LineItem key="admin-panel" icon={SvgShield} onClick={admin.onClick}>
+              {admin.label}
             </LineItem>
           ),
           <LineItem
@@ -182,6 +176,7 @@ export default function UserAvatarPopover({
   >(undefined);
   const { user, isAdmin, isCurator } = useUser();
   const settings = useSettingsContext();
+  const navVersion = useNavVersion();
   const router = useRouter();
   const appFocus = useAppFocus();
 
@@ -197,13 +192,10 @@ export default function UserAvatarPopover({
     notifications?.filter((n) => !n.dismissed).length ?? 0;
   const hasNotifications = undismissedCount > 0;
 
-  // Admin entry (moved out of the sidebar footer into this unified menu).
-  const vectorDbEnabled = settings?.settings?.vector_db_enabled !== false;
-  const adminDefaultHref = (
-    vectorDbEnabled ? "/admin/workflows" : "/admin/assistants"
-  ) as Route;
-  const showAdminPanel = isAdmin || isCurator;
-  const adminLabel = isAdmin ? "Admin Panel" : "Curator Panel";
+  // In v1 this menu is the admin door; in v2 AdminEntryTab is, and this menu
+  // only reflects the role. `adminEntry` keeps both in agreement.
+  const entry = adminEntry({ isAdmin, isCurator, settings });
+  const showAdminEntry = navVersion === "v1" && entry !== null;
   const roleLabel = isAdmin ? "Admin" : isCurator ? "Curator" : "Member";
 
   const handlePopoverOpen = (state: boolean) => {
@@ -299,12 +291,17 @@ export default function UserAvatarPopover({
               router.push("/app/settings");
             }}
             onOpenNotifications={() => setPopupState("Notifications")}
-            showAdminPanel={showAdminPanel}
-            adminLabel={adminLabel}
-            onAdminPanelClick={() => {
-              setPopupState(undefined);
-              router.push(adminDefaultHref);
-            }}
+            admin={
+              showAdminEntry && entry
+                ? {
+                    label: entry.label,
+                    onClick: () => {
+                      setPopupState(undefined);
+                      router.push(entry.href as Route);
+                    },
+                  }
+                : undefined
+            }
           />
         )}
         {popupState === "Notifications" && (

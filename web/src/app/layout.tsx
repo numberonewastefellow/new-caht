@@ -24,6 +24,7 @@ import { WebVitals } from "./web-vitals";
 import { ThemeProvider } from "next-themes";
 import { VirtualAIThemeProvider } from "@/providers/VirtualAIThemeProvider";
 import { UiConfigProvider } from "@/providers/UiConfigProvider";
+import { parseNavVersionEnv } from "@/lib/navVersion";
 import CloudError from "@/components/errorPages/CloudErrorPage";
 import Error from "@/components/errorPages/ErrorPage";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -138,6 +139,10 @@ export default async function RootLayout({
       ? "legacy"
       : "new";
 
+  // Which navigation view this deployment defaults to when a tenant has not
+  // chosen one. Separate from DEFAULT_UI_VERSION on purpose — see lib/navVersion.ts.
+  const defaultNavVersion = parseNavVersionEnv(process.env.DEFAULT_NAV_VERSION);
+
   const getPageContent = async (content: React.ReactNode) => (
     <html
       lang="en"
@@ -224,7 +229,10 @@ export default async function RootLayout({
         <PostHogPageView />
       </Suspense>
       <div id={MODAL_ROOT_ID} className="h-screen w-screen">
-        <UiConfigProvider defaultUiVersion={defaultUiVersion}>
+        <UiConfigProvider
+          defaultUiVersion={defaultUiVersion}
+          defaultNavVersion={defaultNavVersion}
+        >
           {content}
         </UiConfigProvider>
       </div>

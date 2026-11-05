@@ -443,6 +443,28 @@ export const AppearanceThemeSettings = forwardRef<
 
       <Separator className="my-4" />
 
+      <FormField state="idle" className="gap-0">
+        <div className="flex justify-between items-center">
+          <FormField.Label>Modern navigation</FormField.Label>
+          <FormField.Control>
+            <Switch
+              aria-label="Modern navigation"
+              data-label="nav-version-toggle"
+              checked={values.nav_v2}
+              onCheckedChange={(checked) => setFieldValue("nav_v2", checked)}
+            />
+          </FormField.Control>
+        </div>
+        <FormField.Description>
+          Off (Classic): admin pages use a top menu bar and the admin link sits
+          in the user menu. On (Modern): a left navigation rail with expandable
+          sections, and the admin link pinned in the sidebar. Both show exactly
+          the same pages — this applies to everyone in your workspace.
+        </FormField.Description>
+      </FormField>
+
+      <Separator className="my-4" />
+
       <div className="flex flex-col gap-4 p-4 bg-background-tint-00 rounded-16">
         <FormField state="idle" className="gap-0">
           <div className="flex justify-between items-center">

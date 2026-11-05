@@ -8,73 +8,9 @@ import { cn } from "@/lib/utils";
 import { SvgChevronDown } from "@opal/icons";
 import Text from "@/refresh-components/texts/Text";
 import type { AdminNavGroup, AdminNavItem, NavGroupColor } from "./adminNavItems";
+import { NAV_GROUP_COLORS } from "./navGroupColors";
 
-/** Map group color to Tailwind classes for various elements.
- * All classes are full static strings so Tailwind can detect them at build time. */
-const colorMap: Record<
-  NavGroupColor,
-  {
-    activeBg: string;
-    activeText: string;
-    hoverBg: string;
-    iconBg: string;
-    iconText: string;
-    groupHoverIconBg: string;
-    groupHoverIconText: string;
-    accentBorder: string;
-  }
-> = {
-  green: {
-    activeBg: "bg-theme-green-01",
-    activeText: "text-theme-green-05",
-    hoverBg: "hover:bg-theme-green-01",
-    iconBg: "bg-theme-green-01",
-    iconText: "text-theme-green-05",
-    groupHoverIconBg: "group-hover:bg-theme-green-01",
-    groupHoverIconText: "group-hover:text-theme-green-05",
-    accentBorder: "border-l-theme-green-05",
-  },
-  purple: {
-    activeBg: "bg-theme-purple-01",
-    activeText: "text-theme-purple-05",
-    hoverBg: "hover:bg-theme-purple-01",
-    iconBg: "bg-theme-purple-01",
-    iconText: "text-theme-purple-05",
-    groupHoverIconBg: "group-hover:bg-theme-purple-01",
-    groupHoverIconText: "group-hover:text-theme-purple-05",
-    accentBorder: "border-l-theme-purple-05",
-  },
-  blue: {
-    activeBg: "bg-theme-blue-01",
-    activeText: "text-theme-blue-05",
-    hoverBg: "hover:bg-theme-blue-01",
-    iconBg: "bg-theme-blue-01",
-    iconText: "text-theme-blue-05",
-    groupHoverIconBg: "group-hover:bg-theme-blue-01",
-    groupHoverIconText: "group-hover:text-theme-blue-05",
-    accentBorder: "border-l-theme-blue-05",
-  },
-  orange: {
-    activeBg: "bg-theme-orange-01",
-    activeText: "text-theme-orange-05",
-    hoverBg: "hover:bg-theme-orange-01",
-    iconBg: "bg-theme-orange-01",
-    iconText: "text-theme-orange-05",
-    groupHoverIconBg: "group-hover:bg-theme-orange-01",
-    groupHoverIconText: "group-hover:text-theme-orange-05",
-    accentBorder: "border-l-theme-orange-05",
-  },
-  cyan: {
-    activeBg: "bg-theme-cyan-01",
-    activeText: "text-theme-cyan-05",
-    hoverBg: "hover:bg-theme-cyan-01",
-    iconBg: "bg-theme-cyan-01",
-    iconText: "text-theme-cyan-05",
-    groupHoverIconBg: "group-hover:bg-theme-cyan-01",
-    groupHoverIconText: "group-hover:text-theme-cyan-05",
-    accentBorder: "border-l-theme-cyan-05",
-  },
-};
+
 
 interface AdminNavTabProps {
   group: AdminNavGroup;
@@ -83,10 +19,14 @@ interface AdminNavTabProps {
 export default function AdminNavTab({ group }: AdminNavTabProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const colors = colorMap[group.color];
+  const colors = NAV_GROUP_COLORS[group.color];
 
-  // Check if any item in this group matches the current route
-  const isActive = group.items.some((item) => pathname.startsWith(item.link));
+  // Check if any item in this group matches the current route.
+  // External items (e.g. /phoenix/) live outside the Next router, so they can
+  // never be "current".
+  const isActive = group.items.some(
+    (item) => !item.external && pathname.startsWith(item.link)
+  );
 
   const GroupIcon = group.icon;
 
@@ -137,7 +77,7 @@ export default function AdminNavTab({ group }: AdminNavTabProps) {
                 key={item.link}
                 item={item}
                 groupColor={group.color}
-                isActive={pathname.startsWith(item.link)}
+                isActive={!item.external && pathname.startsWith(item.link)}
                 onNavigate={() => setOpen(false)}
               />
             ))}
@@ -157,11 +97,13 @@ interface NavDropdownItemProps {
 
 function NavDropdownItem({ item, groupColor, isActive, onNavigate }: NavDropdownItemProps) {
   const Icon = item.icon;
-  const colors = colorMap[groupColor];
+  const colors = NAV_GROUP_COLORS[groupColor];
 
   return (
     <Link
       href={item.link as any}
+      target={item.external ? "_blank" : undefined}
+      rel={item.external ? "noopener noreferrer" : undefined}
       onClick={onNavigate}
       className={cn(
         "flex items-center gap-2.5 px-2.5 py-2 rounded-08 transition-all group",

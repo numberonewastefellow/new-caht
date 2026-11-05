@@ -21,9 +21,7 @@ export default async function Layout({ children }: LayoutProps) {
   }
 
   return (
-    <ClientLayout
-      enableCloud={NEXT_PUBLIC_CLOUD_ENABLED}
-    >
+    <ClientLayout enableCloud={NEXT_PUBLIC_CLOUD_ENABLED}>
       <AnnouncementBanner />
       {children}
     </ClientLayout>

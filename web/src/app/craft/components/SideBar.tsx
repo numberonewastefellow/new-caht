@@ -17,6 +17,7 @@ import SidebarWrapper from "@/sections/sidebar/SidebarWrapper";
 import SidebarBody from "@/sections/sidebar/SidebarBody";
 import SidebarSection from "@/sections/sidebar/SidebarSection";
 import UserAvatarPopover from "@/sections/sidebar/UserAvatarPopover";
+import AdminEntryTab from "@/sections/sidebar/AdminEntryTab";
 import Popover, { PopoverMenu } from "@/refresh-components/Popover";
 import IconButton from "@/refresh-components/buttons/IconButton";
 import ButtonRenaming from "@/refresh-components/buttons/ButtonRenaming";
@@ -402,8 +403,9 @@ const MemoizedBuildSidebarInner = memo(
 
     const footer = useMemo(
       () => (
-        <div>
+        <div className="flex flex-col gap-0.5">
           {backToChatButton}
+          <AdminEntryTab folded={folded} />
           <UserAvatarPopover folded={folded} />
         </div>
       ),

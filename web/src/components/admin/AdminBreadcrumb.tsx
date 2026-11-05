@@ -4,22 +4,16 @@ import { JSX } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getSegmentLabel, isDynamicSegment, getGroupColorForPath, BREADCRUMB_REDIRECT_MAP } from "./adminNavItems";
-import type { NavGroupColor } from "./adminNavItems";
+import { NAV_GROUP_COLORS } from "./navGroupColors";
 import { SvgChevronRight } from "@opal/icons";
 import Text from "@/refresh-components/texts/Text";
 import type { IconProps } from "@opal/types";
 import { cn } from "@/lib/utils";
 
-/** Map group color to Tailwind icon badge classes */
-const iconColorMap: Record<NavGroupColor, { bg: string; text: string }> = {
-  green:  { bg: "bg-theme-green-01",  text: "text-theme-green-05"  },
-  purple: { bg: "bg-theme-purple-01", text: "text-theme-purple-05" },
-  blue:   { bg: "bg-theme-blue-01",   text: "text-theme-blue-05"   },
-  orange: { bg: "bg-theme-orange-01", text: "text-theme-orange-05" },
-  cyan:   { bg: "bg-theme-cyan-01",   text: "text-theme-cyan-05"   },
+const defaultIconColor = {
+  bg: NAV_GROUP_COLORS.blue.iconBg,
+  text: NAV_GROUP_COLORS.blue.iconText,
 };
-
-const defaultIconColor = { bg: "bg-theme-blue-01", text: "text-theme-blue-05" };
 
 function PageIcon({ Icon, colors }: { Icon: React.FunctionComponent<IconProps>; colors: { bg: string; text: string } }) {
   return (
@@ -73,7 +67,12 @@ export default function AdminBreadcrumb({
 
   // Resolve icon color from the group color for this pathname
   const groupColor = getGroupColorForPath(pathname);
-  const iconColors = groupColor ? iconColorMap[groupColor] : defaultIconColor;
+  const iconColors = groupColor
+    ? {
+        bg: NAV_GROUP_COLORS[groupColor].iconBg,
+        text: NAV_GROUP_COLORS[groupColor].iconText,
+      }
+    : defaultIconColor;
 
   // Determine if icon is a FunctionComponent (SVG) vs ReactNode
   const isIconComponent = typeof icon === "function";

@@ -56,34 +56,25 @@ import useAppFocus from "@/hooks/useAppFocus";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import { useModalContext } from "@/components/context/ModalContext";
 import useScreenSize from "@/hooks/useScreenSize";
-import {
-  SvgClock,
-  SvgDashboard,
-  SvgDevKit,
-  SvgEditBig,
-  SvgFolderPlus,
-  SvgMoreHorizontal,
-  SvgOmOctagon,
-  SvgSearchMenu,
-  SvgSparkle,
-} from "@opal/icons";
-import {
-  makeAccentColorfulIcon,
-  makeColorfulIcon,
-} from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
+import { SvgMoreHorizontal, SvgOmOctagon } from "@opal/icons";
+import { makeColorfulIcon } from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
 import ScheduledSection from "@/sections/sidebar/ScheduledSection";
 
-// Colorful sidebar icons — colored rounded squares with white icons
-const ColorfulNewSession = makeColorfulIcon(SvgEditBig, "sidebar_new_session");
-const ColorfulSearchChats = makeColorfulIcon(SvgSearchMenu, "sidebar_search");
-const ColorfulCraft = makeColorfulIcon(SvgDevKit, "sidebar_craft");
+// The action-row icons live in appNavItems.ts with their rows; these two are
+// for the Agents section, which is not part of the nav catalog.
 const ColorfulExploreAgents = makeColorfulIcon(SvgOmOctagon, "sidebar_agents");
 const ColorfulMoreAgents = makeColorfulIcon(SvgMoreHorizontal, "sidebar_agents");
-const ColorfulNewWorkspace = makeColorfulIcon(SvgFolderPlus, "sidebar_workspaces");
-const ColorfulWorkspaces = makeColorfulIcon(SvgDashboard, "sidebar_workspaces");
-const ColorfulWorkflows = makeColorfulIcon(SvgSparkle, "sidebar_agents");
-// Schedules uses the accent theme color so it adapts to Ocean/Emerald/Violet.
-const ColorfulSchedules = makeAccentColorfulIcon(SvgClock);
+
+/** Maps a catalog focus key to the matching `useAppFocus()` check. */
+const APP_NAV_ACTIVE_CHECKS: Record<
+  AppNavFocusKey,
+  (focus: ReturnType<typeof useAppFocus>) => boolean
+> = {
+  newSession: (focus) => focus.isNewSession(),
+  workspacesDashboard: (focus) => focus.isWorkspacesDashboard(),
+  workflowsGallery: (focus) => focus.isWorkflowsGallery(),
+  schedules: (focus) => focus.isSchedules(),
+};
 import BuildModeIntroBackground from "@/app/craft/components/IntroBackground";
 import BuildModeIntroContent from "@/app/craft/components/IntroContent";
 import { CRAFT_PATH } from "@/app/craft/v1/constants";
@@ -95,6 +86,14 @@ import {
 } from "@/app/admin/settings/interfaces";
 import { errorHandlingFetcher } from "@/lib/fetcher";
 import UserAvatarPopover from "@/sections/sidebar/UserAvatarPopover";
+import AdminEntryTab from "@/sections/sidebar/AdminEntryTab";
+import useNavVersion from "@/hooks/useNavVersion";
+import {
+  getAppNavItems,
+  APP_NAV_GROUP_ORDER,
+  type AppNavItem,
+  type AppNavFocusKey,
+} from "@/sections/sidebar/appNavItems";
 import ChatSearchCommandMenu from "@/sections/sidebar/ChatSearchCommandMenu";
 import { useAppMode } from "@/providers/AppModeProvider";
 import { useQueryController } from "@/providers/QueryControllerProvider";
@@ -473,109 +472,114 @@ const MemoizedAppSidebarInner = memo(
       (user?.preferences?.default_app_mode?.toLowerCase() as
         | "chat"
         | "search") ?? "chat";
-    const newSessionButton = useMemo(() => {
-      const href =
-        combinedSettings?.settings?.disable_default_assistant && currentAgent
-          ? `/app?assistantId=${currentAgent.id}`
-          : "/app";
-      return (
-        <div data-testid="AppSidebar/new-session">
-          <SidebarTab
-            leftIcon={ColorfulNewSession}
-            folded={folded}
-            href={href}
-            transient={activeSidebarTab.isNewSession()}
-            onClick={() => {
+    const navVersion = useNavVersion();
+
+    const navItems = useMemo(
+      () =>
+        getAppNavItems({
+          settings: combinedSettings,
+          currentAgentId: currentAgent?.id,
+        }),
+      [combinedSettings, currentAgent]
+    );
+
+    // One catalog, two layouts. Behaviours needing app state (the chat-search
+    // command menu, the create-workspace modal, query reset) are resolved here
+    // so `appNavItems.ts` can stay pure data.
+    const renderNavItem = useCallback(
+      (item: AppNavItem) => {
+        let transient = item.focusKey
+          ? APP_NAV_ACTIVE_CHECKS[item.focusKey](activeSidebarTab)
+          : false;
+        let onClick: (() => void) | undefined;
+
+        switch (item.behavior) {
+          case "new-session":
+            onClick = () => {
+              // Already here: reset the composer instead of re-navigating.
               if (!activeSidebarTab.isNewSession()) return;
               setAppMode(defaultAppMode);
               reset();
-            }}
+            };
+            break;
+          case "new-workspace":
+            onClick = () => createWorkspaceModal.toggle(true);
+            transient = createWorkspaceModal.isOpen;
+            break;
+          default:
+            if (item.id === "craft") {
+              onClick = () => posthog?.capture("clicked_craft_in_sidebar");
+            }
+        }
+
+        const tab = (
+          <SidebarTab
+            leftIcon={item.icon}
+            folded={folded}
+            href={item.href}
+            transient={transient}
+            lowlight={item.lowlight && !folded}
+            onClick={onClick}
           >
-            New Chat
+            {item.label}
           </SidebarTab>
+        );
+
+        return (
+          <div key={item.id} data-testid={item.testId}>
+            {item.behavior === "search-chats" ? (
+              <ChatSearchCommandMenu trigger={tab} />
+            ) : (
+              tab
+            )}
+          </div>
+        );
+      },
+      [
+        folded,
+        activeSidebarTab,
+        createWorkspaceModal.toggle,
+        createWorkspaceModal.isOpen,
+        setAppMode,
+        defaultAppMode,
+        reset,
+        posthog,
+      ]
+    );
+
+    const actionButtons = useMemo(() => {
+      // v1: one flat list, as the classic sidebar had it.
+      if (navVersion === "v1") {
+        return (
+          <div className="flex flex-col gap-0.5">
+            {navItems.map(renderNavItem)}
+          </div>
+        );
+      }
+
+      // v2: the same rows, grouped and separated by a hairline.
+      const groups = APP_NAV_GROUP_ORDER.map((id) => ({
+        id,
+        items: navItems.filter((item) => item.group === id),
+      })).filter((group) => group.items.length > 0);
+
+      return (
+        <div className="flex flex-col gap-2">
+          {groups.map((group, index) => (
+            <div
+              key={group.id}
+              className={cn(
+                "flex flex-col gap-0.5",
+                index > 0 && "pt-2 border-t border-border-01"
+              )}
+            >
+              {group.items.map(renderNavItem)}
+            </div>
+          ))}
         </div>
       );
-    }, [
-      folded,
-      activeSidebarTab,
-      combinedSettings,
-      currentAgent,
-      defaultAppMode,
-    ]);
+    }, [navVersion, navItems, renderNavItem]);
 
-    const buildButton = useMemo(
-      () => (
-        <div data-testid="AppSidebar/build">
-          <SidebarTab
-            leftIcon={ColorfulCraft}
-            folded={folded}
-            href={CRAFT_PATH}
-            onClick={() => posthog?.capture("clicked_craft_in_sidebar")}
-          >
-            Craft
-          </SidebarTab>
-        </div>
-      ),
-      [folded, posthog]
-    );
-
-    const searchChatsButton = useMemo(
-      () => (
-        <ChatSearchCommandMenu
-          trigger={
-            <SidebarTab leftIcon={ColorfulSearchChats} folded={folded}>
-              Search Chats
-            </SidebarTab>
-          }
-        />
-      ),
-      [folded]
-    );
-    const workspacesButton = useMemo(
-      () => (
-        <div data-testid="AppSidebar/workspaces">
-          <SidebarTab
-            leftIcon={ColorfulWorkspaces}
-            folded={folded}
-            href="/app/workspaces"
-            transient={activeSidebarTab.isWorkspacesDashboard()}
-          >
-            Workspaces
-          </SidebarTab>
-        </div>
-      ),
-      [folded, activeSidebarTab]
-    );
-    const workflowsButton = useMemo(
-      () => (
-        <div data-testid="AppSidebar/workflows">
-          <SidebarTab
-            leftIcon={ColorfulWorkflows}
-            folded={folded}
-            href="/app/workflows"
-            transient={activeSidebarTab.isWorkflowsGallery()}
-          >
-            Workflows
-          </SidebarTab>
-        </div>
-      ),
-      [folded, activeSidebarTab]
-    );
-    const schedulesButton = useMemo(
-      () => (
-        <div data-testid="AppSidebar/schedules">
-          <SidebarTab
-            leftIcon={ColorfulSchedules}
-            folded={folded}
-            href="/app/schedules"
-            transient={activeSidebarTab.isSchedules()}
-          >
-            Pulse
-          </SidebarTab>
-        </div>
-      ),
-      [folded, activeSidebarTab]
-    );
     const moreAgentsButton = useMemo(
       () => (
         <div data-testid="AppSidebar/more-agents">
@@ -596,34 +600,24 @@ const MemoizedAppSidebarInner = memo(
       ),
       [folded, activeSidebarTab, visibleAgents]
     );
-    const newWorkspaceButton = useMemo(
-      () => (
-        <SidebarTab
-          leftIcon={ColorfulNewWorkspace}
-          onClick={() => createWorkspaceModal.toggle(true)}
-          transient={createWorkspaceModal.isOpen}
-          folded={folded}
-          lowlight={!folded}
-        >
-          New Workspace
-        </SidebarTab>
-      ),
-      [folded, createWorkspaceModal.toggle, createWorkspaceModal.isOpen]
-    );
     const handleShowBuildIntro = useCallback(() => {
       setShowIntroAnimation(true);
     }, []);
 
-    // The admin/curator entry now lives inside the unified user menu
-    // (UserAvatarPopover), gated by role — so the footer is a single row.
+    // The admin/curator entry is pinned here, directly above the user chip,
+    // so it is reachable in one click instead of hidden inside the user menu.
     const settingsButton = useMemo(
       () => (
-        <UserAvatarPopover
-          folded={folded}
-          onShowBuildIntro={
-            isOmCraftEnabled ? handleShowBuildIntro : undefined
-          }
-        />
+        <div className="flex flex-col gap-0.5">
+          {/* v2 only — AdminEntryTab gates itself; v1 puts this in the user menu. */}
+          <AdminEntryTab folded={folded} />
+          <UserAvatarPopover
+            folded={folded}
+            onShowBuildIntro={
+              isOmCraftEnabled ? handleShowBuildIntro : undefined
+            }
+          />
+        </div>
       ),
       [folded, handleShowBuildIntro, isOmCraftEnabled]
     );
@@ -696,17 +690,7 @@ const MemoizedAppSidebarInner = memo(
           <SidebarBody
             scrollKey="app-sidebar"
             footer={settingsButton}
-            actionButtons={
-              <div className="flex flex-col gap-0.5">
-                {newSessionButton}
-                {searchChatsButton}
-                {workspacesButton}
-                {workflowsButton}
-                {schedulesButton}
-                {newWorkspaceButton}
-                {isOmCraftEnabled && buildButton}
-              </div>
-            }
+            actionButtons={actionButtons}
           >
             {/* When folded, show icons immediately without waiting for data */}
             {folded ? (

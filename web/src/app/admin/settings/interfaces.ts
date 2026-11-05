@@ -95,6 +95,10 @@ export interface EnterpriseSettings {
   // custom navigation
   custom_nav_items: NavigationItem[];
 
+  // Extensible per-tenant toggles (app_settings.feature_flags JSONB).
+  // Known keys: "nav_v2" — see lib/navVersion.ts.
+  feature_flags?: Record<string, boolean>;
+
   // custom Chat components
   custom_lower_disclaimer_content: string | null;
   custom_header_content: string | null;
