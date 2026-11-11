@@ -6,7 +6,7 @@ RUNTIME. The registries hold ~105 (+ federated) `module_path="om.datasource...."
 strings that never fail at startup -- only when that connector is instantiated. This
 resolves every one (rename-agnostic, MIT-or-EE + env tolerant).
 
-Complements the existing `tests/unit/onyx/connectors/test_connector_factory.py`, whose
+Complements the existing connector-factory unit test, whose
 `module_path.startswith("om.datasource.")` literal must flip to the new root at
 rename time; this suite instead reads the current registry with no hardcoded root.
 """

@@ -19,7 +19,7 @@ curl -fsSL https://raw.githubusercontent.com/vertualai/vertualai/main/deployment
 This provides a guided installation of VertualAI via Docker Compose. It will deploy the latest version of VertualAI
 and set up the volumes to ensure data is persisted across deployments or upgrades.
 
-The script will create an onyx_data directory, all necessary files for the deployment will be stored in
+The script will create a virtualai_data directory, all necessary files for the deployment will be stored in
 there. Note that no application critical data is stored in that directory so even if you delete it, the
 data needed to restore the app will not be destroyed.
 
@@ -166,7 +166,7 @@ dev up
 dev up office
 ```
 
-The `dev.bat` helper automatically builds the container, starts it, and connects it to the `onyx_default` Docker network so the API server can reach it at `http://office-mcp-server:8100/mcp`.
+The `dev.bat` helper automatically builds the container, starts it, and connects it to the `virtualai_default` Docker network so the API server can reach it at `http://office-mcp-server:8100/mcp`.
 
 **Aliases:** `dev up office`, `dev up ppt`, and `dev up docx` all do the same thing — they start the unified server.
 

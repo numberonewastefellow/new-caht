@@ -35,7 +35,7 @@ Both MUST use the same encoders or matching silently fails.
 The old `group:` / `external_group:` encodings are gone. External group ids are
 namespaced per source by `build_ext_team_name_for_om` so ids can't collide across
 connectors. Because the DB and index are **fresh** (greenfield), this rename
-needs **no reindex** — see `DO_NOT_RENAME.md`.
+needs **no reindex**.
 
 ## Public API (frozen — Contract 2)
 

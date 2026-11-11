@@ -4,7 +4,6 @@ This file provides guidance to AI agents when working with code in this reposito
 
 ## KEY NOTES
 
-- ⚠️ **Before any `onyx` → `om` rename or repo-wide find-and-replace, read [`DO_NOT_RENAME.md`](DO_NOT_RENAME.md).** Some `onyx`/`Danswer` strings are *external contracts* — session cookies (`onyx_tid`), the Redis `onyx:` namespace, Docker image tags, Vespa index names. They pass build/mypy but **404 or break at runtime** if renamed. (The HuggingFace model repo ids are now re-hosted under our own `bommina/om-*` namespace — that TODO is done — so those specific ids are ours and safe; see §1/§3 of that file.)
 - If you run into any missing python dependency errors, try running your command with `source .venv/bin/activate` \
   to assume the python venv.
 - To make tests work, check the `.env` file at the root of the project to find an OpenAI key.
@@ -12,7 +11,7 @@ This file provides guidance to AI agents when working with code in this reposito
   `a`. The app can be accessed at `http://localhost:3000`.
 - You should assume that all VertualAI services are running. To verify, you can check the `backend/log` directory to
   make sure we see logs coming out from the relevant service.
-- To connect to the Postgres database, use: `docker exec -it onyx-relational_db-1 psql -U postgres -c "<SQL>"`
+- To connect to the Postgres database, use: `docker exec -it virtualai-relational_db-1 psql -U postgres -c "<SQL>"`
 - When making calls to the backend, always go through the frontend. E.g. make a call to `http://localhost:3000/api/persona` not `http://localhost:8080/api/persona`
 - Put ALL db operations under the `backend/om/db` directory. Don't run queries
   outside of that directory.

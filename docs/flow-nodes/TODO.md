@@ -1,6 +1,6 @@
 # Flow nodes: TODO
 
-**Where we are:** everything through item 4 is built, self-reviewed, tested in a real browser and live on port 3000. Webhooks (5) is with another agent (`D:/llm/danswer-webhooks`). **Item 6 is deferred by the user (2026-10-31).** **Final review done 2026-11-01; findings below are not fixed: the user asked for review only.** The webhook work (5) is in this checkout, and the other agent is testing it.
+**Where we are:** everything through item 4 is built, self-reviewed, tested in a real browser and live on port 3000. Webhooks (5) is with another agent (branch `feature/pulse-webhooks`). **Item 6 is deferred by the user (2026-10-31).** **Final review done 2026-11-01; findings below are not fixed: the user asked for review only.** The webhook work (5) is in this checkout, and the other agent is testing it.
 
 Work top to bottom, one item at a time: implement, test, check on screen, tick, add a progress line. Why each item exists: [FIX_PLAN.md](FIX_PLAN.md) (evidence) and the plan review in the progress log below.
 

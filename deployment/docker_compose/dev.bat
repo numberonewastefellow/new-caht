@@ -395,19 +395,12 @@ goto :eof
 goto :eof
 
 :: Connect Office container to the main compose network (required for inter-container DNS)
-:: Auto-detects the network name (virtualai_default or onyx_default)
+:: Network: virtualai_default (compose project `virtualai`)
 :office_network_connect
 echo Connecting Office MCP server to main network...
 set _net=
 docker network inspect virtualai_default >nul 2>nul
-if !errorlevel! equ 0 (
-    set _net=virtualai_default
-) else (
-    docker network inspect onyx_default >nul 2>nul
-    if !errorlevel! equ 0 (
-        set _net=onyx_default
-    )
-)
+if !errorlevel! equ 0 set _net=virtualai_default
 if not defined _net (
     echo   Main network does not exist yet — skipping. Run 'dev up' first.
     goto :eof
@@ -425,14 +418,7 @@ goto :eof
 :office_network_disconnect
 set _net=
 docker network inspect virtualai_default >nul 2>nul
-if !errorlevel! equ 0 (
-    set _net=virtualai_default
-) else (
-    docker network inspect onyx_default >nul 2>nul
-    if !errorlevel! equ 0 (
-        set _net=onyx_default
-    )
-)
+if !errorlevel! equ 0 set _net=virtualai_default
 if defined _net (
     docker network disconnect !_net! office-mcp-server 2>nul
     if !errorlevel! equ 0 (
@@ -529,7 +515,7 @@ echo.
 echo   Notes:
 echo     The Office MCP server runs from office-mcp-server/docker-compose.yml
 echo     (separate compose project). On 'dev up' and 'dev build', it is auto-started
-echo     and connected to the onyx_default Docker network so the API server can
+echo     and connected to the virtualai_default Docker network so the API server can
 echo     reach it at http://office-mcp-server:8100/mcp.
 echo     It provides 91 tools: 37 PPT (ppt_*) + 54 DOCX (docx_*) including PDF.
 echo.

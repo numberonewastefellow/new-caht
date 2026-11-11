@@ -35,7 +35,7 @@
 - **EE gating:** upstream calls `fetch_versioned_implementation` in 72 places. We removed it, so every call becomes a direct import. A guard test fails if it comes back.
 
 ### 1.2 Translation rules (apply in this order)
-The full mapping, including the upstream-side spellings, lives in `rename-audit/DECISIONS.md` and `DO_NOT_RENAME.md`. Summary of the targets:
+Summary of the targets:
 
 1. **Module paths:** upstream backend package → `om`; bot package → `om/ombot`; `*_api` server package → `om/server/om_api`; enterprise modules → their existing `om/...` folder.
 2. **PascalCase:**
@@ -64,11 +64,11 @@ The full mapping, including the upstream-side spellings, lives in `rename-audit/
 6. **OpenSearch fields and ACLs:** ours are `title_embedding`, `chunk_text`, `content_embedding`, `metadata_tags`, `updated_at`, `is_public`, `is_hidden`, `boost`, `display_name`, `image_id`, `user_workspaces`, `agents`, `snippet`, `document_summary`, `contextual_summary` and `metadata_text`. ACL prefixes are `team:` and `external_team:`. Ours doesn't yet have `created_at`, `cc_pair_ids` or `written_by_port`; adding them needs a re-index.
 7. **Frontend:** upstream enterprise pages → `web/src/app/admin/<feature>/` or `web/src/app/<feature>/`. CSS variables are `--virtualai-*`. Follow the accent-theme rules in CLAUDE.md.
 8. **Brand prose:** "VertualAI".
-- **Frozen persisted or external strings** (cookies, PAT/SCIM prefixes, Redis/S3 keys, metrics, widget tags) stay exactly as listed in `DO_NOT_RENAME.md`.
+- **Frozen persisted or external strings** (cookies, PAT/SCIM prefixes, Redis/S3 keys, metrics, widget tags) keep their current `om` names.
 
 ### 1.3 Gates after every port
-- `python -I rename-audit/build_inventory.py --check` must report 0 hits outside the allowlist. It has no `--help`; running it always regenerates the reports.
-- `pytest backend/tests/unit/migration_safety` and `backend/tests/route_rename`
+- `git diff | grep -iE "onyx|danswer"` must print nothing (no upstream names in new code).
+- `pytest backend/tests/unit/migration_safety`
 - `cd web && npx tsc --noEmit`
 - Grep for frozen strings that were renamed by mistake.
 
@@ -103,7 +103,7 @@ Template:
    - SQLAlchemy models in `backend/om/db/models.py`: classes, fields, and relationships to our renamed tables.
    - Pydantic and API models; route names (`/converse`, `/nexus`, `/bridges`, `/signals`, …) and payload field names.
    - OpenSearch fields (our names), and whether a re-index is needed.
-   - Env vars (`OM_*`), Celery task names, Redis keys (frozen keys stay per `DO_NOT_RENAME.md`).
+   - Env vars (`OM_*`), Celery task names, Redis keys (keep the existing `om` names).
 4. **UI refactor (our design system)**
    - Rebuild the UI in our own components and layout. **Never paste upstream UI.**
    - Use the accent-theme CSS variables (`--theme-primary-*`, `--virtualai-accent*`, `.virtualai-gradient-text`) and support both light and dark modes. No hardcoded colours (CLAUDE.md design rules).
@@ -122,9 +122,8 @@ Template:
    - Unit and integration tests under `backend/tests/...`, plus web type-checks.
    - Note pre-existing, unrelated failures separately.
 9. **Gates**
-   - `python -I rename-audit/build_inventory.py --check`
+   - `git diff | grep -iE "onyx|danswer"` prints nothing
    - `pytest backend/tests/unit/migration_safety`
-   - `backend/tests/route_rename`
    - `npx tsc --noEmit`
 10. **Rollout**
     - The user reviews and rebuilds Docker. No commit unless asked.

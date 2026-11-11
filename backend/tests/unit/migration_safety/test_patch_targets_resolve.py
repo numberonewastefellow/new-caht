@@ -67,7 +67,7 @@ def _patch_target_strings() -> list[tuple[str, int, str]]:
                 continue
             target = first.value
             # Only care about targets into our own package.
-            if not target.startswith(("om.", "onyx.", "ee.")):
+            if not target.startswith(("om.", "ee.")):
                 continue
             out.append((path.name, node.lineno, target))
     return out

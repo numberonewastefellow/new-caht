@@ -1,7 +1,7 @@
 # TODO(fork): set the `IMAGE_REGISTRY` repository variable (Settings > Actions > Variables)
 # to your container-registry namespace, e.g. "myorg" or "ghcr.io/myorg". This workflow
 # publishes/pulls ${{ vars.IMAGE_REGISTRY }}/om-{backend,web-server,sandbox}.
-# NOTE: do NOT rename the om-* image basenames casually -- see DO_NOT_RENAME.md.
+# NOTE: do NOT rename the om-* image basenames casually; deploy scripts pull them by name.
 name: Build and Push Docker Images on Tag
 
 on:

@@ -1,4 +1,4 @@
-name: onyx
+name: virtualai-prod
 
 services:
   api_server:

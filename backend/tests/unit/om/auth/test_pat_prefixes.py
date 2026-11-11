@@ -25,7 +25,7 @@ def test_om_token_validates() -> None:
     assert get_hashed_pat_from_request(_request(token)) == hash_pat(token)
 
 
-@pytest.mark.parametrize("token", ["onyx_pat_abcdefghijklmnop", "other_pat_abcdefghijklmnop"])
+@pytest.mark.parametrize("token", ["other_pat_abcdefghijklmnop", "abcdefghijklmnop"])
 def test_any_other_prefix_is_rejected(token: str) -> None:
     assert get_hashed_pat_from_request(_request(token)) is None
 

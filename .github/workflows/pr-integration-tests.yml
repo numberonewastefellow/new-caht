@@ -1,7 +1,7 @@
 # TODO(fork): set the `IMAGE_REGISTRY` repository variable (Settings > Actions > Variables)
 # to your container-registry namespace, e.g. "myorg" or "ghcr.io/myorg". This workflow
 # publishes/pulls ${{ vars.IMAGE_REGISTRY }}/om-{backend,web-server,sandbox}.
-# NOTE: do NOT rename the om-* image basenames casually -- see DO_NOT_RENAME.md.
+# NOTE: do NOT rename the om-* image basenames casually; deploy scripts pull them by name.
 name: Run Integration Tests v2
 concurrency:
   group: Run-Integration-Tests-${{ github.workflow }}-${{ github.head_ref || github.event.workflow_run.head_branch || github.run_id }}
@@ -37,11 +37,11 @@ env:
   PERM_SYNC_SHAREPOINT_CERTIFICATE_PASSWORD: ${{ secrets.PERM_SYNC_SHAREPOINT_CERTIFICATE_PASSWORD }}
   PERM_SYNC_SHAREPOINT_DIRECTORY_ID: ${{ secrets.PERM_SYNC_SHAREPOINT_DIRECTORY_ID }}
   EXA_API_KEY: ${{ secrets.EXA_API_KEY }}
-  GITHUB_PERMISSION_SYNC_TEST_ACCESS_TOKEN: ${{ secrets.ONYX_GITHUB_PERMISSION_SYNC_TEST_ACCESS_TOKEN }}
-  GITHUB_PERMISSION_SYNC_TEST_ACCESS_TOKEN_CLASSIC: ${{ secrets.ONYX_GITHUB_PERMISSION_SYNC_TEST_ACCESS_TOKEN_CLASSIC }}
-  GITHUB_ADMIN_EMAIL: ${{ secrets.ONYX_GITHUB_ADMIN_EMAIL }}
-  GITHUB_TEST_USER_1_EMAIL: ${{ secrets.ONYX_GITHUB_TEST_USER_1_EMAIL }}
-  GITHUB_TEST_USER_2_EMAIL: ${{ secrets.ONYX_GITHUB_TEST_USER_2_EMAIL }}
+  GITHUB_PERMISSION_SYNC_TEST_ACCESS_TOKEN: ${{ secrets.OM_GITHUB_PERMISSION_SYNC_TEST_ACCESS_TOKEN }}
+  GITHUB_PERMISSION_SYNC_TEST_ACCESS_TOKEN_CLASSIC: ${{ secrets.OM_GITHUB_PERMISSION_SYNC_TEST_ACCESS_TOKEN_CLASSIC }}
+  GITHUB_ADMIN_EMAIL: ${{ secrets.OM_GITHUB_ADMIN_EMAIL }}
+  GITHUB_TEST_USER_1_EMAIL: ${{ secrets.OM_GITHUB_TEST_USER_1_EMAIL }}
+  GITHUB_TEST_USER_2_EMAIL: ${{ secrets.OM_GITHUB_TEST_USER_2_EMAIL }}
 
 jobs:
   discover-test-dirs:
@@ -342,7 +342,7 @@ jobs:
           retry_wait_seconds: 10
           command: |
             echo "Running ${{ matrix.edition }} integration tests for ${{ matrix.test-dir.path }}..."
-            docker run --rm --network onyx_default \
+            docker run --rm --network virtualai_default \
               --name test-runner \
               -e POSTGRES_HOST=relational_db \
               -e POSTGRES_USER=postgres \
@@ -489,7 +489,7 @@ jobs:
           retry_wait_seconds: 10
           command: |
             echo "Running no-vectordb integration tests..."
-            docker run --rm --network onyx_default \
+            docker run --rm --network virtualai_default \
               --name test-runner \
               -e POSTGRES_HOST=relational_db \
               -e POSTGRES_USER=postgres \
@@ -583,7 +583,7 @@ jobs:
       - name: Wait for service to be ready (multi-tenant)
         run: |
           echo "Starting wait-for-service script for multi-tenant..."
-          docker logs -f onyx-api_server-1 &
+          docker logs -f virtualai-multitenant-api_server-1 &
           start_time=$(date +%s)
           timeout=300
           while true; do
@@ -612,7 +612,7 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           echo "Running multi-tenant integration tests..."
-          docker run --rm --network onyx_default \
+          docker run --rm --network virtualai-multitenant_default \
             --name test-runner \
             -e POSTGRES_HOST=relational_db \
             -e POSTGRES_USER=postgres \

@@ -1,11 +1,10 @@
 """Walk-import every module in the root package and fail on namespace breakage.
 
-Static `import onyx.x` breakage fails loudly at startup; this test surfaces it in
+Static `import om.x` breakage fails loudly at startup; this test surfaces it in
 CI before deploy. It focuses on RENAME-related failures: a module that fails to
-import with a ModuleNotFoundError/ImportError naming a root package (`onyx`/`om`/
-the `ee.` mirror) is a missed rename and hard-fails. Other import errors (e.g. a
-genuinely optional dependency) are reported but not treated as rename failures --
-the golden-snapshot tier is what proves the importable SET is unchanged.
+import with a ModuleNotFoundError/ImportError naming a root package (`om`/
+the `ee.` mirror) is a dead path and hard-fails. Other import errors (e.g. a
+genuinely optional dependency) are reported but not treated as failures.
 """
 
 from __future__ import annotations
@@ -30,11 +29,10 @@ def _walk_module_names() -> list[str]:
 
 
 def test_full_package_imports_without_namespace_errors() -> None:
-    """Every submodule imports; no leftover onyx/om/ee namespace import error.
+    """Every submodule imports; no om/ee namespace import error.
 
-    Namespace errors (missing top module in {onyx, om, ee}) hard-fail. Missing
-    third-party deps in a partial env are reported but tolerated -- the
-    golden-snapshot tier proves the importable SET is unchanged.
+    Namespace errors (missing top module in {om, ee}) hard-fail. Missing
+    third-party deps in a partial env are reported but tolerated.
     """
     assert package_source_root().exists()
 

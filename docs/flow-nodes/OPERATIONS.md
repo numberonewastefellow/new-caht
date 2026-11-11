@@ -84,7 +84,6 @@ Any caller on the compose network still needs the token.
 |---|---|
 | Local dev (Windows) | `dev.bat up` / `dev.bat build` check `deployment/docker_compose/.env`. If `CODE_INTERPRETER_API_TOKEN` is missing or still `change-me`, they append a random 256-bit hex token. The file is local and git-ignored; never commit it. |
 | Other compose setups | Add `CODE_INTERPRETER_API_TOKEN=<openssl rand -hex 32>` to `.env`. Every compose file that defines `code-interpreter` or a caller passes it through to both sides. |
-| Helm (`deployment/helm/charts/onyx`) | Set `auth.codeinterpreter.enabled=true` and either supply `auth.codeinterpreter.values.code_interpreter_api_token` or point `auth.codeinterpreter.existingSecret` at your own Secret. The parent chart injects it into every backend pod. The code-interpreter subchart reads the same Secret (`codeInterpreter.auth.existingSecret`, key `code_interpreter_api_token`). If you rename the Secret, change both. |
 | Standalone code-interpreter chart | Use `auth.existingSecret` + `auth.existingSecretKey`, or `auth.apiToken` (creates `<fullname>-auth`). |
 
 ### Token rotation

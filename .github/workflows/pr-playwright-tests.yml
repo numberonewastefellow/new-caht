@@ -1,7 +1,7 @@
 # TODO(fork): set the `IMAGE_REGISTRY` repository variable (Settings > Actions > Variables)
 # to your container-registry namespace, e.g. "myorg" or "ghcr.io/myorg". This workflow
 # publishes/pulls ${{ vars.IMAGE_REGISTRY }}/om-{backend,web-server,sandbox}.
-# NOTE: do NOT rename the om-* image basenames casually -- see DO_NOT_RENAME.md.
+# NOTE: do NOT rename the om-* image basenames casually; deploy scripts pull them by name.
 name: Run Playwright Tests
 concurrency:
   group: Run-Playwright-Tests-${{ github.workflow }}-${{ github.head_ref || github.event.workflow_run.head_branch || github.run_id }}
@@ -264,7 +264,7 @@ jobs:
         run: |
           echo "Starting wait-for-service script..."
 
-          docker logs -f onyx-api_server-1 &
+          docker logs -f virtualai-api_server-1 &
 
           start_time=$(date +%s)
           timeout=300  # 5 minutes in seconds

@@ -159,7 +159,7 @@ def check_sandbox_session_id(chat_session_id: str) -> str | None:
     import subprocess
 
     cmd = (
-        f'docker exec onyx-relational_db-1 psql -U postgres -d postgres -t -c '
+        f'docker exec virtualai-relational_db-1 psql -U postgres -d postgres -t -c '
         f'"SELECT sandbox_session_id FROM chat_session WHERE id = \'{chat_session_id}\'"'
     )
     try:

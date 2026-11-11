@@ -20,8 +20,8 @@ from tests.unit.migration_safety.conftest import qualified
 # the suite still catches NEW orphans introduced by the migration.
 #
 #   cleanup_old_snapshots: the consumer `cleanup_old_snapshots_task`
-#   (om/onyx/server/features/build/sandbox/tasks/tasks.py) is entirely COMMENTED OUT, and
-#   has been since the commit that introduced it (7f0ce0531 "feat: Onyx Craft (#7484)") --
+#   (om/server/features/build/sandbox/tasks/tasks.py) is entirely COMMENTED OUT, and
+#   has been since the commit that introduced it (7f0ce0531, the Craft feature) --
 #   it has never had a consumer on any commit. Beat still dispatches it every 24h to the
 #   SANDBOX queue, where nothing handles it. Fix = delete the beat entry (or re-enable the
 #   task); tracked separately, deliberately NOT changed by the rename migration.

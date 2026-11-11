@@ -1,4 +1,4 @@
-name: onyx
+name: virtualai
 
 services:
   mcp_oauth_server:

@@ -1,7 +1,7 @@
 # Pulse (Scheduled Workflows) — Progress Tracker
 
 > **Resume protocol for a new session:** read this file top-to-bottom, then `DESIGN.md` (same folder, = approved
-> plan + research citations). Work ONLY in the worktree `D:/llm/danswer_sched_wt` (branch
+> plan + research citations). Work ONLY in a separate worktree (branch
 > `feature/scheduled-workflows`, based on `main_multi_agent_stable` @ `eb6902e66`). The main checkout
 > `D:/llm/danswer20022026` is being heavily refactored by another agent — never edit it, never restart its
 > `virtualai-*` containers. **Commits:** LOCAL commit at the end of each phase on this branch only (user-approved

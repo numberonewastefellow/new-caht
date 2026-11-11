@@ -1,7 +1,7 @@
 # Flow nodes — HANDOVER (read this first)
 
 Last updated: 2026-10-31. **Work now lives in the main checkout `D:/llm/danswer20022026` on branch
-`main_multi_agent_stable`.** It was developed on `feature/flow-nodes` (worktree `D:/llm/danswer_flow_wt`, both now
+`main_multi_agent_stable`.** It was developed on `feature/flow-nodes` (in a separate worktree, both now
 removed) and merged locally in commit `3b2074ed3` (user's commits `88eb334e5` "flow-wise" + `e36f48d15`
 "Create flowdev.bat"). **Not pushed.** Rules: commit only when the user asks; never push; explicit `git add`
 paths (the repo is public); never run the alembic CLI. Other uncommitted work by the user/other agents lives in this

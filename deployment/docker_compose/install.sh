@@ -51,7 +51,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-INSTALL_ROOT="${INSTALL_PREFIX:-onyx_data}"
+INSTALL_ROOT="${INSTALL_PREFIX:-virtualai_data}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -849,7 +849,7 @@ if [ "$RESTART_ISSUES" = true ]; then
 fi
 
 # Health check function
-check_onyx_health() {
+check_app_health() {
     local max_attempts=600  # 10 minutes * 60 attempts per minute (every 1 second)
     local attempt=1
     local port=${HOST_PORT:-3000}
@@ -895,7 +895,7 @@ print_success "All containers are running successfully!"
 echo ""
 
 # Run health check
-if check_onyx_health; then
+if check_app_health; then
     echo ""
     echo -e "${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${GREEN}${BOLD}   🎉 VertualAI service is ready! 🎉${NC}"

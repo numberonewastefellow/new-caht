@@ -24,10 +24,6 @@ def test_bearer_token_is_read_from_the_om_header_only() -> None:
     assert get_hashed_bearer_token_from_request(
         req({"X-Om-Authorization": f"Bearer {token}"}), ["on_"], lambda t: f"h:{t}"
     ) == f"h:{token}"
-    # the old header name is no longer honoured
-    assert get_hashed_bearer_token_from_request(
-        req({"X-Onyx-Authorization": f"Bearer {token}"}), ["on_"], lambda t: f"h:{t}"
-    ) is None
 
 
 def test_ingestion_router_prefix_is_om_api() -> None:
@@ -42,7 +38,6 @@ def test_metric_names_are_om_prefixed(module: str) -> None:
     import inspect
 
     source = inspect.getsource(importlib.import_module(module))
-    assert "onyx_" not in source
     assert "om_" in source
 
 

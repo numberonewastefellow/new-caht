@@ -1,18 +1,16 @@
 """Every `from tests.…` import must resolve to a real path in the test tree.
 
 This closes a hole that stayed open for the whole rename. The Stage-1 rename rewrote
-module paths `onyx.*` -> `om.*` everywhere, and that swept up intra-test imports too:
+module paths everywhere, and that swept up intra-test imports too (they were rewritten to
+`tests.unit.om.datasource.utils`)...
 
-    from tests.unit.onyx.connectors.utils import load_everything_from_checkpoint_connector
-                    ^^^^                     became      tests.unit.om.datasource.utils
-
-...but the test DIRECTORY was still `tests/unit/onyx/`. So 12 test modules imported a
+...but the test DIRECTORY still had the old name. So 12 test modules imported a
 package that did not exist and died at COLLECTION. And a collection error is invisible in
 exactly the wrong way: pytest reports it as an error on that file, the other 1500 tests
 still pass, and nobody notices that a dozen files stopped running entirely. It survived
 the rename, a full deploy, and the whole backend EE removal.
 
-Nothing else in this suite could see it: the import-walk and the golden snapshot walk the
+Nothing else in this suite could see it: the import-walk walks the
 `om` PACKAGE, not `tests/`. So check the test tree explicitly.
 
 AST-only -- resolves `from tests.x.y import z` against the filesystem. It does not import

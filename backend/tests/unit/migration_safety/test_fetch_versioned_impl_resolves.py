@@ -1,6 +1,6 @@
 """Every `fetch_versioned_implementation(...)` string target must resolve.
 
-This is the dynamic-dispatch hub: ~166 call sites pass a `"onyx.<module>"` string +
+This is the dynamic-dispatch hub: ~166 call sites pass an `"om.<module>"` string +
 attribute that are imported at RUNTIME, not statically. A missed rename leaves a
 dead string that only fails when that code path fires. We AST-extract the literal
 (module, attribute) pairs and resolve them.

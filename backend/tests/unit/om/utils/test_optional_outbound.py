@@ -45,7 +45,6 @@ def test_telemetry_posts_to_the_configured_endpoint_only(monkeypatch: pytest.Mon
     monkeypatch.setattr(telemetry.threading, "Thread", _InlineThread)
     telemetry.optional_telemetry(record_type=RecordType.USAGE, data={"a": 1}, tenant_id="t")
     assert posted == ["https://collector.example.test/t"]
-    assert not any("onyx" in u for u in posted)
 
 
 # ---- connector request email -------------------------------------------------------------

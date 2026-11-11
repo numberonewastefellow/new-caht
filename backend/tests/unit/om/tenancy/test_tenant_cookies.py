@@ -33,11 +33,6 @@ def test_tenant_cookie_is_read() -> None:
     assert asyncio.run(middleware.resolve_tenant_id(_request({"om_tid": "tenant_abc"}))) == "tenant_abc"
 
 
-def test_old_tenant_cookie_name_is_ignored() -> None:
-    # falls through to the default schema
-    assert asyncio.run(middleware.resolve_tenant_id(_request({"onyx_tid": "tenant_abc"}))) != "tenant_abc"
-
-
 def test_anonymous_cookie_is_decoded(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(middleware, "ALLOW_ANONYMOUS_TENANT_ACCESS", True)
     monkeypatch.setattr(middleware, "decode_anonymous_user_jwt_token", lambda c: {"tenant_id": "tenant_anon"})

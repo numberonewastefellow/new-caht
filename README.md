@@ -181,13 +181,13 @@ docker compose -p virtualai-dashboards -f docker-compose.opensearch-dashboards.y
 
 ```jsonc
 GET _cat/indices?v
-GET danswer_chunk_nomic_ai_nomic_embed_text_v1/_count
-GET danswer_chunk_nomic_ai_nomic_embed_text_v1/_search
+GET chunk_nomic_ai_nomic_embed_text_v1/_count
+GET chunk_nomic_ai_nomic_embed_text_v1/_search
 { "query": { "term": { "source_type": "user_file" } }, "size": 5 }
 ```
 
 > Tip: the index name follows your embedding model (here `nomic-embed-text-v1`). Use
-> `GET _cat/indices?v` to list the actual `danswer_chunk_*` index.
+> `GET _cat/indices?v` to list the actual `chunk_*` index.
 
 ### Default "Files & Chunks" dashboard
 

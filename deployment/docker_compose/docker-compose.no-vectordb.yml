@@ -1,5 +1,5 @@
 # =============================================================================
-# ONYX NO-VECTOR-DB OVERLAY
+# NO-VECTOR-DB OVERLAY
 # =============================================================================
 # Overlay to run VertualAI without a vector database (OpenSearch), model servers, or
 # code interpreter. In this mode, connectors and RAG search are disabled, but
@@ -25,7 +25,7 @@
 #   --profile code-interpreter  Code interpreter
 # =============================================================================
 
-name: onyx
+name: virtualai
 
 services:
   api_server:

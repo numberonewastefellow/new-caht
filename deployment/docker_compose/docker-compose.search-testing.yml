@@ -1,4 +1,4 @@
-name: onyx
+name: virtualai-search-testing
 
 services:
   api_server:

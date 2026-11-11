@@ -15,7 +15,7 @@ scalable, and easy to use.
 
 **Pulse** is the brand, the same way Cortex is the brand for inference and embeddings.
 
-We work in the isolated worktree `D:/llm/danswer_sched_wt`, on branch `feature/scheduled-workflows` (off
+We work in an isolated worktree, on branch `feature/scheduled-workflows` (off
 `main_multi_agent_stable` @ eb6902e66). Another agent is refactoring the main checkout. The tracker is
 `docs/scheduled-workflows/PROGRESS.md`; a new session resumes from it.
 

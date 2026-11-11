@@ -6,11 +6,10 @@ EE-removal safety net:
 
   * versioned_apps stubs resolve their real app via
     `fetch_versioned_implementation("om.background.celery.apps.X", "celery_app")`
-    plus `config_from_object("onyx...configs.X")` -- both STRINGS.
+    plus `config_from_object("om...configs.X")` -- both STRINGS.
   * each app's `autodiscover_tasks([...])` takes a LIST OF STRING module paths;
     finalizing the app forces every one of them to import.
-  * `app_base._VECTOR_DB_TASK_MODULES` is a STRING set (currently including two
-    `ee.onyx...` entries that EE-removal must drop/rename).
+  * `app_base._VECTOR_DB_TASK_MODULES` is a STRING set.
 """
 
 from __future__ import annotations
@@ -62,9 +61,8 @@ def test_autodiscover_imports_every_task_module(
 def test_vector_db_task_modules_all_import() -> None:
     """Every string in `_VECTOR_DB_TASK_MODULES` must import.
 
-    This set is read live from the source module, so it is rename-agnostic. After
-    EE removal the two `ee.onyx...` entries must be gone/merged -- a leftover
-    `ee.<root>...` string here would raise ModuleNotFoundError and fail this test.
+    This set is read live from the source module; a dead `om.`/`ee.` string here
+    would raise ModuleNotFoundError and fail this test.
     """
     status, app_base = import_module_status(qualified("background.celery.apps.app_base"))
     if status == "namespace":
@@ -77,7 +75,7 @@ def test_vector_db_task_modules_all_import() -> None:
     env_skips: list[str] = []
     for module_path in sorted(modules):
         # MIT-or-EE tolerant: some entries are EE-only task modules; on the current
-        # tree they resolve via the ee mirror. A leftover onyx/om/ee string that
+        # tree they resolve via the ee mirror. A leftover om/ee string that
         # resolves to nothing post-migration is a namespace defect.
         status = resolve_symbol(module_path)
         if status == "namespace":

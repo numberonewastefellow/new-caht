@@ -1,4 +1,4 @@
-name: onyx
+name: virtualai-multitenant
 
 services:
   api_server:

@@ -78,16 +78,3 @@ To go back to HTTP: delete `ssl.crt`, remove `WEB_DOMAIN` from `.env`, and run `
 
 All data is stored under `E:\temp\vert\` with subdirectories per service (db, opensearch, minio_data, etc.).
 
-## Migrating from Named Volumes
-
-If you previously used `docker-compose.dev.yml` with default Docker named volumes, stop services and copy them:
-
-```bat
-docker compose -f docker-compose.yml -f docker-compose.dev.yml down
-
-docker run --rm -v onyx-stack_db_volume:/source -v E:/temp/vert/db:/dest alpine sh -c "cp -a /source/. /dest/"
-docker run --rm -v onyx-stack_opensearch_data:/source -v E:/temp/vert/opensearch:/dest alpine sh -c "cp -a /source/. /dest/"
-docker run --rm -v onyx-stack_minio_data:/source -v E:/temp/vert/minio_data:/dest alpine sh -c "cp -a /source/. /dest/"
-```
-
-Then start with `dev build`.

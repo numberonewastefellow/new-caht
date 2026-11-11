@@ -46,7 +46,7 @@ fi
 echo "Waiting for API server to boot up; this may take a minute or two..."
 echo "If this takes more than ~5 minutes, check the logs of the API server container for errors with the following command:"
 echo
-echo "docker logs onyx-api_server-1"
+echo "docker logs virtualai-api_server-1"
 echo
 
 while true; do

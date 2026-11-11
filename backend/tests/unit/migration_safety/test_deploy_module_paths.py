@@ -24,7 +24,7 @@ _COMPOSE_DIR = repo_root() / "deployment" / "docker_compose"
 _PATTERNS = [
     re.compile(r"uvicorn\s+([A-Za-z_][\w.]+):"),  # uvicorn om.main:app
     re.compile(r"python\s+-m\s+([A-Za-z_][\w.]+)"),  # python -m om.mcp_server_main
-    re.compile(r"celery\s+-A\s+([A-Za-z_][\w.]+)"),  # celery -A onyx....
+    re.compile(r"celery\s+-A\s+([A-Za-z_][\w.]+)"),  # celery -A om....
 ]
 _PY_SCRIPT = re.compile(r"python\s+([\w./\\-]+\.py)")
 

@@ -11,9 +11,9 @@ strings that the Dashboards saved-object format requires.
 import json
 import os
 
-INDEX_PATTERN_ID = "danswer-chunks"
+INDEX_PATTERN_ID = "virtualai-chunks"
 INDEX_PATTERN_TITLE = "chunk_*"
-DASHBOARD_ID = "danswer-files-and-chunks"
+DASHBOARD_ID = "virtualai-files-and-chunks"
 VERSION = "3.6.0"
 
 # Drill-down: render each `user_workspaces` value (in the "Files by Workspace" table
@@ -158,7 +158,7 @@ objects.append(
 # 2) Total Files = unique document_id
 objects.append(
     metric_viz(
-        "danswer-total-files",
+        "virtualai-total-files",
         "Total Files",
         {
             "id": "1",
@@ -173,7 +173,7 @@ objects.append(
 # 3) Total Chunks = count
 objects.append(
     metric_viz(
-        "danswer-total-chunks",
+        "virtualai-total-chunks",
         "Total Chunks",
         {"id": "1", "enabled": True, "type": "count", "schema": "metric", "params": {}},
     )
@@ -183,7 +183,7 @@ objects.append(
 #    has doc_values disabled and can't be a terms bucket) -> chunk count
 objects.append(
     table_viz(
-        "danswer-files-table",
+        "virtualai-files-table",
         "Files (click to see chunks)",
         [
             {"id": "1", "enabled": True, "type": "count", "schema": "metric", "params": {}},
@@ -208,7 +208,7 @@ objects.append(
 # 5) Files by Workspace: user_workspaces -> #files (cardinality) + #chunks (count)
 objects.append(
     table_viz(
-        "danswer-files-by-workspace",
+        "virtualai-files-by-workspace",
         "Files by Workspace (click a workspace)",
         [
             {"id": "1", "enabled": True, "type": "count", "schema": "metric", "params": {}},
@@ -227,7 +227,7 @@ objects.append(
 # 6) Chunk Text saved search
 objects.append(
     {
-        "id": "danswer-chunk-text",
+        "id": "virtualai-chunk-text",
         "type": "search",
         "attributes": {
             "title": "Chunk Text",
@@ -278,11 +278,11 @@ panels_json = [
     for p in panels
 ]
 dashboard_refs = [
-    {"name": "panel_1", "type": "visualization", "id": "danswer-total-files"},
-    {"name": "panel_2", "type": "visualization", "id": "danswer-total-chunks"},
-    {"name": "panel_3", "type": "visualization", "id": "danswer-files-table"},
-    {"name": "panel_4", "type": "visualization", "id": "danswer-files-by-workspace"},
-    {"name": "panel_5", "type": "search", "id": "danswer-chunk-text"},
+    {"name": "panel_1", "type": "visualization", "id": "virtualai-total-files"},
+    {"name": "panel_2", "type": "visualization", "id": "virtualai-total-chunks"},
+    {"name": "panel_3", "type": "visualization", "id": "virtualai-files-table"},
+    {"name": "panel_4", "type": "visualization", "id": "virtualai-files-by-workspace"},
+    {"name": "panel_5", "type": "search", "id": "virtualai-chunk-text"},
 ]
 objects.append(
     {

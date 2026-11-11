@@ -23,7 +23,7 @@
 # Then click "Discover Tools" for each server to list and enable tools.
 # =============================================================================
 
-name: onyx
+name: virtualai
 
 services:
   # ---------------------------------------------------------------------------

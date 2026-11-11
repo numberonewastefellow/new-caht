@@ -1,5 +1,5 @@
 # =============================================================================
-# ONYX DOCKER COMPOSE
+# VERTUALAI DOCKER COMPOSE
 # =============================================================================
 # This is the default configuration for VertualAI. This file is fairly configurable,
 # also see env.template for possible settings.
@@ -800,31 +800,31 @@ volumes:
   #   the compose project name. Rename here only if you want a fresh volume.
   # Necessary for persisting data for use
   db_volume:
-    name: onyx-stack_db_volume
+    name: virtualai_db_volume
   opensearch_data:
-    name: onyx-stack_opensearch_data
+    name: virtualai_opensearch_data
   minio_data:
-    name: onyx-stack_minio_data
+    name: virtualai_minio_data
   # Model weights for the OpenAI-compatible embedding server (vllm / tei profiles)
   cortex_hf_cache:
-    name: onyx-stack_cortex_hf_cache
+    name: virtualai_cortex_hf_cache
   # Logs preserved across container restarts
   api_server_logs:
-    name: onyx-stack_api_server_logs
+    name: virtualai_api_server_logs
   background_logs:
-    name: onyx-stack_background_logs
+    name: virtualai_background_logs
   pulse_logs:
     name: virtualai_pulse_logs
   # mcp_server_logs:
   # Shared volume for persistent document storage (Craft file-system mode)
   file-system:
-    name: onyx-stack_file-system
+    name: virtualai_file-system
   # Craft templates (venv + npm deps), shared between api_server and background
   craft-templates:
-    name: onyx-stack_craft-templates
+    name: virtualai_craft-templates
   # SmartSearch AI (Perplexica) data
   smartsearch_data:
-    name: onyx-stack_smartsearch_data
+    name: virtualai_smartsearch_data
   # Arize Phoenix observability data
   phoenix_data:
-    name: onyx-stack_phoenix_data
+    name: virtualai_phoenix_data

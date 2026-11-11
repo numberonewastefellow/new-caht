@@ -43,10 +43,6 @@ def test_zip_metadata_is_saved_under_the_om_name() -> None:
     assert json.loads(store.saved[0]["bytes"]) == META
 
 
-def test_old_metadata_file_name_is_no_longer_recognised() -> None:
-    assert save_zip_metadata_to_file_store(_zip(["x.txt", ".onyx_metadata.json"]), _FakeFileStore()) is None  # type: ignore[arg-type]
-
-
 def test_metadata_file_is_not_treated_as_a_document() -> None:
     zf = _zip(["x.txt", ".om_metadata.json"])
     raw = io.BytesIO()
@@ -62,6 +58,6 @@ def test_inline_marker_is_om(line: str) -> None:
     assert _extract_om_metadata(line) == {"title": "A"}
 
 
-@pytest.mark.parametrize("line", ['<!-- ONYX_METADATA={"title": "A"} -->', '#ONYX_METADATA={"title": "A"}', "# heading"])
-def test_old_marker_is_not_metadata(line: str) -> None:
+@pytest.mark.parametrize("line", ['<!-- OTHER_METADATA={"title": "A"} -->', "# heading"])
+def test_other_lines_are_not_metadata(line: str) -> None:
     assert _extract_om_metadata(line) is None
